@@ -1,0 +1,17 @@
+<div id="app">{{ message }}</div>
+
+<script type="module">
+  import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+  createApp({
+    data() {
+    const x = 2;
+    const y = 3;
+    var z = 0;
+    z = (x + y);
+      return {
+        message: z
+      }
+    }
+  }).mount('#app')
+</script>
