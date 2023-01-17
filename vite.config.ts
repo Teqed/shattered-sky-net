@@ -17,12 +17,17 @@ export default defineConfig({
         {
           name: "vue-router",
           var: "VueRouter",
-          path: "dist/vue-router.esm-browser.js",
+          path: "dist/vue-router.global.prod.js",
+        },
+        {
+          name: "vue-demi",
+          var: "VueDemi",
+          path: "lib/index.iife.min.js",
         },
         {
           name: "pinia",
           var: "Pinia",
-          path: "dist/pinia.esm-browser.js",
+          path: "dist/pinia.iife.min.js",
         },
       ],
     }),

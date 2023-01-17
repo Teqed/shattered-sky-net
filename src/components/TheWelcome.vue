@@ -12,110 +12,90 @@ import SupportIcon from "./icons/IconSupport.vue";
     <template #icon>
       <DocumentationIcon />
     </template>
-    <template #heading>Documentation</template>
+    <template #heading>Books</template>
 
-    Vue’s
-    <a href="https://vuejs.org/" target="_blank" rel="noopener"
-      >official documentation</a
+    File hosting for tabletop materials can be found in the
+    <a href="https://files.shatteredsky.net/" target="_blank" rel="noopener"
+      >book directory browser.</a
     >
-    provides you with all information you need to get started.
   </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
       <ToolingIcon />
     </template>
-    <template #heading>Tooling</template>
+    <template #heading>Tabletop</template>
 
-    This project is served and bundled with
-    <a
-      href="https://vitejs.dev/guide/features.html"
-      target="_blank"
-      rel="noopener"
-      >Vite</a
-    >. The recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noopener"
-      >VSCode</a
+    Our
+    <a href="https://foundry.shatteredsky.net/" target="_blank" rel="noopener"
+      >Foundry VTT server</a
     >
-    +
+    uses three licenses and is currently hosting
     <a
-      href="https://github.com/johnsoncodehk/volar"
+      href="https://foundry.shatteredsky.net/cyberpunk/"
       target="_blank"
       rel="noopener"
-      >Volar</a
-    >. If you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a>
-    and
-    <a href="https://on.cypress.io/component" target="_blank"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
+      >Cyberpunk RED</a
+    >&nbsp;by R. Talsorian Games,
+    <a
+      href="https://foundry.shatteredsky.net/krune/"
+      target="_blank"
+      rel="noopener"
+      >The Waking Rune</a
+    >&nbsp;from Pathfinder Society Season 4, and a Skybourne-inspired
+    <a
+      href="https://foundry.shatteredsky.net/spheres/"
+      target="_blank"
+      rel="noopener"
+      >Spheres of Power</a
+    >&nbsp;campaign.
   </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
       <EcosystemIcon />
     </template>
-    <template #heading>Ecosystem</template>
+    <template #heading>Streaming</template>
 
-    Get official tools and libraries for your project:
-    <a href="https://pinia.vuejs.org/" target="_blank" rel="noopener">Pinia</a>,
-    <a href="https://router.vuejs.org/" target="_blank" rel="noopener"
-      >Vue Router</a
-    >,
-    <a href="https://test-utils.vuejs.org/" target="_blank" rel="noopener"
-      >Vue Test Utils</a
-    >, and
-    <a href="https://github.com/vuejs/devtools" target="_blank" rel="noopener"
-      >Vue Dev Tools</a
-    >. If you need more resources, we suggest paying
-    <a
-      href="https://github.com/vuejs/awesome-vue"
-      target="_blank"
-      rel="noopener"
-      >Awesome Vue</a
-    >
-    a visit.
+    We have a media collection available for access over your choice of
+    <a href="https://plex.shatteredsky.net/" target="_blank" rel="noopener"
+      >Plex</a
+    >&nbsp;or
+    <a href="https://jellyfin.shatteredsky.net/" target="_blank" rel="noopener"
+      >Jellyfin</a
+    >.
   </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
       <CommunityIcon />
     </template>
-    <template #heading>Community</template>
+    <template #heading>Blogging</template>
 
-    Got stuck? Ask your question on
-    <a href="https://chat.vuejs.org" target="_blank" rel="noopener">Vue Land</a
-    >, our official Discord server, or
+    We participate in
     <a
-      href="https://stackoverflow.com/questions/tagged/vue.js"
+      href="https://en.wikipedia.org/wiki/Fediverse"
       target="_blank"
       rel="noopener"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a href="https://news.vuejs.org" target="_blank" rel="noopener"
-      >our mailing list</a
+      >federated</a
     >
-    and follow the official
-    <a href="https://twitter.com/vuejs" target="_blank" rel="noopener"
-      >@vuejs</a
+    web publishing using the ActivityPub protocol, and currently have a
+    <a href="https://mastodon.shatteredsky.net/" target="_blank" rel="noopener"
+      >Mastodon</a
     >
-    twitter account for latest news in the Vue world.
+    microblogging front-end.
   </WelcomeItem>
 
   <WelcomeItem>
     <template #icon>
       <SupportIcon />
     </template>
-    <template #heading>Support Vue</template>
+    <template #heading>Whitelisting</template>
 
-    As an independent project, Vue relies on community backing for its
-    sustainability. You can help us by
-    <a href="https://vuejs.org/sponsor/" target="_blank" rel="noopener"
-      >becoming a sponsor</a
+    If you're a member of the Shattered Sky community, you can request access to
+    any of the above services by contacting the administrators on
+    <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener"
+      >our Discord</a
     >.
   </WelcomeItem>
 </template>

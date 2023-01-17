@@ -6,9 +6,9 @@ import HelloWorld from "./components/HelloWorld.vue";
 <template>
   <header>
     <img
-      alt="Vue logo"
+      alt="Site logo"
       class="logo"
-      src="@/assets/logo.svg"
+      src="@/assets/ss_icon.webp"
       width="125"
       height="125"
     />
