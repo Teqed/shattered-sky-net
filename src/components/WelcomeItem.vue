@@ -21,6 +21,17 @@
 .details {
   flex: 1;
   margin-left: 1rem;
+  /* Addition */
+  padding-top: 0.4rem;
+  padding-bottom: 0.4rem;
+  padding-left: 0.6rem;
+  padding-right: 0.6rem;
+  background: rgba(71, 71, 71, 0.404);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  backdrop-filter: saturate(180%) blur(10px);
+  -webkit-backdrop-filter: saturate(180%) blur(10px);
+  border: 1px solid rgba(121, 121, 121, 0.51);
 }
 
 i {
@@ -55,6 +66,17 @@ h3 {
     border-radius: 8px;
     width: 50px;
     height: 50px;
+    /* Addition */
+    padding-top: 0.4rem;
+    padding-bottom: 0.4rem;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    background: rgba(71, 71, 71, 0.404);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: saturate(180%) blur(10px);
+    -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border: 1px solid rgba(121, 121, 121, 0.51);
   }
 
   .item:before {
