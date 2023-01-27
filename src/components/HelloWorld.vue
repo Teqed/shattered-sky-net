@@ -16,10 +16,12 @@ h1 {
   font-weight: 500;
   font-size: 2.6rem;
   top: -10px;
+  animation: slidein_top 1s ease-out;
 }
 
 h3 {
   font-size: 1.2rem;
+  animation: slidein_top 1s ease-out;
 }
 
 .greetings h1,
@@ -27,10 +29,10 @@ h3 {
   text-align: center;
 }
 
-@media (min-width: 1024px) {
-  .greetings h1,
+@media (min-width: 1200px) {
+  /* .greetings h1,
   .greetings h3 {
     text-align: left;
-  }
+  } */
 }
 </style>

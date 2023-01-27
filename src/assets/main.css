@@ -24,19 +24,17 @@ a,
 
 @media (hover: hover) {
   a:hover {
-    background-color: hsla(189, 65%, 21%, 0.2);
+    /* text-decoration: underline;
+    font-style: bold, underline;
+    background-color: hsla(189, 65%, 21%, 0.2); */
   }
 }
 
-@media (min-width: 1024px) {
-  body {
+#app {
+  /* padding: 0; */
+  /* top: 2vh; */
     display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;  
 }
