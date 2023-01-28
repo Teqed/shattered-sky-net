@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from "vue-router";
-import HelloWorld from "./components/SiteTitle.vue";
+import SiteTitle from "./components/SiteTitle.vue";
 </script>
 <script lang="ts">
 export default {
@@ -54,7 +54,7 @@ export default {
       />
     </div>
     <div class="wrapper">
-      <HelloWorld msg="Shattered Sky" />
+      <SiteTitle msg="Shattered Sky" />
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <a href="https://files.shatteredsky.net">Books</a>
