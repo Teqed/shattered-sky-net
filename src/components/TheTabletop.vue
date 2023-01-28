@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WelcomeItem from "./WelcomeItem.vue";
+import WelcomeItem from "./TileItem.vue";
 </script>
 <script lang="ts"></script>
 

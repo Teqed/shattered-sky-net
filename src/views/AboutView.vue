@@ -15,4 +15,10 @@
 .words-subtile {
   padding: 1rem;
 }
+
+.about-tile {
+  min-height: 7vh;
+  display: flex;
+  align-items: center;
+}
 </style>

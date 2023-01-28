@@ -1,0 +1,13 @@
+{
+	"overrides": [
+		{
+			
+			"files": ["**/*.vue", "*.vue", "**/*.{vue,htm,html,css,sss,less,scss,sass}"]
+		}
+	],
+	"extends": [
+	  "stylelint-config-standard",
+	  "stylelint-config-recommended-vue",
+	  "stylelint-config-prettier"
+	]
+  }
