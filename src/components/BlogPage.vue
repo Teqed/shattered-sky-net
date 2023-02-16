@@ -4,6 +4,8 @@ import WelcomeItem from "./TileItem.vue";
 <script lang="ts"></script>
 
 <template>
+  <title>Social - Shattered Sky</title>
+  <meta name="description" content="Social platforms for Shattered Sky." />
   <WelcomeItem>
     <template #icon> 📚 </template>
     <template #heading>Social</template>

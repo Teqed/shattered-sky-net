@@ -5,6 +5,8 @@ import PlexIcon from "./icons/IconPlex.vue";
 <script lang="ts"></script>
 
 <template>
+  <title>Streaming - Shattered Sky</title>
+  <meta name="description" content="Streaming from Shattered Sky." />
   <WelcomeItem>
     <template #icon>📺</template>
     <template #heading>Streaming</template>

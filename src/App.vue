@@ -89,13 +89,15 @@ initialize();
         width="125"
         height="125"
       />
-      <img
-        alt="Site logo"
-        class="logo"
-        src="@/assets/ss_icon.webp"
-        width="125"
-        height="125"
-      />
+      <RouterLink to="/" class="logo-link">
+        <img
+          alt="Site logo"
+          class="logo"
+          src="@/assets/ss_icon.webp"
+          width="125"
+          height="125"
+        />
+      </RouterLink>
     </div>
     <div class="wrapper">
       <!-- Site title -->
@@ -138,6 +140,11 @@ initialize();
 
 .logo-container:hover .logo-blur {
   opacity: 0.6;
+}
+
+.logo-link {
+  text-decoration: none;
+  background-color: transparent;
 }
 
 .slide-enter-active {

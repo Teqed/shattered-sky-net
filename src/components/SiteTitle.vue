@@ -6,7 +6,10 @@ defineProps<{
 
 <template>
   <div class="greetings">
-    <h1 class="blue">{{ msg }}</h1>
+    <RouterLink to="/" class="greetings-container"
+      ><h1 class="blue">Shattered Sky</h1>
+      <h1 class="blue, blur">Shattered Sky</h1></RouterLink
+    >
     <h3>Hosting platform for the Shattered Sky community.</h3>
   </div>
 </template>
@@ -24,9 +27,16 @@ h3 {
   animation: slidein-top 1s ease-out;
 }
 
-.greetings h1 {
-  text-align: center;
+.greetings-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  text-decoration: none;
+  background-color: transparent;
+}
 
+.greetings h1 {
   /* Change colors as a gradient */
   background: linear-gradient(
       300deg,
@@ -40,6 +50,18 @@ h3 {
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+.blur {
+  opacity: 0;
+  filter: blur(0);
+  position: absolute;
+  transition: opacity 0.5s ease, filter 0.5s ease;
+}
+
+.blur:hover {
+  opacity: 0.8;
+  filter: blur(5px);
 }
 
 .greetings h3 {
