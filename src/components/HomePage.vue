@@ -13,11 +13,11 @@ import SupportIcon from "./icons/IconSupport.vue";
     <template #icon>
       <DocumentationIcon />
     </template>
-    <template #heading>Books</template>
+    <template #heading>Files</template>
 
-    File hosting for tabletop materials can be found in the
+    File hosting can be found in the
     <a href="https://files.shatteredsky.net/" target="_blank" rel="noopener"
-      >book directory browser.</a
+      >directory browser.</a
     >
   </WelcomeItem>
 
@@ -27,29 +27,8 @@ import SupportIcon from "./icons/IconSupport.vue";
     </template>
     <template #heading>Tabletop</template>
 
-    Our
-    <a href="https://foundry.shatteredsky.net/" target="_blank" rel="noopener"
-      >Foundry VTT server</a
-    >
-    uses three licenses and is currently hosting
-    <a
-      href="https://foundry.shatteredsky.net/cyberpunk/"
-      target="_blank"
-      rel="noopener"
-      >Cyberpunk RED</a
-    >&nbsp;by R. Talsorian Games,
-    <a
-      href="https://foundry.shatteredsky.net/krune/"
-      target="_blank"
-      rel="noopener"
-      >The Waking Rune</a
-    >&nbsp;from Pathfinder Society Season 4, and a Skybourne-inspired
-    <a
-      href="https://foundry.shatteredsky.net/spheres/"
-      target="_blank"
-      rel="noopener"
-      >Spheres of Power</a
-    >&nbsp;campaign.
+    We have three <RouterLink to="/tabletop">Foundry VTT servers</RouterLink>
+    for our campaigns.
   </WelcomeItem>
 
   <WelcomeItem>

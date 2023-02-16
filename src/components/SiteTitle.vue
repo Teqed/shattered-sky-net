@@ -24,7 +24,24 @@ h3 {
   animation: slidein-top 1s ease-out;
 }
 
-.greetings h1,
+.greetings h1 {
+  text-align: center;
+
+  /* Change colors as a gradient */
+  background: linear-gradient(
+      300deg,
+      rgb(132, 0, 255),
+      rgba(174, 0, 255, 0.5) 20%
+    ),
+    linear-gradient(100deg, rgba(0, 242, 255, 90%), rgba(0, 136, 255, 0.5) 90%);
+  background-blend-mode: color-dodge, color-dodge;
+  font-weight: 600;
+  /* stylelint-disable-next-line property-no-vendor-prefix */
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
 .greetings h3 {
   text-align: center;
 }

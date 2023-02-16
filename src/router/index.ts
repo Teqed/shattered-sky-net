@@ -22,6 +22,21 @@ const router = createRouter({
       name: "tabletop",
       component: () => import("../views/TabletopView.vue"),
     },
+    {
+      path: "/files",
+      name: "files",
+      component: () => import("../views/FilesView.vue"),
+    },
+    {
+      path: "/stream",
+      name: "stream",
+      component: () => import("../views/StreamingView.vue"),
+    },
+    {
+      path: "/blog",
+      name: "blog",
+      component: () => import("../views/BlogView.vue"),
+    },
   ],
 });
 

@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div class="about-tile tile">
     <br />
     <div class="words-subtile">
@@ -21,4 +21,14 @@
   display: flex;
   align-items: center;
 }
-</style>
+</style> -->
+
+<script setup lang="ts">
+import AboutPage from "../components/AboutPage.vue";
+</script>
+
+<template>
+  <main>
+    <AboutPage />
+  </main>
+</template>

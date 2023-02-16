@@ -13,6 +13,10 @@
 </template>
 
 <style scoped>
+* {
+  --animation-generic: fadein 0.5s ease-out, slidein-top 0.5s ease-out;
+}
+
 .tile {
   width: 55vw;
 
@@ -35,13 +39,13 @@
 .item {
   margin-top: 2rem;
   display: flex;
-  animation: fadein 1s ease, slidein-top 1s ease-out;
+  animation: var(--animation-generic);
 }
 
 .details {
   flex: 1;
   margin-left: 1rem;
-  animation: fadein 1s ease, slidein-top 1s ease-out;
+  animation: var(--animation-generic);
 }
 
 .i-icon {
@@ -51,7 +55,7 @@
   width: 32px;
   height: 32px;
   color: var(--color-text);
-  animation: fadein 1s ease, slidein-top 1s ease-out;
+  animation: var(--animation-generic);
 }
 
 h3 {
