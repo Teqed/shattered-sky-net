@@ -5,7 +5,7 @@
 
   
 @media (hover: hover) {
-	a:hover {
+	.item a:hover {
 	  text-decoration: underline;
 	  background-color: hsl(189deg 65% 21% / 20%);
 	}
