@@ -3,7 +3,7 @@ useHead({
   link: [
     {
       rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/titleitem.css'
+      href: 'https://shatteredsky.net/style/tileitem.css'
     }
   ]
 });
