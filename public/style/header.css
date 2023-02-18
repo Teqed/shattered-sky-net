@@ -5,6 +5,10 @@
 	position: sticky;
 	float: left;
   }
+
+  .logo-container:hover {
+	text-decoration: none;
+  }
   
   .logo-blur {
 	filter: blur(10px);
