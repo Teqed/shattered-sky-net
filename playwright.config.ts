@@ -11,7 +11,8 @@ import { devices } from "@playwright/test";
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  testDir: "./e2e",
+  // globalSetup: require.resolve('./tests/e2e/global-setup'),
+  testDir: "./tests/e2e/",
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
   expect: {
@@ -34,7 +35,10 @@ const config: PlaywrightTestConfig = {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
-    baseURL: "http://localhost:5173",
+    baseURL: "http://localhost:3000",
+
+    /* Use storage from global setup */
+    // storageState: 'state.json',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: "on-first-retry",
@@ -103,8 +107,10 @@ const config: PlaywrightTestConfig = {
      * Use the preview server on CI for more realistic testing.
     Playwright will re-use the local server if there is already a dev-server running.
      */
-    command: process.env.CI ? "vite preview --port 5173" : "vite dev",
-    port: 5173,
+    // command: process.env.CI ? "vite preview --port 5173" : "vite dev",
+    command: process.env.CI ? "nuxt preview" : "nuxt preview",
+    // port: 5173,
+    port: 3000,
     reuseExistingServer: !process.env.CI,
   },
 };
