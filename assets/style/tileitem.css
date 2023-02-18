@@ -2,6 +2,14 @@
 * {
 	--animation-generic: fadein 0.5s ease-out, slidein-top 0.5s ease-out;
   }
+
+  
+@media (hover: hover) {
+	a:hover {
+	  text-decoration: underline;
+	  background-color: hsl(189deg 65% 21% / 20%);
+	}
+  }
   
   .tile {
 	width: 55vw;
