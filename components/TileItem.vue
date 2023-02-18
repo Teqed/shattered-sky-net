@@ -1,3 +1,17 @@
+<script setup lang="ts">
+useHead({
+  link: [
+    {
+      rel: 'stylesheet',
+      href: 'https://shatteredsky.net/style/titleitem.css'
+    }
+  ]
+});
+defineProps<{
+  msg: string;
+}>();
+</script>
+
 <template>
   <div class="item">
     <div class="i-icon">
@@ -13,5 +27,5 @@
 </template>
 
 <style scoped>
-@import '~/assets/style/tileitem.css';
+/* @import '~/assets/style/tileitem.css'; */
 </style>
