@@ -38,22 +38,6 @@ a,
   --color-border-hover: var(--vt-c-divider-dark-1);
   --color-heading: var(--vt-c-text-dark-1);
   --color-text: var(--vt-c-text-dark-2);
-  
-  background: var(--color-background);
-  background-size: 150% 150%;
-  background-blend-mode: exclusion;
-  background-image: radial-gradient(
-      circle at bottom right,
-      rgb(170 0 206 / 10%),
-      rgb(50 0 206 / 0%) 65%
-    ),
-    radial-gradient(
-      circle at top left,
-      rgb(50 0 206 / 15%),
-      rgb(170 0 206 / 0%) 65%
-    );
-  transition: background-position 0.5s ease-in-out;
-  will-change: background-position;
 }
 
 *,
@@ -77,6 +61,21 @@ body {
   text-rendering: optimizelegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background: var(--color-background);
+  background-size: 150% 150%;
+  background-blend-mode: exclusion;
+  background-image: radial-gradient(
+      circle at bottom right,
+      rgb(170 0 206 / 10%),
+      rgb(50 0 206 / 0%) 65%
+    ),
+    radial-gradient(
+      circle at top left,
+      rgb(50 0 206 / 15%),
+      rgb(170 0 206 / 0%) 65%
+    );
+  transition: background-position 0.5s ease-in-out;
+  will-change: background-position;
 }
 
 ::-webkit-scrollbar {
