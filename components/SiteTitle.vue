@@ -7,9 +7,9 @@ useHead({
     }
   ]
 });
-defineProps<{
-  msg: string;
-}>();
+// defineProps<{
+//   msg: string;
+// }>();
 </script>
 
 <template>

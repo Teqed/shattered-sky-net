@@ -1,6 +1,6 @@
 .logo-container {
 	display: flex;
-	margin: 0 2rem 2rem;
+	margin: 0 4vw 2vh;
 	position: sticky;
 	float: left;
   }
@@ -8,8 +8,17 @@
   .logo-container:hover {
 	text-decoration: none;
   }
+
+  .logo {
+    width: min(15vw, 125px);
+    height: auto;
+	animation: fadein 0.5s ease-out, slidein-top 1s ease-out;
+	justify-self: center;
+  }
   
   .logo-blur {
+    width: min(15vw, 125px);
+    height: auto;
 	filter: blur(10px);
 	position: absolute;
 	opacity: 0.1;
@@ -52,23 +61,16 @@
 	animation: fadein 0.5s ease-out, slidein-top 1s ease-out;
   }
   
-  .logo {
-	animation: fadein 0.5s ease-out, slidein-top 1s ease-out;
-	justify-self: center;
-  }
-  
   nav {
 	margin: auto;
 	box-sizing: content-box;
 	content: "";
 	clear: both;
 	display: table;
-	font-size: 12px;
+	font-size: min(3vw, 1rem);
 	text-align: center;
-	margin-top: 2rem;
-  
-	/* Box */
-	padding: 0.4rem 0.6rem;
+	margin-top: 1.5vh;
+	padding: 0.55vh 0.2vw;
 	background: rgb(71 71 71 / 40.4%);
 	border-radius: 16px;
 	box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
@@ -93,7 +95,7 @@
   
   nav a {
 	display: inline;
-	padding: 0 1rem;
+	padding: 0 min(3vw, 1rem);
 	border-left: 1px solid var(--color-border);
   }
 
@@ -115,11 +117,7 @@
   
   /* @mixin for-tablet-portrait-up { */
   @media (min-width: 600px) {
-	nav {
-	  margin-left: -1rem;
-	  font-size: 1rem;
-	  margin-top: 1rem;
-	}
+	/* Empty */
   }
   
   /* @mixin for-tablet-landscape-up { */

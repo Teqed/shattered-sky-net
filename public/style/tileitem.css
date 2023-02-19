@@ -13,9 +13,7 @@
   
   .tile {
 	width: 55vw;
-  
-	/* Addition */
-	padding: 0.6rem 0.8rem;
+	padding: 1vh 1.5vw;
 	background: rgb(71 71 71 / 40%);
 	border-radius: 16px;
 	box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
@@ -31,14 +29,14 @@
   }
   
   .item {
-	margin-top: 2rem;
+	margin-top: 3vh;
 	display: flex;
 	animation: var(--animation-generic);
   }
   
   .details {
 	flex: 1;
-	margin-left: 1rem;
+	margin-left: 1.5vw;
 	animation: var(--animation-generic);
   }
   
@@ -55,7 +53,7 @@
   h3 {
 	font-size: 1.2rem;
 	font-weight: 500;
-	margin-bottom: 0.4rem;
+	margin-bottom: 0.5vh;
 	color: var(--color-heading);
   }
   
@@ -72,11 +70,6 @@
 	  width: 80vw;
 	}
   
-	nav {
-	  margin-left: -1rem;
-	  font-size: 1rem;
-	  margin-top: 1rem;
-	}
   }
   
   /* @mixin for-tablet-landscape-up { */
@@ -90,12 +83,12 @@
   @media (min-width: 1200px) {
 	.tile {
 	  width: 45vw;
-	  padding: 0.8rem 1rem;
+	  padding: 1.2vh 1vw;
 	}
   
 	.item {
 	  margin-top: 0;
-	  padding: 0.4rem 0 1rem calc(var(--section-gap) / 2);
+	  padding: 0.4vh 0 1.5vh 2vw;
 	}
   
 	.i-icon {
@@ -104,9 +97,6 @@
 	  position: absolute;
 	  width: 50px;
 	  height: 50px;
-  
-	  /* Addition */
-	  padding: 0.4rem 0.6rem;
 	  background: rgb(71 71 71 / 40%);
 	  border-radius: 16px;
 	  box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
@@ -145,14 +135,14 @@
 	/* @mixin for-med-desktop-up { */
 	@media (min-width: 1800px) {
 	  .tile {
-		width: 40vw;
+		/* width: 40vw; */
 	  }
 	}
   
 	/* @mixin for-big-desktop-up { */
 	@media (min-width: 1921px) {
 	  .tile {
-		width: 30vw;
+		/* width: 30vw; */
 	  }
 	}
   }

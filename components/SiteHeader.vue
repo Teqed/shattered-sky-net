@@ -15,16 +15,12 @@ useHead({
       alt="Site logo blur"
       class="logo-blur"
       src="../assets/icons/ss_icon.webp"
-      width="125"
-      height="125"
     />
     <NuxtLink to="/" class="logo-link">
       <img
         alt="Site logo"
         class="logo"
         src="../assets/icons/ss_icon.webp"
-        width="125"
-        height="125"
       />
     </NuxtLink>
   </div>
@@ -45,5 +41,5 @@ useHead({
   </div>
 </template>
 <style>
-/* @import '~/assets/style/header.css'; */
+/* @import '~/public/style/header.css'; */
 </style>

@@ -7,9 +7,6 @@ useHead({
     }
   ]
 });
-defineProps<{
-  msg: string;
-}>();
 </script>
 
 <template>
@@ -27,5 +24,5 @@ defineProps<{
 </template>
 
 <style scoped>
-/* @import '~/assets/style/tileitem.css'; */
+/* @import '~/public/style/tileitem.css'; */
 </style>
