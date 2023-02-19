@@ -1,40 +1,38 @@
 <script setup lang="ts">
 useHead({
   title: 'Social - Shattered Sky',
-  meta: [
-    { name: 'description', content: 'Social platforms for Shattered Sky.' }
-  ],
-})</script>
+  meta: [{ name: 'description', content: 'Social platforms for Shattered Sky.' }],
+});
+</script>
 
 <template>
   <main>
     <TileItem>
-      <template #icon> 📚 </template>
-      <template #heading>Social</template>
+      <template #icon>
+        📚
+      </template>
+      <template #heading>
+        Social
+      </template>
 
-      <p></p>
+      <p />
     </TileItem>
     <TileItem>
       <template #icon>
-        <img
-          src="../assets/icons/discord-mark-white.svg"
-          width="20"
-          height="20"
-        />
+        <img src="../assets/icons/discord-mark-white.svg" width="20" height="20">
       </template>
-      <template #heading>Discord</template>
+      <template #heading>
+        Discord
+      </template>
       <div style="overflow: hidden">
         <p>
           We have a
-          <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener"
-            >Discord</a
-          >
-          server for chatting and playing games together. We have several
-          topic-based text channels for sharing media, threads for video game
-          discussion, and usually one or two active voice channels streaming
-          video games.
+          <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">Discord</a>
+          server for chatting and playing games together. We have several topic-based text channels
+          for sharing media, threads for video game discussion, and usually one or two active voice
+          channels streaming video games.
         </p>
-        <br />
+        <br>
         <div style="width: 100%; height: 300px">
           <iframe
             src="https://discord.com/widget?id=272487248006479874"
@@ -45,13 +43,17 @@ useHead({
             height="133%"
             overflow="hidden"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-          ></iframe>
+          />
         </div>
       </div>
     </TileItem>
     <TileItem>
-      <template #icon>🐘 </template>
-      <template #heading>Mastodon</template>
+      <template #icon>
+        🐘
+      </template>
+      <template #heading>
+        Mastodon
+      </template>
       <div style="overflow: hidden">
         <p>
           We participate in
@@ -59,18 +61,16 @@ useHead({
             href="https://en.wikipedia.org/wiki/Fediverse"
             target="_blank"
             rel="noopener"
-            >federated</a
-          >
+          >federated</a>
           web publishing using the ActivityPub protocol, and currently have a
           <a
             href="https://mastodon.shatteredsky.net/public"
             target="_blank"
             rel="noopener"
-            >Mastodon</a
-          >
+          >Mastodon</a>
           microblogging front-end using Glitch-soc.
         </p>
-        <br />
+        <br>
         <div style="width: 100%; height: 600px">
           <iframe
             src="https://mastodon.shatteredsky.net/public"
@@ -81,7 +81,7 @@ useHead({
             height="118%"
             overflow="hidden"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
-          ></iframe>
+          />
           <!-- <iframe
         allowfullscreen
         sandbox="allow-top-navigation allow-scripts allow-popups allow-popups-to-escape-sandbox"

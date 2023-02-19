@@ -1,17 +1,16 @@
-import { describe, it, expect } from "vitest";
-import { setup, $fetch, createPage } from '@nuxt/test-utils'
+import { describe, it, expect } from 'vitest';
+import { setup, $fetch, createPage } from '@nuxt/test-utils';
 
-
-describe("HomePage", async () => {
+describe('HomePage', async () => {
   await setup({
     // test context options
     // browser: true,
-  })
+  });
 
-  it("renders properly", async () => {
-    const page = await createPage('/')
-    const text = await page.innerText('body')
+  it('renders properly', async () => {
+    const page = await createPage('/');
+    const text = await page.innerText('body');
 
-    expect(text).toContain('Shattered Sky')
+    expect(text).toContain('Shattered Sky');
   });
 });

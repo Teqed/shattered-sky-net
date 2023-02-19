@@ -1,6 +1,4 @@
 <script setup lang="ts">
-// useHead({
-// });
 </script>
 <script lang="ts"></script>
 
@@ -9,4 +7,3 @@
 </template>
 
 <style></style>
-
