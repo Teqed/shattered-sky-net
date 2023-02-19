@@ -27,7 +27,7 @@ function updateBackground() {
   target.y = mouse.y;
 
   // Update the background element
-  document.body.style.backgroundPosition = `
+  document.documentElement.style.backgroundPosition = `
     ${(target.x / windowSize.width) * 100}%
     ${(target.y / windowSize.height) * 100}%`;
 }

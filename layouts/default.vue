@@ -39,5 +39,5 @@ useHead({
 </template>
 
 <style>
-/* @import '~/assets/style/main.css'; */
+/* @import '~/public/style/main.css'; */
 </style>
