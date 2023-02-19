@@ -12,7 +12,8 @@ let target = {
 };
 
 // Create a variable for the lerp
-const lerp = 0.075;
+const lerp = (start: number, end: number, amt: number) =>
+  (1 - amt) * start + amt * end;
 
 // Create a variable for the window size
 let windowSize = {
@@ -23,8 +24,8 @@ let windowSize = {
 // Create a function to update the background position
 function updateBackground() {
   // Update the target position
-  target.x = mouse.x;
-  target.y = mouse.y;
+  target.x = lerp(mouse.x, target.x, 0.9);
+  target.y = lerp(mouse.y, target.y, 0.9);
 
   // Update the background element
   document.body.style.backgroundPosition = `
@@ -32,11 +33,9 @@ function updateBackground() {
     ${(target.y / windowSize.height) * 100}%`;
 }
 
+
 // Create a function to animate the background
 function animateBackground() {
-  // Update the mouse position
-  mouse.x += (target.x - mouse.x) * lerp;
-  mouse.y += (target.y - mouse.y) * lerp;
 
   // Update the background position
   updateBackground();

@@ -74,7 +74,6 @@ body {
       rgb(50 0 206 / 15%),
       rgb(170 0 206 / 0%) 65%
     );
-  transition: background-position 0.5s ease-in-out;
   will-change: background-position;
 }
 
