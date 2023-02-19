@@ -1,5 +1,5 @@
 <script setup lang="ts">
-definePageMeta({
+useHead({
   title: 'Tabletop - Shattered Sky',
   meta: [{ name: 'description', content: 'Pen & Paper RPGs without the paper.' }],
 });

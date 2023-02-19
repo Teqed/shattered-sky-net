@@ -74,7 +74,14 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      link: [],
+      link: [
+        // Import favicon
+        {
+          rel: 'icon',
+          type: 'image/x-icon',
+          href: '/favicon.ico',
+        }
+      ],
 			script: [
 				// Import Vue from CDN URL
 				{
