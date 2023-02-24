@@ -1102,6 +1102,18 @@
   dependencies:
     "@types/node" "*"
 
+"@types/lodash.template@^4.5.1":
+  version "4.5.1"
+  resolved "https://registry.yarnpkg.com/@types/lodash.template/-/lodash.template-4.5.1.tgz#3a2325e02963ca8aced4a657598ac26816340d83"
+  integrity sha512-0y71S2dGgmwdkSsyW95JBp8HSZchgKCsjr6F0lsT3eSMtaT3Nn9rcMHU1U4UKu6XjQT3YC6/PNwgFI7k9f+ltw==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash@*":
+  version "4.14.191"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.191.tgz#09511e7f7cba275acd8b419ddac8da9a6a79e2fa"
+  integrity sha512-BdZ5BCCvho3EIXw6wUCXHe7rS53AIDPLE+JzwgT+OsJk53oBfbSmZZ7CX4VaRoN78N+TJpFi9QPlfIVNmJYWxQ==
+
 "@types/minimist@^1.2.0":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@types/minimist/-/minimist-1.2.2.tgz#ee771e2ba4b3dc5b372935d549fd9617bf345b8c"
@@ -5164,6 +5176,17 @@ nuxi@3.2.0:
   integrity sha512-iKXBSzyh1uyvlFl3M5ZuEQtuz0N0HvL8+no2FuIo4LnYfYcWF8F3++C3QPQHX+LuG7cbK+t2Ks4H1rhXk0nWTA==
   optionalDependencies:
     fsevents "~2.3.2"
+
+nuxt-delay-hydration@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/nuxt-delay-hydration/-/nuxt-delay-hydration-1.1.4.tgz#a140c993d92bb2fe9fe3f3b2e98c80661c3af7f8"
+  integrity sha512-CXa/DYiho0YP1Sw3gwedU9XY003KfiC9VeZ7yvLcmozmOpcQH8DsSgH9iSdNXbTbAMMyaPWCTYqWoNBU607YCw==
+  dependencies:
+    "@nuxt/kit" "^3.1.2"
+    "@types/lodash.template" "^4.5.1"
+    lodash.template "^4.5.0"
+    packrup "^0.1.0"
+    radix3 "^1.0.0"
 
 nuxt-link-checker@^1.0.3:
   version "1.0.3"

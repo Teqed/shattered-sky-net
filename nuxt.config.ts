@@ -4,7 +4,10 @@
 // import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
-  modules: ['nuxt-security'],
+  modules: [
+    'nuxt-security',
+    'nuxt-delay-hydration'
+  ],
   security: {
     headers: {
       crossOriginResourcePolicy: {
@@ -27,6 +30,9 @@ export default defineNuxtConfig({
       // xPermittedCrossDomainPolicies: false,
       // xXSSProtection: false,
     }
+  },
+  delayHydration: {
+    mode: 'init'
   },
   // extends: [
   //   'nuxt-seo-kit'
