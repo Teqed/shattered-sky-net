@@ -32,7 +32,7 @@ export default defineNuxtConfig({
     }
   },
   delayHydration: {
-    mode: 'init'
+    mode: 'mount'
   },
   // extends: [
   //   'nuxt-seo-kit'
