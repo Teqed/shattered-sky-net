@@ -5,9 +5,13 @@
 
 export default defineNuxtConfig({
   modules: [
+    '@nuxtjs/web-vitals',
     'nuxt-security',
     'nuxt-delay-hydration'
   ],
+  webVitals: {
+    ga: { id: 'G-2FGMFZNKDY' }
+  },
   security: {
     headers: {
       crossOriginResourcePolicy: {
