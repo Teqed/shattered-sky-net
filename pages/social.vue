@@ -80,7 +80,7 @@ useHead({
             width="118%"
             height="118%"
             overflow="hidden"
-            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts allow-cross-origin"
+            sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
           />
           <!-- <iframe
         allowfullscreen
