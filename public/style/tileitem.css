@@ -134,15 +134,15 @@
   
 	/* @mixin for-med-desktop-up { */
 	@media (min-width: 1800px) {
-	  .tile {
-		/* width: 40vw; */
-	  }
+	  /* .tile {
+		width: 40vw;
+	  } */
 	}
   
 	/* @mixin for-big-desktop-up { */
 	@media (min-width: 1921px) {
-	  .tile {
-		/* width: 30vw; */
-	  }
+	  /* .tile {
+		width: 30vw;
+	  } */
 	}
   }
