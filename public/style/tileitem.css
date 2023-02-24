@@ -1,6 +1,6 @@
 
 * {
-	--animation-generic: fadein 0.5s ease-out, slidein-top 0.5s ease-out;
+	--animation-generic: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
 
   
@@ -21,7 +21,7 @@
 	/* stylelint-disable-next-line property-no-vendor-prefix */
 	-webkit-backdrop-filter: saturate(180%) blur(10px);
 	border: 1px solid rgb(121 121 121 / 51%);
-	transition: box-shadow 0.3s ease-in-out;
+	transition: box-shadow 0.28s ease-in-out;
   }
   
   .tile:hover {

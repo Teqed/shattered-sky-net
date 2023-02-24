@@ -2,7 +2,7 @@ a,
 .blue {
   text-decoration: none;
   color: rgb(47 112 172);
-  transition: 0.4s;
+  transition: 0.28s;
 }
 
 
@@ -84,8 +84,8 @@ body {
 
 @keyframes fadein {
   from {
-    opacity: 0.01;
-    filter: blur(20px);
+    opacity: 0.1;
+    filter: blur(10px);
   }
 
   to {
@@ -96,7 +96,7 @@ body {
 
 @keyframes slidein-top {
   from {
-    transform: translateY(-30%);
+    transform: translateY(-15%);
   }
 
   to {
@@ -106,7 +106,7 @@ body {
 
 @keyframes slidein-top-10 {
   from {
-    transform: translateY(-5%);
+    transform: translateY(-3%);
   }
 
   to {

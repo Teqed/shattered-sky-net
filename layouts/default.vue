@@ -16,6 +16,10 @@ useHead({
     },
     {
       rel: 'stylesheet',
+      href: 'https://shatteredsky.net/style/tileitem.css',
+    },
+    {
+      rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Roboto&display=swap',
       crossorigin: '',
     },
@@ -41,5 +45,6 @@ useHead({
 </template>
 
 <style>
-/* @import '~/public/style/main.css'; */
+/* @import '~/public/style/main.css';
+@import '~/public/style/tileitem.css'; */
 </style>

@@ -27,5 +27,5 @@ useHead({
 </template>
 
 <style scoped>
-/* @import '~/assets/style/title.css'; */
+/* @import '~/public/style/title.css'; */
 </style>

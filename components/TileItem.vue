@@ -24,5 +24,5 @@ useHead({
 </template>
 
 <style scoped>
-/* @import '~/public/style/tileitem.css'; */
+@import '~/public/style/tileitem.css';
 </style>

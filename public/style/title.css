@@ -3,12 +3,12 @@ h1 {
 	font-weight: 500;
 	font-size: 2.6rem;
 	top: -10px;
-	animation: slidein-top 1s ease-out;
+	animation: slidein-top 0.28s ease-out;
   }
   
   h3 {
 	font-size: 1.2rem;
-	animation: slidein-top 1s ease-out;
+	animation: slidein-top 0.28s ease-out;
   }
   
   .greetings-container {
@@ -24,10 +24,10 @@ h1 {
 	/* Change colors as a gradient */
 	background: linear-gradient(
 		300deg,
-		rgb(132, 0, 255),
-		rgba(174, 0, 255, 0.5) 20%
+		rgb(132 0 255),
+		rgb(174 0 255 / 50%) 20%
 	  ),
-	  linear-gradient(100deg, rgba(0, 242, 255, 90%), rgba(0, 136, 255, 0.5) 90%);
+	  linear-gradient(100deg, rgb(0 242 255 / 90%), rgb(0 136 255 / 50%) 90%);
 	background-blend-mode: color-dodge, color-dodge;
 	font-weight: 600;
 	/* stylelint-disable-next-line property-no-vendor-prefix */
@@ -40,7 +40,7 @@ h1 {
 	opacity: 0;
 	filter: blur(0);
 	position: absolute;
-	transition: opacity 0.5s ease, filter 0.5s ease;
+	transition: opacity 0.28s ease, filter 0.28s ease;
   }
   
   .blur:hover {

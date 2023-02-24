@@ -12,7 +12,7 @@
   .logo {
     width: min(15vw, 125px);
     height: auto;
-	animation: fadein 0.5s ease-out, slidein-top 1s ease-out;
+	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
 	justify-self: center;
   }
   
@@ -22,7 +22,7 @@
 	filter: blur(10px);
 	position: absolute;
 	opacity: 0.1;
-	transition: opacity 0.5s ease-in-out;
+	transition: opacity 0.28s ease-in-out;
   }
   
   .logo-container:hover .logo-blur {
@@ -35,11 +35,11 @@
   }
   
   .slide-enter-active {
-	animation: fadein 0.5s ease, slidein-top-10 0.5s ease-out;
+	animation: fadein 0.28s ease, slidein-top-10 0.28s ease-out;
   }
   
   .slide-leave-active {
-	transition: all 0.2s ease-in;
+	transition: all 0.15s ease-in;
   }
   
   .slide-enter-from,
@@ -58,7 +58,7 @@
   }
   
   header .wrapper {
-	animation: fadein 0.5s ease-out, slidein-top 1s ease-out;
+	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
   
   nav {
@@ -78,7 +78,7 @@
 	/* stylelint-disable-next-line property-no-vendor-prefix */
 	-webkit-backdrop-filter: saturate(180%) blur(20px);
 	border: 1px solid rgb(121 121 121 / 51%);
-	transition: box-shadow 0.5s ease-in-out;
+	transition: box-shadow 0.28s ease-in-out;
   }
   
   nav:hover {
