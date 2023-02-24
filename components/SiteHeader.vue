@@ -1,10 +1,10 @@
 <script setup lang="ts">
 useHead({
   link: [
-    {
-      rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/header.css',
-    },
+    // {
+    //   rel: 'stylesheet',
+    //   href: 'https://shatteredsky.net/style/header.css',
+    // },
   ],
 });
 </script>
@@ -49,5 +49,5 @@ useHead({
   </div>
 </template>
 <style>
-/* @import '~/public/style/header.css'; */
+@import '~/public/style/header.css';
 </style>

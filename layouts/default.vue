@@ -10,14 +10,14 @@ useHead({
       href: 'https://fonts.gstatic.com',
       crossorigin: '',
     },
-    {
-      rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/main.css',
-    },
-    {
-      rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/tileitem.css',
-    },
+    // {
+    //   rel: 'stylesheet',
+    //   href: 'https://shatteredsky.net/style/main.css',
+    // },
+    // {
+    //   rel: 'stylesheet',
+    //   href: 'https://shatteredsky.net/style/tileitem.css',
+    // },
     {
       rel: 'stylesheet',
       href: 'https://fonts.googleapis.com/css2?family=Roboto&display=swap',
@@ -45,6 +45,6 @@ useHead({
 </template>
 
 <style>
-/* @import '~/public/style/main.css';
-@import '~/public/style/tileitem.css'; */
+@import '~/public/style/main.css';
+@import '~/public/style/tileitem.css';
 </style>

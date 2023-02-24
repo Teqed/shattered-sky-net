@@ -1,10 +1,10 @@
 <script setup lang="ts">
 useHead({
   link: [
-    {
-      rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/title.css',
-    },
+    // {
+    //   rel: 'stylesheet',
+    //   href: 'https://shatteredsky.net/style/title.css',
+    // },
   ],
 });
 // defineProps<{
@@ -27,5 +27,5 @@ useHead({
 </template>
 
 <style scoped>
-/* @import '~/public/style/title.css'; */
+@import '~/public/style/title.css';
 </style>

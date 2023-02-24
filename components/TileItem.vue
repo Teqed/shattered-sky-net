@@ -1,10 +1,10 @@
 <script setup lang="ts">
 useHead({
   link: [
-    {
-      rel: 'stylesheet',
-      href: 'https://shatteredsky.net/style/tileitem.css',
-    },
+    // {
+    //   rel: 'stylesheet',
+    //   href: 'https://shatteredsky.net/style/tileitem.css',
+    // },
   ],
 });
 </script>
@@ -24,5 +24,5 @@ useHead({
 </template>
 
 <style scoped>
-@import '~/public/style/tileitem.css';
+/* @import '~/public/style/tileitem.css'; */
 </style>

@@ -4,6 +4,41 @@
 // import { defineNuxtConfig } from 'nuxt/config'
 
 export default defineNuxtConfig({
+  modules: ['nuxt-security'],
+  security: {
+    headers: {
+      crossOriginResourcePolicy: {
+        value: 'cross-origin',
+        route: '/**'
+      },
+      // crossOriginOpenerPolicy: false,
+      crossOriginEmbedderPolicy: {
+        value: 'unsafe-none',
+        route: '/social'
+      },
+      // contentSecurityPolicy: false,
+      // originAgentCluster: false,
+      // referrerPolicy: false,
+      // strictTransportSecurity: false,
+      // xContentTypeOptions: false,
+      // xDNSPrefetchControl: false,
+      // xDownloadOptions: false,
+      // xFrameOptions: false,
+      // xPermittedCrossDomainPolicies: false,
+      // xXSSProtection: false,
+    }
+  },
+  // extends: [
+  //   'nuxt-seo-kit'
+  // ],
+  // runtimeConfig: {
+  //   public: {
+  //     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
+  //     siteName: 'Shattered Sky',
+  //     siteDescription: 'Hosting for Shattered Sky',
+  //     language: 'en-US',
+  //   }
+  // },
   // webpack:{
   // 	extractCSS: true,
   // 	optimization: {

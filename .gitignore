@@ -39,3 +39,5 @@ coverage
 
 test-results/
 playwright-report/
+
+.unlighthouse/
