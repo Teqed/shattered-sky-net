@@ -1,6 +1,6 @@
 # shattered-sky-net
 
-Repository for [shatteredsky.net](https://shatteredsky.net) website. Built with [Nuxt.js](https://nuxtjs.org).
+Repository for [shatteredsky.net](https://shatteredsky.net) website. Built with [Nuxt.js](https://nuxt.com/).
 
 ## Build
 
