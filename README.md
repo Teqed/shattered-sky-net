@@ -48,6 +48,12 @@ pm2 status
 
 ![image](https://user-images.githubusercontent.com/5181964/221232265-dc0f18f8-7bdb-4b8a-81af-fe33e7839d79.png)
 
+To keep the application running after you log out of the server, you can save the current PM2 process list:
+
+```bash
+pm2 save
+```
+
 ## Pull latest changes, build, and redeploy
 
 ```bash
