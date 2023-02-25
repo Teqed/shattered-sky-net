@@ -13,6 +13,7 @@
 <template>
   <div>
     <header>
+      <meta name="darkreader-lock">
       <SiteHeader />
     </header>
     <NuxtLayout />
