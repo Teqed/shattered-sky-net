@@ -18,6 +18,7 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+    'vue/html-end-tags': 'off',
 	'unicorn/filename-case': 'off',
     // 'unicorn/filename-case': 'warn',
     'no-tabs': 'off',
