@@ -1,5 +1,13 @@
 <script setup lang="ts">
 useHead({
+  title: 'Shattered Sky',
+  titleTemplate: '%s',
+  meta: [
+    {
+      name: 'description',
+      content: 'Welcome to %site.name.',
+    },
+  ],
   link: [
     {
       rel: 'preconnect',
@@ -30,21 +38,20 @@ useHead({
 <script lang="ts"></script>
 
 <template>
-  <main>
-    <ClientOnly> <FollowCursor /></ClientOnly>
-    <header>
-      <SiteHeader />
-    </header>
+  <div>
+    <ClientOnly>
+      <FollowCursor />
+      <!-- <SeoKit /> -->
+    </ClientOnly>
     <br>
     <NuxtPage v-slot="{ Component }">
       <transition name="slide" mode="out-in">
         <component :is="Component" :key="$route.path" />
       </transition>
     </NuxtPage>
-  </main>
+  </div>
 </template>
 
 <style>
-@import '~/public/style/main.css';
 @import '~/public/style/tileitem.css';
 </style>

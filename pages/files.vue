@@ -6,7 +6,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         📂
@@ -20,5 +20,5 @@ useHead({
         <a href="https://files.shatteredsky.net/" target="_blank" rel="noopener">login here.</a>&nbsp;
       </p>
     </TileItem>
-  </main>
+  </div>
 </template>

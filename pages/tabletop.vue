@@ -6,7 +6,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         <img src="../assets/icons/fvtt.png" style="width: 80%">
@@ -132,5 +132,5 @@ useHead({
         >
       </a>
     </TileItem>
-  </main>
+  </div>
 </template>

@@ -7,7 +7,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         🕮
@@ -29,5 +29,5 @@ useHead({
       Site assembled and hosted by Timothy E. Quilling, 2023. Please contact
       <a url="mailto:admin@shatteredsky.net">admin@shatteredsky.net</a> for inquiries.
     </TileItem>
-  </main>
+  </div>
 </template>

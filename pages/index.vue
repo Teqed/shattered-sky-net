@@ -11,7 +11,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         <DocumentationIcon />
@@ -83,5 +83,5 @@ useHead({
       services by contacting the administrators on
       <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">our Discord</a>.
     </TileItem>
-  </main>
+  </div>
 </template>

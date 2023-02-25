@@ -6,7 +6,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         📚
@@ -92,5 +92,5 @@ useHead({
         </div>
       </div>
     </TileItem>
-  </main>
+  </div>
 </template>

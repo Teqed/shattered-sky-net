@@ -7,7 +7,7 @@ useHead({
 </script>
 
 <template>
-  <main>
+  <div>
     <TileItem>
       <template #icon>
         📺
@@ -56,5 +56,5 @@ useHead({
 
       <p><a href="https://jellyfin.shatteredsky.net">Login here.</a></p>
     </TileItem>
-  </main>
+  </div>
 </template>
