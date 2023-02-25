@@ -34,17 +34,19 @@ export default defineNuxtConfig({
   delayHydration: {
     mode: 'init'
   },
-  // extends: [
-  //   'nuxt-seo-kit'
-  // ],
-  // runtimeConfig: {
-  //   public: {
-  //     siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
-  //     siteName: 'Shattered Sky',
-  //     siteDescription: 'Hosting for Shattered Sky',
-  //     language: 'en-US',
-  //   }
-  // },
+  extends: [
+    'nuxt-seo-kit'
+  ],
+  runtimeConfig: {
+    public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
+      siteName: 'Shattered Sky',
+      titleTemplate: '%s',
+      siteDescription: 'Hosting for Shattered Sky',
+      language: 'en-US',
+      // titleSeparator: '|',
+    }
+  },
   // webpack:{
   // 	extractCSS: true,
   // 	optimization: {

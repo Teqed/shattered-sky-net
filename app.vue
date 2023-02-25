@@ -1,9 +1,23 @@
-<script setup lang="ts">
+<script setup lang="ts">useHead({
+  title: 'Shattered Sky',
+  titleTemplate: '%s',
+  meta: [
+    {
+      name: 'description',
+      content: 'Welcome to %site.name.',
+    },
+  ],});
 </script>
 <script lang="ts"></script>
 
 <template>
-  <NuxtLayout />
+  <div>
+    <header>
+      <SiteHeader />
+    </header>
+    <NuxtLayout />
+  </div>
 </template>
 
-<style></style>
+<style>
+@import '~/public/style/main.css';</style>
