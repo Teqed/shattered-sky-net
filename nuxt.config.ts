@@ -6,7 +6,7 @@
 export default defineNuxtConfig({
   modules: [
     'nuxt-security',
-    'nuxt-delay-hydration'
+    'nuxt-delay-hydration',
   ],
   security: {
     headers: {
