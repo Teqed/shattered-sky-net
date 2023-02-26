@@ -1,12 +1,22 @@
 <script setup lang="ts">
+const head = useLocaleHead({
+  addDirAttribute: true,
+  identifierAttribute: 'id',
+  addSeoAttributes: true
+})
 useHead({
-  title: 'Shattered Sky',
-  titleTemplate: '%s',
   meta: [
     {
-      name: 'description',
-      content: 'Welcome to %site.name.',
+      name: 'darkreader-lock',
     },
+    {
+      name: 'lang',
+      content: head.value.htmlAttrs.lang || 'en',
+    },
+    {
+      name: 'dir',
+      content: head.value.htmlAttrs.dir || 'ltr',
+    }
   ],
   link: [
     // {
@@ -39,9 +49,12 @@ useHead({
 
 <template>
   <div>
+    <header>
+      <SeoKit />
+      <SiteHeader />
+    </header>
     <ClientOnly>
       <FollowCursor />
-      <!-- <SeoKit /> -->
     </ClientOnly>
     <br>
     <NuxtPage v-slot="{ Component }">

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PlexIcon from '../assets/icons/IconPlex.vue';
 useHead({
-  title: 'Streaming - Shattered Sky',
+  title: 'Streaming',
   meta: [{ name: 'description', content: 'Streaming from Shattered Sky.' }],
 });
 </script>

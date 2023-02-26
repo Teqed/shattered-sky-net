@@ -6,7 +6,10 @@ import CommunityIcon from '../assets/icons/IconCommunity.vue';
 import SupportIcon from '../assets/icons/IconSupport.vue';
 useHead({
   title: 'Shattered Sky',
-  meta: [{ name: 'description', content: 'Home page for Shattered Sky community.' }],
+  titleTemplate: '%s',
+  meta: [
+    { name: 'description', content: 'Home page for Shattered Sky community.' },
+  ],
 });
 </script>
 
@@ -17,15 +20,16 @@ useHead({
         <DocumentationIcon />
       </template>
       <template #heading>
-        Files
+        {{ $t('index.files.title') }}
       </template>
 
-      File hosting can be found in the
-      <a
-        href="https://files.shatteredsky.net/"
-        target="_blank"
-        rel="noopener"
-      >directory browser.</a>
+      <i18n-t keypath="index.files.blurb" tag="label" for="index.files.linkText">
+        <a
+          href="https://files.shatteredsky.net/"
+          target="_blank"
+          rel="noopener"
+        >{{ $t('index.files.linkText') }}</a>
+      </i18n-t>
     </TileItem>
 
     <TileItem>
@@ -33,7 +37,7 @@ useHead({
         <ToolingIcon />
       </template>
       <template #heading>
-        Tabletop
+        {{ $t('index.tabletop.title') }}
       </template>
 
       We have three
@@ -48,7 +52,7 @@ useHead({
         <EcosystemIcon />
       </template>
       <template #heading>
-        Streaming
+        {{ $t('index.streaming.title') }}
       </template>
 
       We have a media collection available for access over your choice of
@@ -61,7 +65,7 @@ useHead({
         <CommunityIcon />
       </template>
       <template #heading>
-        Blogging
+        {{ $t('index.social.title') }}
       </template>
 
       We participate in
@@ -76,7 +80,7 @@ useHead({
         <SupportIcon />
       </template>
       <template #heading>
-        Whitelisting
+        {{ $t('index.whitelisting.title') }}
       </template>
 
       If you're a member of the Shattered Sky community, you can request access to any of the above

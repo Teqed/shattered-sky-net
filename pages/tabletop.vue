@@ -1,6 +1,6 @@
 <script setup lang="ts">
 useHead({
-  title: 'Tabletop - Shattered Sky',
+  title: 'Tabletop',
   meta: [{ name: 'description', content: 'Pen & Paper RPGs without the paper.' }],
 });
 </script>

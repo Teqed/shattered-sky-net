@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 useHead({
-  title: 'About - Shattered Sky',
+  title: 'About',
   meta: [{ name: 'description', content: 'About Shattered Sky.' }],
 });
 </script>

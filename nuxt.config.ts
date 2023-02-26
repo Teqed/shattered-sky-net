@@ -13,6 +13,34 @@ export default defineNuxtConfig({
           Roboto: true,
         },
     }],
+    ['@nuxtjs/i18n', {
+      baseUrl: 'https://shatteredsky.net',
+      locales: [{
+        code: 'en',
+        iso: 'en-US',
+        name: 'English',
+        file: 'en-US.js',
+      }, {
+        code: 'fr',
+        iso: 'fr-FR',
+        name: 'Français',
+        file: 'fr-FR.js',
+      }],
+      lazy: true,
+      langDir: 'lang/',
+      defaultLocale: 'en',
+      strategy: 'no_prefix',
+      detectBrowserLanguage: {
+        useCookie: true,
+        cookieKey: 'i18n_redirected',
+        redirectOn: 'root',
+      },
+      vueI18n: {
+        legacy: false,
+        // locale: 'fr',
+        fallbackLocale: 'en',
+    }
+    }],
   ],
   security: {
     headers: {
@@ -43,14 +71,15 @@ export default defineNuxtConfig({
   extends: [
     'nuxt-seo-kit'
   ],
+  unhead: {
+    ogTitleTemplate: '%pageTitle',
+  },
   runtimeConfig: {
     public: {
       siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
       siteName: 'Shattered Sky',
-      titleTemplate: '%s',
       siteDescription: 'Hosting for Shattered Sky',
-      language: 'en-US',
-      // titleSeparator: '|',
+      siteAuthor: 'Timothy E. Quilling',
     }
   },
   // webpack:{
@@ -123,9 +152,9 @@ export default defineNuxtConfig({
   },
   app: {
     head: {
-      htmlAttrs: {
-        lang: 'en',
-      },
+      // htmlAttrs: {
+      //   lang: 'en',
+      // },
       link: [
         // Import favicon
         {
