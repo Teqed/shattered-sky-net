@@ -27,7 +27,7 @@ a,
   --vt-c-divider-dark-1: rgb(84 84 84 / 65%);
   --vt-c-divider-dark-2: rgb(84 84 84 / 48%);
   --vt-c-text-light-1: var(--vt-c-indigo);
-  --vt-c-text-light-2: rgb(60 60 60 0.66%);
+  --vt-c-text-light-2: rgb(60 60 60 / 0.66%);
   --vt-c-text-dark-1: var(--vt-c-white);
   --vt-c-text-dark-2: rgb(235 235 235 / 64%);
   --section-gap: 160px;
