@@ -18,6 +18,7 @@ module.exports = {
     ecmaVersion: 'latest',
   },
   rules: {
+    '@typescript-eslint/no-unused-vars': 'warn',
     'vue/html-end-tags': 'off',
 	'unicorn/filename-case': 'off',
     // 'unicorn/filename-case': 'warn',
