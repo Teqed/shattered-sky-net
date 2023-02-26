@@ -7,6 +7,12 @@ export default defineNuxtConfig({
   modules: [
     'nuxt-security',
     'nuxt-delay-hydration',
+    // 'nuxt-purgecss',
+    ['@nuxtjs/google-fonts', {
+        families: {
+          Roboto: true,
+        },
+    }],
   ],
   security: {
     headers: {
