@@ -23,7 +23,7 @@ useHead({
         {{ $t('index.files.title') }}
       </template>
 
-      <i18n-t keypath="index.files.blurb" tag="label" for="index.files.linkText">
+      <i18n-t keypath="index.files.blurb" scope="global" for="index.files.linkText">
         <a
           href="https://files.shatteredsky.net/"
           target="_blank"

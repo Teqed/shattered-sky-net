@@ -19,12 +19,12 @@ export default defineNuxtConfig({
         code: 'en',
         iso: 'en-US',
         name: 'English',
-        file: 'en-US.js',
+        file: 'en-US.json',
       }, {
         code: 'fr',
         iso: 'fr-FR',
         name: 'Français',
-        file: 'fr-FR.js',
+        file: 'fr-FR.json',
       }],
       lazy: true,
       langDir: 'lang/',
@@ -35,11 +35,13 @@ export default defineNuxtConfig({
         cookieKey: 'i18n_redirected',
         redirectOn: 'root',
       },
-      vueI18n: {
-        legacy: false,
-        // locale: 'fr',
-        fallbackLocale: 'en',
-    }
+        vueI18n: {
+          legacy: false,
+          // locale: 'fr',
+            fallbackLocale: 'en',
+            runtimeOnly: false,
+            compositionOnly: false,
+          }
     }],
   ],
   security: {
