@@ -27,6 +27,6 @@ export default defineNuxtPlugin((nuxtApp) => {
 		config: {
 			id: 'G-2FGMFZNKDY'
 		}
-	})
+	}, nuxtApp.vueApp.router)
 	// trackRouter(useRouter())
 })
