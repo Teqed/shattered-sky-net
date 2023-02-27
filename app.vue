@@ -1,12 +1,15 @@
 <script setup lang="ts">useHead({
   // title: 'Shattered Sky',
   // titleTemplate: '%s',
-  // meta: [
+  meta: [
   //   {
   //     name: 'description',
   //     content: 'Welcome to Shattered Sky.',
   //   },
-  // ],
+    {
+      name: 'darkreader-lock',
+    },
+  ],
   });
 </script>
 <script lang="ts"></script>
