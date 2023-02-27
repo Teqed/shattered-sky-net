@@ -32,7 +32,7 @@ useHead({
       <br>
       <p>
         <i18n-t keypath="about.card1.blurb2" scope="global" for="about.card1.linkText">
-          <a url="mailto:teqed@shatteredsky.net">teqed@shatteredsky.net</a>
+          <a href="mailto:teqed@shatteredsky.net">teqed@shatteredsky.net</a>
         </i18n-t>
       </p>
     </TileItem>
