@@ -22,7 +22,7 @@ useHead({
         Shattered Sky
       </h1>
     </RouterLink>
-    <h3>{{ $t('title.sub') }}</h3>
+    <h2>{{ $t('title.sub') }}</h2>
   </div>
 </template>
 
