@@ -9,7 +9,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        <img src="../assets/icons/fvtt.png" style="width: 80%">
+        <img src="../assets/icons/fvtt.png" style="width: 80%" alt="FVTT logo">
       </template>
       <template #heading>
         {{ $t('tabletop.card0.title') }}

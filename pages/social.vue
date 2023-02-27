@@ -19,7 +19,7 @@ useHead({
     </TileItem>
     <TileItem>
       <template #icon>
-        <img src="../assets/icons/discord-mark-white.svg" width="20" height="20">
+        <img src="../assets/icons/discord-mark-white.svg" width="20" height="20" alt="Discord logo">
       </template>
       <template #heading>
         {{ $t('social.card1.title') }}
@@ -44,6 +44,7 @@ useHead({
             height="133%"
             overflow="hidden"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+            title="Discord Widget"
           />
         </div>
       </div>
@@ -78,6 +79,7 @@ useHead({
             height="118%"
             overflow="hidden"
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
+            title="Mastodon Widget"
           />
           <!-- <iframe
         allowfullscreen
