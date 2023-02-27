@@ -31,7 +31,6 @@
   .item {
 	margin-top: 3vh;
 	display: flex;
-	animation: var(--animation-generic);
   }
   
   .details {
