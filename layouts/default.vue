@@ -7,9 +7,6 @@ const head = useLocaleHead({
 // const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
   meta: [
-    {
-      name: 'darkreader-lock',
-    },
   ],
   link: [
     // {
