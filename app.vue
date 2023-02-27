@@ -16,13 +16,15 @@
 
 <template>
   <div>
-    <NuxtLayout>
-      <NuxtPage v-slot="{ Component }">
-        <transition name="slide" mode="out-in">
-          <component :is="Component" :key="$route.path" />
-        </transition>
-      </NuxtPage>
-    </NuxtLayout>
+    <NuxtErrorBoundary>
+      <NuxtLayout>
+        <NuxtPage v-slot="{ Component }">
+          <transition name="slide" mode="out-in">
+            <component :is="Component" :key="$route.path" />
+          </transition>
+        </NuxtPage>
+      </NuxtLayout>
+    </NuxtErrorBoundary>
   </div>
 </template>
 

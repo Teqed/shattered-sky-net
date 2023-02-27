@@ -39,21 +39,27 @@ useHead({
 
 <template>
   <div>
-    <Html>
-      <Head>
-        <SeoKit :language="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir" />
-      </Head>
-      <header>
-        <SiteHeader />
-      </header>
-      <ClientOnly>
-        <FollowCursor />
-      </ClientOnly>
-      <br>
-      <Body>
-        <slot />
-      </Body>
-    </Html>
+    <NuxtErrorBoundary>
+      <Html>
+        <Head>
+          <SeoKit :language="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir" />
+        </Head>
+        <header>
+          <NuxtErrorBoundary>
+            <SiteHeader />
+          </NuxtErrorBoundary>
+        </header>
+        <ClientOnly>
+          <FollowCursor />
+        </ClientOnly>
+        <br>
+        <Body>
+          <NuxtErrorBoundary>
+            <slot />
+          </NuxtErrorBoundary>
+        </Body>
+      </Html>
+    </NuxtErrorBoundary>
   </div>
 </template>
 
