@@ -27,23 +27,23 @@ useHead({
     <!-- Navigation links -->
     <nav>
       <NuxtLink to="/">
-        Home
+        {{ $t('nav.home') }}
       </NuxtLink>
       <NuxtLink to="/files">
-        Files
+        {{ $t('nav.files') }}
       </NuxtLink>
       <NuxtLink to="/tabletop">
-        Tabletop
+        {{ $t('nav.tabletop') }}
       </NuxtLink>
       <!-- <NuxtLink to="/games">Games</NuxtLink> -->
       <NuxtLink to="/stream">
-        Stream
+        {{ $t('nav.stream') }}
       </NuxtLink>
       <NuxtLink to="/social">
-        Social
+        {{ $t('nav.social') }}
       </NuxtLink>
       <NuxtLink to="/about">
-        About
+        {{ $t('nav.about') }}
       </NuxtLink>
     </nav>
   </div>

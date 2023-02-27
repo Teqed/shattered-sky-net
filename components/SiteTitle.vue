@@ -22,7 +22,7 @@ useHead({
         Shattered Sky
       </h1>
     </RouterLink>
-    <h3>Hosting platform for the Shattered Sky community.</h3>
+    <h3>{{ $t('title.sub') }}</h3>
   </div>
 </template>
 

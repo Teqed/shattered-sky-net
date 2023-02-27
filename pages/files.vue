@@ -12,12 +12,17 @@ useHead({
         📂
       </template>
       <template #heading>
-        Files
+        {{ $t('files.card0.title') }}
       </template>
 
       <p>
-        File hosting accessible by
-        <a href="https://files.shatteredsky.net/" target="_blank" rel="noopener">login here.</a>&nbsp;
+        {{ $t('files.card0.blurb') }}
+      </p>
+      <br>
+      <p>
+        <a href="https://files.shatteredsky.net/" target="_blank" rel="noopener">
+          {{ $t('files.card0.linkText') }}
+        </a>
       </p>
     </TileItem>
   </div>

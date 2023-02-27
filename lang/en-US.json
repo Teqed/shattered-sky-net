@@ -1,5 +1,15 @@
 {
-	"home": "Home",
+	"title": {
+		"main": "Shattered Sky",
+		"sub": "Hosting platform for the Shattered Sky community."},
+	"nav": {
+		"home": "Home",
+		"files": "Files",
+		"tabletop": "Tabletop",
+		"stream": "Stream",
+		"social": "Social",
+		"about": "About"
+	},
 	"index": {
 		"files": {
 			"title": "Files",
@@ -8,23 +18,102 @@
 		},
 		"tabletop": {
 			"title": "Tabletop",
-			"blurb": "French French French"
+			"blurb": "We have three {0} for our campaigns.",
+			"linkText": "Foundry VTT servers"
 		},
 		"streaming": {
 			"title": "Streaming",
-			"blurb": "French French French"
+			"blurb": "We have a media collection available for access over your choice of {0} or {1}.",
+			"linkText": "Plex",
+			"linkText2": "Jellyfin"
 		},
 		"social": {
 			"title": "Social",
-			"blurb": "French French French"
+			"blurb": "We participate in {0} web publishing using the ActivityPub protocol, and currently have a {1} microblogging front-end.",
+			"linkText": "Federated",
+			"linkText2": "Mastodon"
 		},
 		"whitelisting": {
 			"title": "Whitelisting",
-			"blurb": "French French French"
+			"blurb": "If you're a member of the Shattered Sky community, you can request access to any of the above services by contacting the administrators on {0}.",
+			"linkText": "our Discord"
+		}
+	},
+	"files": {
+		"card0": {
+			"title": "Files",
+			"blurb": "Browse the contents of our file server.",
+			"linkText": "Login here."
+		}
+	},
+	"tabletop": {
+		"card0": {
+			"title": "Foundry Virtual Tabletop",
+			"blurb": "Pen & Paper RPGs without the paper."
 		},
-		"about": {
-			"title": "About",
-			"blurb": "French French French"
+		"card1": {
+			"title": "Cyberpunk",
+			"sub": "\"High tech, low life.\"",
+			"blurb": "Cyberpunk RED by R. Talsorian Games, set {0} into the future. A group of edgerunners are recruited by their fixer to fulfill corporate contracts for conspiracies larger than they could imagine.",
+			"linkText": "twenty minutes",
+			"linkText2": "Login here."
+		},
+		"card2": {
+			"title": "The Waking Rune",
+			"sub": "\"In the Varisian Gulf near Magnimar, a Runecarved Key was found with nothing in history explaining what it was or did.\"",
+			"blurb": "Season 4 of the Pathfinder Society Roleplaying Guild campaign is referred to as the Year of the Risen Rune due to the season's prominent presence in Varisia and activities dealing with the mystic civilizations ruled by ancient wizard kings, or Runelords, that were lost to time.",
+			"linkText": "Login here."
+		},
+		"card3": {
+			"title": "Spheres of Power",
+			"sub": "\"Squawk.\"",
+			"blurb": "A Skybourne-inspired Spheres of Power campaign. Airships are the primary form of travel between disconnected civilizations, requiring a crew of sailors to man and protect from hazardous weather and flying monsters. Spheres of Power provides versatile character building options, along with Spheres of War for martials.",
+			"linkText": "Login here."
+		}
+	},
+	"stream": {
+		"card0": {
+			"title": "Streaming",
+			"blurb": "Browse our media collection."
+		},
+		"card1": {
+			"title": "Plex",
+			"blurb": "Free Plex accounts can share media libraries between devices or to friends, and access Plex's content library of ad-supported video on demand and free-to-stream live TV channels.",
+			"blurb2": "If you already have your own account, you can request to have our library shared with you.",
+			"linkText": "Login here."
+		},
+		"card2": {
+			"title": "Jellyfin",
+			"blurb": "Jellyfin is a free and open source media server. It is a fork of Emby, written in C#. Compared to Plex, it does not have centralized authentication, meaning all user accounts must be locally registered, and content libraries cannot be shared across servers.",
+			"linkText": "Login here."
+		}
+	},
+	"social": {
+		"card0": {
+			"title": "Social",
+			"blurb": "Browse our social media."
+		},
+		"card1": {
+			"title": "Discord",
+			"blurb": "Discord is a proprietary freeware VoIP application and digital distribution platform designed for video gaming communities, that specializes in text, image, video and audio communication between users in a chat channel.",
+			"blurb2": "{0} is our hub for chatting and playing games. We keep text channels organized by topic, use threads for discussing individual games, and have regularly populated voice channels for playing together.",
+			"linkText": "Our Discord server"
+		},
+		"card2": {
+			"title": "Mastodon",
+			"blurb": "Mastodon is a free, open-source social network server. Users can interact with each other by posting text, images, and videos, and can follow other users' posts. Users create their accounts on \"instances\", which are separate servers running Mastodon.",
+			"blurb2": "We use a fork of Mastodon called Glitch-soc, which adds a few features compatible with the ActivityPub protocol.",
+			"linkText": "Check out our instance here."
+		}
+	},
+	"about": {
+		"card0": {
+			"title": "About"
+		},
+		"card1": {
+			"title": "Created by",
+			"blurb": "Website by Timothy E. Quilling, 2023.",
+			"blurb2": "Please contact {0} for inquiries."
 		}
 	}
 }

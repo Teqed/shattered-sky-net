@@ -40,11 +40,11 @@ useHead({
         {{ $t('index.tabletop.title') }}
       </template>
 
-      We have three
-      <RouterLink to="/tabletop">
-        Foundry VTT servers
-      </RouterLink>
-      for our campaigns.
+      <i18n-t keypath="index.tabletop.blurb" scope="global" for="index.tabletop.linkText">
+        <RouterLink to="/tabletop">
+          {{ $t('index.tabletop.linkText') }}
+        </RouterLink>
+      </i18n-t>
     </TileItem>
 
     <TileItem>
@@ -55,9 +55,14 @@ useHead({
         {{ $t('index.streaming.title') }}
       </template>
 
-      We have a media collection available for access over your choice of
-      <a href="https://plex.shatteredsky.net/" target="_blank" rel="noopener">Plex</a>&nbsp;or
-      <a href="https://jellyfin.shatteredsky.net/" target="_blank" rel="noopener">Jellyfin</a>.
+      <i18n-t keypath="index.streaming.blurb" scope="global" for="index.streaming.linkText">
+        <a href="https://plex.shatteredsky.net/" target="_blank" rel="noopener">
+          {{ $t('index.streaming.linkText') }}
+        </a>
+        <a href="https://jellyfin.shatteredsky.net/" target="_blank" rel="noopener">
+          {{ $t('index.streaming.linkText2') }}
+        </a>
+      </i18n-t>
     </TileItem>
 
     <TileItem>
@@ -68,11 +73,14 @@ useHead({
         {{ $t('index.social.title') }}
       </template>
 
-      We participate in
-      <a href="https://en.wikipedia.org/wiki/Fediverse" target="_blank" rel="noopener">federated</a>
-      web publishing using the ActivityPub protocol, and currently have a
-      <a href="https://mastodon.shatteredsky.net/" target="_blank" rel="noopener">Mastodon</a>
-      microblogging front-end.
+      <i18n-t keypath="index.social.blurb" scope="global" for="index.social.linkText">
+        <a href="https://en.wikipedia.org/wiki/Fediverse" target="_blank" rel="noopener">
+          {{ $t('index.social.linkText') }}
+        </a>
+        <a href="https://mastodon.shatteredsky.net/" target="_blank" rel="noopener">
+          {{ $t('index.social.linkText2') }}
+        </a>
+      </i18n-t>
     </TileItem>
 
     <TileItem>
@@ -83,9 +91,11 @@ useHead({
         {{ $t('index.whitelisting.title') }}
       </template>
 
-      If you're a member of the Shattered Sky community, you can request access to any of the above
-      services by contacting the administrators on
-      <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">our Discord</a>.
+      <i18n-t keypath="index.whitelisting.blurb" scope="global" for="index.whitelisting.linkText">
+        <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">
+          {{ $t('index.whitelisting.linkText') }}
+        </a>
+      </i18n-t>
     </TileItem>
   </div>
 </template>

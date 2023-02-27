@@ -12,10 +12,10 @@ useHead({
         <img src="../assets/icons/fvtt.png" style="width: 80%">
       </template>
       <template #heading>
-        Foundry Virtual Tabletop
+        {{ $t('tabletop.card0.title') }}
       </template>
 
-      <p>Pen & Paper RPGs without the paper.</p>
+      <p>{{ $t('tabletop.card0.blurb') }}</p>
     </TileItem>
 
     <TileItem>
@@ -23,30 +23,29 @@ useHead({
         🌌
       </template>
       <template #heading>
-        Cyberpunk
+        {{ $t('tabletop.card1.title') }}
       </template>
       <div style="width: 50%; float: left">
         <p>
-          <i>"High tech, low life."</i><br><br>
+          <i>{{ $t('tabletop.card1.sub') }}</i><br><br>
 
-          Cyberpunk RED by R. Talsorian Games, set
-          <a href="https://tvtropes.org/pmwiki/pmwiki.php/Main/TwentyMinutesIntoTheFuture">twenty minutes
-          </a>
-          into the future. A group of edgerunners are recruited by their fixer to fulfill corporate
-          contracts for conspiracies larger than they could imagine.
+          <i18n-t keypath="tabletop.card1.blurb" scope="global" for="tabletop.card1.linkText">
+            <a href="https://tvtropes.org/pmwiki/pmwiki.php/Main/TwentyMinutesIntoTheFuture">
+              {{ $t('tabletop.card1.linkText') }}
+            </a>
+          </i18n-t>
         </p>
         <br>
         <a
           href="https://foundry.shatteredsky.net/cyberpunk/"
           target="_blank"
           rel="noopener"
-        >Login here.</a>
+        >{{ $t('tabletop.card1.linkText2') }}</a>
       </div>
       <a href="https://foundry.shatteredsky.net/cyberpunk/">
         <img
           src="../assets/images/cyberpunk_group.webp"
-          style="
-            width: 45%;
+          style="width: 45%;
             float: right;
             margin-left: 1rem;
             margin-bottom: 1rem;
@@ -61,30 +60,25 @@ useHead({
         🧙
       </template>
       <template #heading>
-        The Waking Rune
+        {{ $t('tabletop.card2.title') }}
       </template>
       <div style="width: 50%; float: left">
         <p>
-          <i>"In the Varisian Gulf near Magnimar, a Runecarved Key was found with nothing in history
-            explaining what it was or did."</i><br><br>
+          <i>{{ $t('tabletop.card2.sub') }}</i><br><br>
 
-          Season 4 of the Pathfinder Society Roleplaying Guild campaign is referred to as the Year
-          of the Risen Rune due to the season's prominent presence in Varisia and activities dealing
-          with the mystic civilizations ruled by ancient wizard kings, or Runelords, that were lost
-          to time.
+          {{ $t('tabletop.card2.blurb') }}
           <br><br>
         </p>
         <a
           href="https://foundry.shatteredsky.net/krune/"
           target="_blank"
           rel="noopener"
-        >Login here.</a>
+        >{{ $t('tabletop.card2.linkText') }}</a>
       </div>
       <a href="https://foundry.shatteredsky.net/krune/">
         <img
           src="../assets/images/krune_group.webp"
-          style="
-            width: 45%;
+          style="width: 45%;
             float: right;
             margin-left: 1rem;
             margin-bottom: 1rem;
@@ -100,29 +94,25 @@ useHead({
         🐦
       </template>
       <template #heading>
-        Spheres of Power
+        {{ $t('tabletop.card3.title') }}
       </template>
       <div style="width: 50%; float: left">
-        <p><i>"Squawk."</i></p>
+        <p><i>{{ $t('tabletop.card3.sub') }}</i></p>
         <br>
         <p>
-          A Skybourne-inspired Spheres of Power campaign. Airships are the primary form of travel
-          between disconnected civilizations, requiring a crew of sailors to man and protect from
-          hazardous weather and flying monsters. Spheres of Power provides versatile character
-          building options, along with Spheres of War for martials.
+          {{ $t('tabletop.card3.blurb') }}
         </p>
         <br>
         <a
           href="https://foundry.shatteredsky.net/spheres/"
           target="_blank"
           rel="noopener"
-        >Login here.</a>
+        >{{ $t('tabletop.card3.linkText') }}</a>
       </div>
       <a href="https://foundry.shatteredsky.net/spheres/">
         <img
           src="../assets/images/spheres_group.webp"
-          style="
-            width: 45%;
+          style="width: 45%;
             float: right;
             margin-left: 1rem;
             margin-bottom: 1rem;

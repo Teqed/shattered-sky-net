@@ -1,5 +1,15 @@
 {
-	"home": "Accueil",
+	"title": {
+		"main": "Shattered Sky",
+		"sub": "Serveurs pour la communauté Shattered Sky."},
+	"nav": {
+		"home": "Accueil",
+		"files": "Fichiers",
+		"tabletop": "Jeu de rôle",
+		"stream": "Stream",
+		"social": "Sociaux",
+		"about": "Info"
+	},
 	"index": {
 		"files": {
 			"title": "Fichiers",
@@ -8,23 +18,102 @@
 		},
 		"tabletop": {
 			"title": "Jeu de rôle",
-			"blurb": "French French French"
+			"blurb": "Nous disposons de trois serveurs {0} pour nos campagnes.",
+			"linkText": "Foundry VTT"
 		},
 		"streaming": {
 			"title": "Streaming",
-			"blurb": "French French French"
+			"blurb": "Nous disposons d'une collection de médias à laquelle vous pouvez accéder via {0} ou {1}.",
+			"linkText": "Plex",
+			"linkText2": "Jellyfin"
 		},
 		"social": {
 			"title": "Sociaux",
-			"blurb": "French French French"
+			"blurb": "Nous participons à la publication web {0} en utilisant le protocole ActivityPub, et nous avons actuellement un frontal de microblogging {1}.",
+			"linkText": "Fédérée",
+			"linkText2": "Mastodon"
 		},
 		"whitelisting": {
 			"title": "Liste Blanche",
-			"blurb": "French French French"
+			"blurb": "Si vous êtes membre de la communauté Shattered Sky, vous pouvez demander l'accès à l'un des services ci-dessus en contactant les administrateurs {0}.",
+			"linkText": "sur notre Discord"
+		}
+	},
+	"files": {
+		"card0": {
+			"title": "Fichiers",
+			"blurb": "Parcourez le contenu de notre serveur de fichiers.",
+			"linkText": "Connectez-vous ici."
+		}
+	},
+	"tabletop": {
+		"card0": {
+			"title": "Foundry Virtual Tabletop",
+			"blurb": "Pen and Paper RPGs sans papier."
 		},
-		"about": {
-			"title": "À propos",
-			"blurb": "French French French"
+		"card1": {
+			"title": "Cyberpunk",
+			"sub": "\"Haute technologie, basse vie.\"",
+			"blurb": "Cyberpunk RED de R. Talsorian Games, situé {0} dans le futur. Un groupe de edgerunners est recruté par leur fixateur pour remplir des contrats d'entreprise pour des complots plus importants qu'ils ne pourraient l'imaginer.",
+			"linkText": "vingt minutes",
+			"linkText2": "Connectez-vous ici."
+		},
+		"card2": {
+			"title": "The Waking Rune",
+			"sub": "\"Dans le golfe Varisien près de Magnimar, une clé de mannequin a été trouvée avec rien dans l'histoire expliquant ce qu'elle était ou a fait.\"",
+			"blurb": "La saison 4 de la campagne Roleplaying Guild de la Pathfinder Society est appelée l'année de la Rune Rune en raison de la présence proéminente de la saison dans Varisia et des activités traitant des civilisations mystiques dirigées par d'anciens rois de sorciers, ou Runelords, qui ont été perdus au temps.",
+			"linkText": "Connectez-vous ici."
+		},
+		"card3": {
+			"title": "Spheres of Power",
+			"sub": "\"Coin coin.\"",
+			"blurb": "Une campagne de puissance inspirée de Skybourne. Les dirigeables sont la principale forme de voyage entre les civilisations déconnectées, nécessitant un équipage de marins à l'homme et se protéger contre les conditions météorologiques dangereuses et les monstres volants. Sphas of Power offre des options de construction de personnages polyvalentes, ainsi que des sphères de guerre pour les martials.",
+			"linkText": "Connectez-vous ici."
+		}
+	},
+	"stream": {
+		"card0": {
+			"title": "Streaming",
+			"blurb": "Parcourez notre collection de médias."
+		},
+		"card1": {
+			"title": "Plex",
+			"blurb": "Les comptes Plex gratuits peuvent partager des bibliothèques de médias entre les appareils ou les amis, et accéder à la bibliothèque de contenu de Plex de vidéo sur la publicité sur la publicité et des chaînes de télévision en direct gratuites.",
+			"blurb2": "Si vous avez déjà votre propre compte, vous pouvez demander à la partage de notre bibliothèque avec vous.",
+			"linkText": "Connectez-vous ici."
+		},
+		"card2": {
+			"title": "Jellyfin",
+			"blurb": "JellyFin est un serveur multimédia gratuit et open source. C'est une fourche d'Emby, écrite en C #. Par rapport à Plex, il n'a pas d'authentification centralisée, ce qui signifie que tous les comptes d'utilisateurs doivent être enregistrés localement et les bibliothèques de contenu ne peuvent pas être partagées entre les serveurs.",
+			"linkText": "Connectez-vous ici."
+		}
+	},
+	"social": {
+		"card0": {
+			"title": "Sociaux",
+			"blurb": "Parcourez nos médias sociaux."
+		},
+		"card1": {
+			"title": "Discord",
+			"blurb": "Discord est une application VoIP gratuite et une plate-forme de distribution numérique propriétaire conçue pour les communautés de jeux vidéo, spécialisées dans la communication de texte, d'image, de vidéo et d'audio entre les utilisateurs dans un canal de chat.",
+			"blurb2": "{0} est notre hub pour discuter et jouer à des jeux. Nous gardons des canaux de texte organisés par sujet, utilisons des fils pour discuter des jeux individuels et avons des canaux vocaux régulièrement peuplés pour jouer ensemble.",
+			"linkText": "Notre serveur Discord"
+		},
+		"card2": {
+			"title": "Mastodon",
+			"blurb": "Mastodon est un serveur de réseau social gratuit et open-source. Les utilisateurs peuvent interagir les uns avec les autres en publiant du texte, des images et des vidéos, et peuvent suivre les publications des autres utilisateurs. Les utilisateurs créent leurs comptes sur \"Instances\", qui sont des serveurs distincts exécutant Mastodon.",
+			"blurb2": "Nous utilisons une fourche de mastodon appelée Glitch-Soc, qui ajoute quelques fonctionnalités compatibles avec le protocole ActivityPub.",
+			"linkText": "Consultez notre instance ici."
+		}
+	},
+	"about": {
+		"card0": {
+			"title": "Info"
+		},
+		"card1": {
+			"title": "Créé par",
+			"blurb": "Site Web de Timothy E. Quilling, 2023.",
+			"blurb2": "Veuillez contacter {0} pour des questions."
 		}
 	}
 }

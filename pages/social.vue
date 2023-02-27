@@ -12,25 +12,26 @@ useHead({
         📚
       </template>
       <template #heading>
-        Social
+        {{ $t('social.card0.title') }}
       </template>
 
-      <p />
+      <p>{{ $t('social.card0.blurb') }}</p>
     </TileItem>
     <TileItem>
       <template #icon>
         <img src="../assets/icons/discord-mark-white.svg" width="20" height="20">
       </template>
       <template #heading>
-        Discord
+        {{ $t('social.card1.title') }}
       </template>
       <div style="overflow: hidden">
         <p>
-          We have a
-          <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">Discord</a>
-          server for chatting and playing games together. We have several topic-based text channels
-          for sharing media, threads for video game discussion, and usually one or two active voice
-          channels streaming video games.
+          {{ $t('social.card1.blurb') }}
+          <br>
+          <br>
+          <i18n-t keypath="social.card1.blurb2" scope="global" for="social.card1.linkText">
+            <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">{{ $t('social.card1.linkText') }}</a>
+          </i18n-t>
         </p>
         <br>
         <div style="width: 100%; height: 300px">
@@ -52,23 +53,19 @@ useHead({
         🐘
       </template>
       <template #heading>
-        Mastodon
+        {{ $t('social.card2.title') }}
       </template>
       <div style="overflow: hidden">
         <p>
-          We participate in
-          <a
-            href="https://en.wikipedia.org/wiki/Fediverse"
-            target="_blank"
-            rel="noopener"
-          >federated</a>
-          web publishing using the ActivityPub protocol, and currently have a
+          {{ $t('social.card2.blurb') }}
+          <br>
+          <br>
+          {{ $t('social.card2.blurb2') }}
           <a
             href="https://mastodon.shatteredsky.net/public"
             target="_blank"
             rel="noopener"
-          >Mastodon</a>
-          microblogging front-end using Glitch-soc.
+          >{{ $t('social.card2.linkText') }}</a>
         </p>
         <br>
         <div style="width: 100%; height: 600px">

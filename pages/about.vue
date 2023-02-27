@@ -13,7 +13,7 @@ useHead({
         🕮
       </template>
       <template #heading>
-        About
+        {{ $t('about.card0.title') }}
       </template>
 
       <p />
@@ -23,11 +23,18 @@ useHead({
         ✏️
       </template>
       <template #heading>
-        Created By
+        {{ $t('about.card1.title') }}
       </template>
 
-      Site assembled and hosted by Timothy E. Quilling, 2023. Please contact
-      <a url="mailto:admin@shatteredsky.net">admin@shatteredsky.net</a> for inquiries.
+      <p>
+        {{ $t('about.card1.blurb') }}
+      </p>
+      <br>
+      <p>
+        <i18n-t keypath="about.card1.blurb2" scope="global" for="about.card1.linkText">
+          <a url="mailto:teqed@shatteredsky.net">teqed@shatteredsky.net</a>
+        </i18n-t>
+      </p>
     </TileItem>
   </div>
 </template>
