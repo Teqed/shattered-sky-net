@@ -35,6 +35,8 @@ export default defineNuxtConfig({
       langDir: 'lang/',
       defaultLocale: 'en',
       strategy: 'no_prefix',
+      seo: true,
+      seoOptimise: true,
       detectBrowserLanguage: {
         useCookie: true,
         cookieKey: 'i18n_redirected',

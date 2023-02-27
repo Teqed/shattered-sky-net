@@ -4,19 +4,12 @@ const head = useLocaleHead({
   identifierAttribute: 'id',
   addSeoAttributes: true
 })
+// const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
   meta: [
     {
       name: 'darkreader-lock',
     },
-    {
-      name: 'lang',
-      content: head.value.htmlAttrs.lang || 'en',
-    },
-    {
-      name: 'dir',
-      content: head.value.htmlAttrs.dir || 'ltr',
-    }
   ],
   link: [
     // {
@@ -49,19 +42,21 @@ useHead({
 
 <template>
   <div>
-    <header>
-      <SeoKit />
-      <SiteHeader />
-    </header>
-    <ClientOnly>
-      <FollowCursor />
-    </ClientOnly>
-    <br>
-    <NuxtPage v-slot="{ Component }">
-      <transition name="slide" mode="out-in">
-        <component :is="Component" :key="$route.path" />
-      </transition>
-    </NuxtPage>
+    <Html>
+      <Head>
+        <SeoKit :language="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir" />
+      </Head>
+      <header>
+        <SiteHeader />
+      </header>
+      <ClientOnly>
+        <FollowCursor />
+      </ClientOnly>
+      <br>
+      <Body>
+        <slot />
+      </Body>
+    </Html>
   </div>
 </template>
 
