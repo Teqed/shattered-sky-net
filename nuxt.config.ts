@@ -5,6 +5,7 @@
 
 export default defineNuxtConfig({
   modules: [
+    '@unlighthouse/nuxt',
     'nuxt-security',
     'nuxt-delay-hydration',
     // 'nuxt-purgecss',
@@ -73,6 +74,12 @@ export default defineNuxtConfig({
       // xPermittedCrossDomainPolicies: false,
       // xXSSProtection: false,
     }
+  },
+  unlighthouse: {
+    site: 'shatteredsky.net',
+    scanner: {
+      exclude: ['/cdn-cgi/*']
+    },
   },
   delayHydration: {
     mode: 'init'
