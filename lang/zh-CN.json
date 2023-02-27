@@ -1,0 +1,119 @@
+{
+	"title": {
+		"main": "Shattered Sky",
+		"sub": "为Shattered Sky社区提供托管服务的平台。"},
+	"nav": {
+		"home": "首页",
+		"files": "文件",
+		"tabletop": "桌游",
+		"stream": "直播",
+		"social": "社交",
+		"about": "关于我们"
+	},
+	"index": {
+		"files": {
+			"title": "文件",
+			"blurb": "您可以在{0}中找到文件托管。",
+			"linkText": "目录浏览器"
+		},
+		"tabletop": {
+			"title": "桌游",
+			"blurb": "我们为我们的游戏活动提供三个{0}。",
+			"linkText": "Foundry VTT 服务器"
+		},
+		"streaming": {
+			"title": "直播",
+			"blurb": "我们有一个媒体收藏，可通过您选择的{0}或{1}进行访问。",
+			"linkText": "Plex",
+			"linkText2": "Jellyfin"
+		},
+		"social": {
+			"title": "社交",
+			"blurb": "我们使用ActivityPub协议参与{0}的Web发布，并且目前有一个{1}的微博客前端。",
+			"linkText": "联邦式社交媒体",
+			"linkText2": "Mastodon"
+		},
+		"whitelisting": {
+			"title": "白名单",
+			"blurb": "如果您是碎天之城社区的成员，您可以通过在{0}上与管理员联系来请求访问上述任何服务。",
+			"linkText": "我们的 Discord"
+		}	
+	},
+	"files": {
+		"card0": {
+			"title": "文件",
+			"blurb": "浏览我们文件服务器的内容。",
+			"linkText": "在此处登录。"
+		}
+	},	
+	"tabletop": {
+		"card0": {
+			"title": "Foundry虚拟桌面",
+			"blurb": "纸笔RPG游戏的无纸化体验。"
+		},
+		"card1": {
+			"title": "赛博朋克",
+			"sub": "“高科技，低生活。”",
+			"blurb": "R.Talsorian Games的《Cyberpunk RED》将故事设定在{0}未来。一群边缘人被他们的联系人招募，完成超出他们想象的公司合同和阴谋。",
+			"linkText": "二十分钟",
+			"linkText2": "在此登录。"
+		},
+		"card2": {
+			"title": "觉醒符文",
+			"sub": "“在Magnimar附近的Varisian Gulf，发现了一把雕刻符文的钥匙，历史中没有任何记载说明它是什么或有什么用。”",
+			"blurb": "《Pathfinder Society Roleplaying Guild》第四季被称为“复活符文之年”，因为本季在Varisia占据了重要位置，并涉及与神秘文明有关的活动，这些文明曾由古老的巫师国王，或符文领主，统治，如今已被时间湮没。",
+			"linkText": "在此登录。"
+		},
+		"card3": {
+			"title": "能量领域",
+			"sub": "“叽叽”",
+			"blurb": "基于Skybourne的Spheres of Power战役。飞艇是连接不同文明的主要旅行方式，需要船员操作和保护免受恶劣的天气和飞行怪物的影响。Spheres of Power提供了多样化的角色构建选项，以及用于战斗职业的Spheres of War。",
+			"linkText": "在此登录。"
+		}
+	}, 
+	"stream": {
+		"card0": {
+			"title": "ストリーミング",
+			"blurb": "当コミュニティのメディアコレクションを閲覧できます。"
+		},
+		"card1": {
+			"title": "Plex",
+			"blurb": "無料のPlexアカウントを利用すると、デバイス間や友人との間でメディアライブラリを共有でき、広告が入った動画配信や無料のライブTVチャンネルにアクセスできます。",
+			"blurb2": "既にアカウントをお持ちの方は、当コミュニティのライブラリにアクセスできるようにリクエストしてください。",
+			"linkText": "こちらからログイン"
+		},
+		"card2": {
+			"title": "Jellyfin",
+			"blurb": "Jellyfinは、無料かつオープンソースのメディアサーバーです。Embyのフォークで、C#で書かれています。Plexと比較して、中央集権型の認証システムがなく、すべてのユーザーアカウントはローカルで登録する必要があり、コンテンツライブラリはサーバー間で共有できません。",
+			"linkText": "こちらからログイン"
+		}
+	},	
+	"social": {
+		"card0": {
+			"title": "Social",
+			"blurb": "浏览我们的社交媒体。"
+		},
+		"card1": {
+			"title": "Discord",
+			"blurb": "Discord是一款专门为视频游戏社区设计的专有免费VoIP应用程序和数字分发平台，专门用于用户在聊天频道中进行文本、图像、视频和音频通信。",
+			"blurb2": "{0}是我们聊天和玩游戏的中心。我们通过主题组织文本频道，在线程中讨论单个游戏，并定期使用热门的语音频道一起游戏。",
+			"linkText": "我们的Discord服务器"
+		},
+		"card2": {
+			"title": "Mastodon",
+			"blurb": "Mastodon是一款免费的开源社交网络服务器。用户可以通过发布文本、图像和视频互动，并可以关注其他用户的帖子。用户在“实例”上创建自己的帐户，这些实例是运行Mastodon的独立服务器。",
+			"blurb2": "我们使用的是Mastodon的Glitch-soc分支，它添加了一些与ActivityPub协议兼容的功能。",
+			"linkText": "在这里查看我们的实例。"
+		}
+	},	
+	"about": {
+		"card0": {
+			"title": "关于"
+		},
+		"card1": {
+			"title": "创建者",
+			"blurb": "本网站由Timothy E. Quilling于2023年创建。",
+			"blurb2": "如有任何疑问，请联系{0}。"
+		}
+	}	
+}
