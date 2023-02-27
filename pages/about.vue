@@ -32,7 +32,12 @@ useHead({
       <br>
       <p>
         <i18n-t keypath="about.card1.blurb2" scope="global" for="about.card1.linkText">
-          <a href="mailto:teqed@shatteredsky.net">teqed@shatteredsky.net</a>
+          <a
+            href="mailto:teqed@shatteredsky.net?subject=About ShatteredSky.net"
+            rel="nofollow noopener noreferrer"
+          >
+            teqed@shatteredsky.net
+          </a>
         </i18n-t>
       </p>
     </TileItem>
