@@ -7,11 +7,8 @@ export default defineNuxtPlugin((nuxtApp) => {
 		config: {
 			id: 'G-2FGMFZNKDY'
 		},
-		onReady: () => {
-			console.log('Google Analytics is ready');
-		},
-		onError: () => {
-			// console.log('An error occurred while sending data to Google Analytics, but it is not critical:');
+		onError: (_error) => {
+			return true;
 		},
 		deferScriptLoad: true,
 	}, nuxtApp.vueApp.router);
