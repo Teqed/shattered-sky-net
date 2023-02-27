@@ -34,20 +34,6 @@
 	background-color: transparent;
   }
   
-  .slide-enter-active {
-	animation: fadein 0.28s ease, slidein-top-10 0.28s ease-out;
-  }
-  
-  .slide-leave-active {
-	transition: all 0.15s ease-in;
-  }
-  
-  .slide-enter-from,
-  .slide-leave-to {
-	filter: blur(20px);
-	opacity: 0;
-  }
-  
   header {
 	line-height: 1.5;
 	min-height: 10vh;
@@ -55,10 +41,6 @@
 	place-items: center;
 	flex-wrap: wrap;
 	justify-content: center;
-  }
-  
-  header .wrapper {
-	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
   
   nav {
@@ -79,6 +61,7 @@
 	-webkit-backdrop-filter: saturate(180%) blur(20px);
 	border: 1px solid rgb(121 121 121 / 51%);
 	transition: box-shadow 0.28s ease-in-out;
+	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
   
   nav:hover {
@@ -110,32 +93,3 @@
 	border: 0;
   }
   
-  /* @mixin for-phone-only { */
-  @media (max-width: 599px) {
-	/* Empty */
-  }
-  
-  /* @mixin for-tablet-portrait-up { */
-  @media (min-width: 600px) {
-	/* Empty */
-  }
-  
-  /* @mixin for-tablet-landscape-up { */
-  @media (min-width: 900px) {
-	/* Empty */
-  }
-  
-  /* @mixin for-desktop-up { */
-  @media (min-width: 1200px) {
-	/* Empty */
-  }
-  
-  /* @mixin for-med-desktop-up { */
-  @media (min-width: 1800px) {
-	/* Empty */
-  }
-  
-  /* @mixin for-big-desktop-up { */
-  @media (min-width: 1921px) {
-	/* Empty */
-  }
