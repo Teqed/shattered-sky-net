@@ -80,6 +80,10 @@ export default defineNuxtConfig({
   extends: [
     'nuxt-seo-kit'
   ],
+  routeRules: {
+    // Do not index /cdn-cgi/ pages
+    '/cdn-cgi/**': {index: false},
+  },
   unhead: {
     ogTitleTemplate: '%pageTitle',
   },
