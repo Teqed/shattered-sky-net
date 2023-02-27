@@ -82,7 +82,7 @@ export default defineNuxtConfig({
   ],
   robots: {
     disallow: [
-      '/cdn-cgi/**',
+      '/cdn-cgi/',
     ]
   },
   unhead: {
