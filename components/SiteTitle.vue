@@ -1,15 +1,4 @@
 <script setup lang="ts">
-useHead({
-  link: [
-    // {
-    //   rel: 'stylesheet',
-    //   href: 'https://shatteredsky.net/style/title.css',
-    // },
-  ],
-});
-// defineProps<{
-//   msg: string;
-// }>();
 </script>
 
 <template>

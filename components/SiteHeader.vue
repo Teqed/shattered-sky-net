@@ -14,7 +14,7 @@
   </div>
   <div class="wrapper">
     <!-- Site title -->
-    <SiteTitle msg="Shattered Sky" />
+    <SiteTitle />
 
     <!-- Navigation links -->
     <nav>
