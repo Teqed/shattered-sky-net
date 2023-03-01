@@ -14,10 +14,10 @@ useHead({
     <img
       alt="Site logo blur"
       class="logo-blur"
-      src="../assets/icons/ss_icon.webp"
+      src="../assets/icons/ss-logo.min.svg"
     >
     <NuxtLink to="/" class="logo-link">
-      <img alt="Site logo" class="logo" src="../assets/icons/ss_icon.webp">
+      <img alt="Site logo" class="logo" src="../assets/icons/ss-logo.min.svg">
     </NuxtLink>
   </div>
   <div class="wrapper">
