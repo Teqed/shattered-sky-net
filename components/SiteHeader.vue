@@ -1,12 +1,4 @@
 <script setup lang="ts">
-useHead({
-  link: [
-    // {
-    //   rel: 'stylesheet',
-    //   href: 'https://shatteredsky.net/style/header.css',
-    // },
-  ],
-});
 </script>
 <script lang="ts"></script>
 <template>
@@ -35,7 +27,6 @@ useHead({
       <NuxtLink to="/tabletop">
         {{ $t('nav.tabletop') }}
       </NuxtLink>
-      <!-- <NuxtLink to="/games">Games</NuxtLink> -->
       <NuxtLink to="/stream">
         {{ $t('nav.stream') }}
       </NuxtLink>
