@@ -9,6 +9,7 @@ export default defineNuxtConfig({
     'nuxt-security',
     'nuxt-delay-hydration',
     // 'nuxt-purgecss',
+    '@nuxtjs/html-validator',
     ['@nuxtjs/google-fonts', {
         families: {
           Roboto: true,
