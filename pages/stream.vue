@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import PlexIcon from '../assets/icons/IconPlex.vue';
 useHead({
   title: 'Streaming',
   meta: [{ name: 'description', content: 'Streaming from Shattered Sky.' }],
@@ -20,7 +19,7 @@ useHead({
     </TileItem>
     <TileItem>
       <template #icon>
-        <PlexIcon />
+        <img src="../assets/icons/IconPlex.svg" alt="Plex" width="30" height="30">
       </template>
       <template #heading>
         {{ $t('stream.card1.title') }}
