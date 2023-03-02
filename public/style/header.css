@@ -15,7 +15,7 @@
 	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
 	justify-self: center;
   }
-  
+
   .logo-blur {
     width: min(15vw, 125px);
     height: auto;
@@ -24,16 +24,16 @@
 	opacity: 0.1;
 	transition: opacity 0.28s ease-in-out;
   }
-  
+
   .logo-container:hover .logo-blur {
 	opacity: 0.6;
   }
-  
+
   .logo-link {
 	text-decoration: none;
 	background-color: transparent;
   }
-  
+
   header {
 	line-height: 1.5;
 	min-height: 10vh;
@@ -41,9 +41,19 @@
 	place-items: center;
 	flex-wrap: wrap;
 	justify-content: center;
+  user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
   }
-  
+
   nav {
+  user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
 	margin: auto;
 	box-sizing: content-box;
 	content: "";
@@ -63,19 +73,19 @@
 	transition: box-shadow 0.28s ease-in-out;
 	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
-  
+
   nav:hover {
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
   }
-  
+
   nav a.router-link-exact-active {
 	color: var(--color-text);
   }
-  
+
   nav a.router-link-exact-active:hover {
 	background-color: transparent;
   }
-  
+
   nav a {
 	display: inline;
 	padding: 0 min(3vw, 1rem);
@@ -88,8 +98,7 @@
 	  background-color: hsl(189deg 65% 21% / 0%);
 	}
   }
-  
+
   nav a:first-of-type {
 	border: 0;
   }
-  
