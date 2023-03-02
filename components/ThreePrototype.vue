@@ -26,11 +26,36 @@ const scene = new THREE.Scene();
 
       camera.position.y = -0.3;
 
+      // Add a light
+      const light = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+      light.position.set(0, 10, -10);
+      scene.add(light);
+      const light2 = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+      light2.position.set(0, 10, 10);
+      scene.add(light2);
+      const light3 = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+      light3.position.set(0, -10, 10);
+      scene.add(light3);
+
+      // Set the rendering quality to high
+      renderer.setPixelRatio(window.devicePixelRatio);
+
 			const geometry = new THREE.BoxGeometry(1, 1, 1);
 			// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
       // Create a material with a texture, from wall.jpg, in the assets/images folder
-      const texture = new THREE.TextureLoader().load('../images/borg.webp');
-      const material = new THREE.MeshBasicMaterial({ map: texture });
+      const texture = new THREE.TextureLoader().load('../images/5210/5210.jpg');
+      const normalMap = new THREE.TextureLoader().load('../images/5210/5210-normal.jpg');
+      const bumpMap = new THREE.TextureLoader().load('../images/5210/5210-bump.jpg');
+      const diffuseMap = new THREE.TextureLoader().load('../images/5210/5210-diffuse.jpg');
+      const material = new THREE.MeshPhongMaterial({
+        map: texture,
+        normalMap,
+        bumpMap,
+        // shininess: 100,
+        // specular: 0x111111,
+        });
+        // Change the color to blue
+      material.color.setHex(0x0089FD);
 			const cube = new THREE.Mesh(geometry, material);
 			scene.add(cube);
 
