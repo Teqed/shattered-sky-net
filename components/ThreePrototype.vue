@@ -20,8 +20,11 @@ const scene = new THREE.Scene();
       document.querySelector('#threejs')?.removeChild(document.querySelector('#threejs')?.firstChild);
       document.querySelector('#threejs')?.appendChild(renderer.domElement);
 
-			const geometry = new THREE.BoxGeometry(0.5, 0.5, 2);
-			const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
+			const geometry = new THREE.BoxGeometry(1, 1, 1);
+			// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
+      // Create a material with a texture, from wall.jpg, in the assets/images folder
+      const texture = new THREE.TextureLoader().load('../images/borg.webp');
+      const material = new THREE.MeshBasicMaterial({ map: texture });
 			const cube = new THREE.Mesh(geometry, material);
 			scene.add(cube);
 
@@ -32,6 +35,9 @@ const scene = new THREE.Scene();
 
 				cube.rotation.x += 0.01;
 				cube.rotation.y += 0.01;
+
+        // Move the cube in the z direction, back and forth
+        cube.position.z = Math.sin(Date.now() / 1000) * 0.5;
 
 				renderer.render(scene, camera);
 			}
