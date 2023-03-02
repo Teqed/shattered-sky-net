@@ -5,9 +5,9 @@
 <template>
   <div>
     <div class="item-three">
-      <div class="i-icon-three">
+      <!-- <div class="i-icon-three">
         <slot name="icon-three" />
-      </div>
+      </div> -->
       <div class="details tile-three">
         <ClientOnly>
           <ThreePrototype />
@@ -30,15 +30,15 @@
 
   .tile-three {
   width: 55vw;
-  padding: 1vh 1.5vw;
-  /* background: rgb(71 71 71 / 40%); */
-  /* border-radius: 16px; */
-  /* box-shadow: 0 4px 30px rgb(121 121 121 / 10%); */
-  /* backdrop-filter: saturate(180%) blur(10px); */
+  /* padding: 1vh 1.5vw; */
+  /* background: rgb(71 71 71 / 40%);
+  border-radius: 16px;
+  box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
+  backdrop-filter: saturate(180%) blur(10px); */
   /* stylelint-disable-next-line property-no-vendor-prefix */
-  /* -webkit-backdrop-filter: saturate(180%) blur(10px); */
-  /* border: 1px solid rgb(121 121 121 / 51%); */
-  /* transition: box-shadow 0.28s ease-in-out; */
+  /* -webkit-backdrop-filter: saturate(180%) blur(10px);
+  border: 1px solid rgb(121 121 121 / 51%);
+  transition: box-shadow 0.28s ease-in-out; */
   }
 
   .tile:hover {
@@ -114,13 +114,13 @@
     position: absolute;
     width: 50px;
     height: 50px;
-    background: rgb(71 71 71 / 40%);
+    /* background: rgb(71 71 71 / 40%);
     border-radius: 16px;
     box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
-    backdrop-filter: saturate(180%) blur(10px);
+    backdrop-filter: saturate(180%) blur(10px); */
     /* stylelint-disable-next-line property-no-vendor-prefix */
-    -webkit-backdrop-filter: saturate(180%) blur(10px);
-    border: 1px solid rgb(121 121 121 / 51%);
+    /* -webkit-backdrop-filter: saturate(180%) blur(10px);
+    border: 1px solid rgb(121 121 121 / 51%); */
   }
 
   .item-three::before {
