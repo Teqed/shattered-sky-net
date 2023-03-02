@@ -10,7 +10,7 @@
       </div> -->
       <div class="details tile-three">
         <ClientOnly>
-          <ThreePrototype />
+          <NuxtPage :foobar="123" />
         </ClientOnly>
       </div>
     </div>
