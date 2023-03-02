@@ -1,4 +1,10 @@
-<script setup lang="ts">useHead({
+<script setup lang="ts">
+const head = useLocaleHead({
+  addDirAttribute: true,
+  identifierAttribute: 'id',
+  addSeoAttributes: true
+});
+useHead({
   meta: [
     {
       name: 'darkreader-lock',
@@ -10,7 +16,11 @@
 
 <template>
   <div>
+    <SeoKit :language="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir" />
     <NuxtErrorBoundary>
+      <ClientOnly>
+        <FollowCursor />
+      </ClientOnly>
       <NuxtLayout>
         <NuxtPage v-slot="{ Component }">
           <transition name="slide" mode="out-in">

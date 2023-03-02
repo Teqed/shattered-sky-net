@@ -1,9 +1,4 @@
 <script setup lang="ts">
-const head = useLocaleHead({
-  addDirAttribute: true,
-  identifierAttribute: 'id',
-  addSeoAttributes: true
-})
 // const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
   meta: [
@@ -16,25 +11,13 @@ useHead({
 <template>
   <div>
     <NuxtErrorBoundary>
-      <Html>
-        <Head>
-          <SeoKit :language="head.htmlAttrs.lang" :dir="head.htmlAttrs.dir" />
-        </Head>
+      <Body>
         <header>
-          <NuxtErrorBoundary>
-            <SiteHeader />
-          </NuxtErrorBoundary>
+          <SiteHeader />
         </header>
-        <ClientOnly>
-          <FollowCursor />
-        </ClientOnly>
         <br>
-        <Body>
-          <NuxtErrorBoundary>
-            <slot />
-          </NuxtErrorBoundary>
-        </Body>
-      </Html>
+        <slot />
+      </Body>
     </NuxtErrorBoundary>
   </div>
 </template>
