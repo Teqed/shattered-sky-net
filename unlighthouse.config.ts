@@ -1,5 +1,5 @@
 export default {
-	// example
+	enabled: false,
 	site: 'shatteredsky.net',
 	scanner: {
 		exclude: ['/cdn-cgi/*']
