@@ -9,7 +9,7 @@ import image5210Bump from '../assets/images/5210/5210-bump.jpg';
 import image5210Diffuse from '../assets/images/5210/5210-diffuse.jpg';
 
 // Get toast notifications from plugin
-const { setNotification } = useNotificationStore()
+// const { setNotification } = useNotificationStore()
 
 // We're going to create two spheres, and pretend that each has mass.
 // Then we're going to have them apply a force to each other, attracting each other.
@@ -205,14 +205,14 @@ onMounted(() => {
 								if (distanceFromCenters < 0.1) {
 									console.log('Singularity!')
 									// Show toast notification of singularity
-									setNotification({
-										message: '<strong>Singularity!</strong><br> <p>Two spheres have merged into one.</p>',
-										type: 'info',
-										showIcon: false,
-										duration: 2000,
-										appearance: 'dark',
-										// showDurationProgress: false,
-									});
+									// setNotification({
+									// 	message: '<strong>Singularity!</strong><br> <p>Two spheres have merged into one.</p>',
+									// 	type: 'info',
+									// 	showIcon: false,
+									// 	duration: 2000,
+									// 	appearance: 'dark',
+									// 	showDurationProgress: false,
+									// });
 									// Add mass to the first sphere
 									spheres[i].mass += spheres[j].mass;
 									// And shrink its radius by taking its current radius and dividing it by the square root of its mass
