@@ -43,10 +43,10 @@ const scene = new THREE.Scene();
 			const geometry = new THREE.BoxGeometry(1, 1, 1);
 			// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
       // Create a material with a texture, from wall.jpg, in the assets/images folder
-      const texture = new THREE.TextureLoader().load('../images/5210/5210.jpg');
-      const normalMap = new THREE.TextureLoader().load('../images/5210/5210-normal.jpg');
-      const bumpMap = new THREE.TextureLoader().load('../images/5210/5210-bump.jpg');
-      const diffuseMap = new THREE.TextureLoader().load('../images/5210/5210-diffuse.jpg');
+      const texture = new THREE.TextureLoader().load('~/images/5210/5210.jpg');
+      const normalMap = new THREE.TextureLoader().load('~/images/5210/5210-normal.jpg');
+      const bumpMap = new THREE.TextureLoader().load('~/images/5210/5210-bump.jpg');
+      const diffuseMap = new THREE.TextureLoader().load('~/images/5210/5210-diffuse.jpg');
       const material = new THREE.MeshPhongMaterial({
         map: texture,
         normalMap,

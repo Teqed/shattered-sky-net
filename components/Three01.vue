@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import * as THREE from 'three';
 
+// Get toast notifications from plugin
+import { useNotificationStore } from '@dafcoe/vue-notification'
+const { setNotification } = useNotificationStore()
+
 // We're going to create two spheres, and pretend that each has mass.
 // Then we're going to have them apply a force to each other, attracting each other.
 // We'll use the formula F = G * (m1 * m2) / r^2 to calculate the force.
@@ -17,12 +21,12 @@ class MassMesh extends THREE.Mesh {
     material: THREE.Material | THREE.Material[] | undefined,
     radius?: number,
     mass?: number,
-    velocit?: THREE.Vector3
+    velocity?: THREE.Vector3
     ) {
     super(geometry, material);
     this.radius = radius ?? 0.5;
-    this.mass = mass ?? 0.5;
-    this.velocity = velocit ?? new THREE.Vector3(0, 0, 0);
+    this.mass = mass ?? 1;
+    this.velocity = velocity ?? new THREE.Vector3(0, 0, 0);
   }
 }
 
@@ -85,7 +89,7 @@ const scene = new THREE.Scene();
       sphere.position.x = -2;
       sphere.position.y = -2;
       // Give it a spin
-      sphere.velocity = new THREE.Vector3(0.01, 0.01, 0.01);
+      sphere.velocity = new THREE.Vector3(0.001, 0.001, 0.001);
 
       // Create an array to hold all the spheres
       const spheres: MassMesh[] = [];
@@ -99,6 +103,7 @@ const scene = new THREE.Scene();
       scene.add(planeMesh);
 
       // When the user clicks the screen, create a new sphere at the mouse position
+      // Only activate once even on double-click
       window.addEventListener('click', (event) => {
         const mouse = {
           x: (event.clientX / window.innerWidth) * 2 - 1,
@@ -127,14 +132,21 @@ const scene = new THREE.Scene();
         // Add it to the scene
         scene.add(sphereClick);
 
+        // Give a slightly random position
+        sphereClick.position.x += (Math.random() * 1) + 0.05 * (Math.random() > 0.5 ? 1 : -1);
+        sphereClick.position.y += (Math.random() * 1) + 0.05 * (Math.random() > 0.5 ? 1 : -1);
+        sphereClick.position.z += (Math.random() * 1) + 0.05 * (Math.random() > 0.5 ? 1 : -1);
+
         // Give it a random rotation
         sphereClick.rotation.x = Math.random() * 2 * Math.PI;
+        sphereClick.rotation.y = Math.random() * 2 * Math.PI;
+        sphereClick.rotation.z = Math.random() * 2 * Math.PI;
         // and random spin
         sphereClick.velocity = new THREE.Vector3(
           // Random positive or negative number
-          (Math.random() * 0.02) + 0.01 * (Math.random() > 0.5 ? 1 : -1),
-          (Math.random() * 0.02) + 0.01 * (Math.random() > 0.5 ? 1 : -1),
-          (Math.random() * 0.001) + 0.001 * (Math.random() > 0.5 ? 1 : -1)
+          (Math.random() * 0.01) + 0.001 * (Math.random() > 0.5 ? 1 : -1),
+          (Math.random() * 0.01) + 0.001 * (Math.random() > 0.5 ? 1 : -1),
+          (Math.random() * 0.001) + 0.0001 * (Math.random() > 0.5 ? 1 : -1)
           );
 
         // Add it to the array of spheres
@@ -156,69 +168,120 @@ const scene = new THREE.Scene();
                 // Calculate the distance between the two spheres
                 const distance = spheres[i].position.distanceTo(spheres[j].position);
                 // const maxDistance = 50; // example maximum distance value
-                let force: number;
+                let gravForce: number;
 
                 // Check if the spheres are overlapping
                 const radiusSum: number = spheres[i].radius + spheres[j].radius;
                 const surfaceVector: THREE.Vector3 = new THREE.Vector3().copy(spheres[j].position).sub(spheres[i].position);
                 const distanceFromSurface: number = surfaceVector.length() - radiusSum;
+                const distanceFromCenters: number = spheres[i].position.distanceTo(spheres[j].position);
 
                 // Calculate the gravitational force
-                const gravitationalConstant = -0.2;
-                force = -gravitationalConstant * (spheres[i].mass * spheres[j].mass) / (distance * distance);
-
-                if (distanceFromSurface < 0.2) {
-                  // The spheres are moving inside each other
-                  // Reist this movement by applying a force in the opposite direction
-                  force += distanceFromSurface * 1.2;
-                }
-
-                // Apply a gravitation attraction to z = -15, so that objects on either side are attracted to the center
-                const zForce = spheres[i].position.z * -0.01;
-                force += zForce;
+                const gravitationalConstant = -0.1;
+                gravForce = -gravitationalConstant * (spheres[i].mass * spheres[j].mass) / (distance * distance);
 
                 // Ensure the force doesn't become too large
-                if (force > 5) {
-                  force = 5;
+                if (gravForce > 5) {
+                  gravForce = 5;
                 }
 
                 // Calculate the acceleration of each sphere
-                const acceleration = force / spheres[i].mass;
-                const acceleration2 = force / spheres[j].mass;
+                const acceleration = gravForce / spheres[i].mass;
+                const acceleration2 = gravForce / spheres[j].mass;
                 // Calculate the velocity of each sphere
                 const velocity = acceleration / 60;
                 const velocity2 = acceleration2 / 60;
                 // Calculate the direction of the force
                 const direction = spheres[j].position.clone().sub(spheres[i].position).normalize();
                 const direction2 = spheres[i].position.clone().sub(spheres[j].position).normalize();
+                // If the spheres are overlapping, apply a force to separate them that scales with the distance to their center
+                if (distanceFromSurface < 0) {
+                  if (distanceFromCenters < 0.1) {
+                    console.log('Singularity!')
+                    // Show toast notification of singularity
+                    setNotification({
+                      message: '<strong>Singularity!</strong><br> <p>Two spheres have merged into one.</p>',
+                      type: 'info',
+                      showIcon: false,
+                      duration: 2000,
+                      appearance: 'dark',
+                      // showDurationProgress: false,
+                    });
+                    // Add mass to the first sphere
+                    spheres[i].mass += spheres[j].mass;
+                    // And shrink its radius by taking its current radius and dividing it by the square root of its mass
+                    spheres[i].radius = (spheres[i].radius / Math.sqrt(spheres[i].mass));
+                    // Remove the second sphere from the scene
+                    scene.remove(spheres[j]);
+                    // Remove the second sphere from the array of spheres
+                    spheres.splice(j, 1);
+                  } else {
+                  // The closer the spheres are to each other, the stronger the emForce
+                  const emForce = -0.001 / (distanceFromCenters * distanceFromCenters);
+                  // Apply the force to each sphere in the opposite direction of the other
+                  spheres[i].velocity.add(direction.multiplyScalar(emForce * 0.9));
+                  spheres[j].velocity.add(direction2.multiplyScalar(emForce * 0.9));
+                }
+                } else {
                 // Apply the force to each sphere
                 spheres[i].velocity.add(direction.multiplyScalar(velocity));
                 spheres[j].velocity.add(direction2.multiplyScalar(velocity2));
-
-                // Place a maximum on the velocity
-                if (spheres[i].velocity.length() > 0.1) {
-                  spheres[i].velocity.setLength(0.1);
                 }
+                // Place a maximum on the velocity
+                // if (spheres[i].velocity.length() > 0.1) {
+                //   spheres[i].velocity.setLength(0.1);
+                // }
+                // if (spheres[j].velocity.length() > 0.1) {
+                //   spheres[j].velocity.setLength(0.1);
+                // }
               }
             }
           }
+                // Apply a gravitation attraction to z = -15, so that objects on either side are attracted to the center
+                const zForce = (15 + spheres[i].position.z) * -0.0001;
+                spheres[i].velocity.z += Math.min(zForce, 0.01);
+                // Slowly drag spheres to the center of x and y
+                const xForce = Math.min((spheres[i].position.x * -0.00001), 0.001);
+                spheres[i].velocity.x += xForce;
+                const yForce = Math.min((spheres[i].position.y * -0.00001), 0.001);
+                spheres[i].velocity.y += yForce;
         }
 
         // Apply each sphere's velocity to its position
         for (let i = 0; i < spheres.length; i++) {
+          // If the velocity is too large, slow it down
+          if (spheres[i].velocity.length() > 10) {
+          // Simulate friction
+          spheres[i].velocity.multiplyScalar(0.9);
+          } else {
+            // Small friction
+            spheres[i].velocity.multiplyScalar(0.99);
+          }
           // Don't let the sphere go too far away
-          // If it's beyond the boundaries, reverse its velocity
-          if (spheres[i].position.x > 30) {
-            spheres[i].velocity.x = -spheres[i].velocity.x;
+          // If it's beyond the boundaries, start moving it back
+          if (spheres[i].position.x > 10) {
+            spheres[i].velocity.x += -0.05;
+            spheres[i].velocity.multiplyScalar(0.9);
           }
-          if (spheres[i].position.x < -30) {
-            spheres[i].velocity.x = -spheres[i].velocity.x;
+          if (spheres[i].position.x < -10) {
+            spheres[i].velocity.x += 0.05;
+            spheres[i].velocity.multiplyScalar(0.9);
           }
-          if (spheres[i].position.y > 30) {
-            spheres[i].velocity.y = -spheres[i].velocity.y;
+          if (spheres[i].position.y > 10) {
+            spheres[i].velocity.y += -0.05;
+            spheres[i].velocity.multiplyScalar(0.9);
           }
-          if (spheres[i].position.y < -30) {
-            spheres[i].velocity.y = -spheres[i].velocity.y;
+          if (spheres[i].position.y < -10) {
+            spheres[i].velocity.y += 0.05;
+            spheres[i].velocity.multiplyScalar(0.9);
+          }
+          if (spheres[i].position.z > -5) {
+            spheres[i].velocity.z += -0.1;
+            spheres[i].velocity.multiplyScalar(0.9);
+          }
+          if (spheres[i].position.z < -35) {
+            spheres[i].velocity.z += 0.01;
+            spheres[i].velocity.multiplyScalar(0.9);
           }
           spheres[i].position.add(spheres[i].velocity);
         }
@@ -250,9 +313,6 @@ const scene = new THREE.Scene();
 			}
 
 			animate();
-
-sphere.rotation.x += 0.01;
-sphere.rotation.y += 0.01;
 }
 });
 </script>
@@ -264,6 +324,7 @@ sphere.rotation.y += 0.01;
   <div id="threejs">
     Not yet loaded
   </div>
+  <vue-notification-list />
 </template>
 
 <style scoped>
