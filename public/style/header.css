@@ -34,11 +34,12 @@
 	background-color: transparent;
   }
 
+
   header {
-  padding: 2rem;
+  padding: 2rem 5vw 2rem 2rem;
 	line-height: 1.5;
 	min-height: 10vh;
-	/* display: flex; */
+	display: flex;
 	place-items: center;
 	flex-wrap: wrap;
 	justify-content: center;
@@ -104,8 +105,8 @@
 	border: 0;
   }
 
-  @media (min-width: 800px) {
+  @media (max-width: 800px) {
     header {
-      display: flex;
+      display: block;
     }
   }
