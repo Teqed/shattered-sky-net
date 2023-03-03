@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import * as THREE from 'three';
 
+import image5210 from '../assets/images/5210/5210.jpg';
+import image5210Normal from '../assets/images/5210/5210-normal.jpg';
+import image5210Bump from '../assets/images/5210/5210-bump.jpg';
+import image5210Diffuse from '../assets/images/5210/5210-diffuse.jpg';
+
 // Once the component is mounted, we can access the DOM element
 // and use it to create a Three.js scene.
 
@@ -43,10 +48,10 @@ const scene = new THREE.Scene();
 			const geometry = new THREE.BoxGeometry(1, 1, 1);
 			// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
       // Create a material with a texture, from wall.jpg, in the assets/images folder
-      const texture = new THREE.TextureLoader().load('~/images/5210/5210.jpg');
-      const normalMap = new THREE.TextureLoader().load('~/images/5210/5210-normal.jpg');
-      const bumpMap = new THREE.TextureLoader().load('~/images/5210/5210-bump.jpg');
-      const diffuseMap = new THREE.TextureLoader().load('~/images/5210/5210-diffuse.jpg');
+      const texture = new THREE.TextureLoader().load(image5210);
+      const normalMap = new THREE.TextureLoader().load(image5210Normal);
+      const bumpMap = new THREE.TextureLoader().load(image5210Bump);
+      const diffuseMap = new THREE.TextureLoader().load(image5210Diffuse);
       const material = new THREE.MeshPhongMaterial({
         map: texture,
         normalMap,
