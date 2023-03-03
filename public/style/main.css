@@ -8,13 +8,13 @@ a,
 
 :root {
   margin: 0 auto;
-  padding: 2rem;
+  /* padding: 2rem; */
   font-weight: normal;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  
+
   --vt-c-white: #fff;
   --vt-c-white-soft: #f8f8f8;
   --vt-c-white-mute: #f2f2f2;

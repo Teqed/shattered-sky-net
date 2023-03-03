@@ -3,14 +3,14 @@
 	--animation-generic: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
 
-  
+
 @media (hover: hover) {
 	.item a:hover {
 	  text-decoration: underline;
 	  background-color: hsl(189deg 65% 21% / 20%);
 	}
   }
-  
+
   .tile {
 	width: 55vw;
 	padding: 1vh 1.5vw;
@@ -23,22 +23,22 @@
 	border: 1px solid rgb(121 121 121 / 51%);
 	transition: box-shadow 0.28s ease-in-out;
   }
-  
+
   .tile:hover {
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
   }
-  
+
   .item {
-	margin-top: 3vh;
+  padding: 1vh 3vw 1vh 3vw;
 	display: flex;
   }
-  
+
   .details {
 	flex: 1;
 	margin-left: 1.5vw;
 	animation: var(--animation-generic);
   }
-  
+
   .i-icon {
 	display: flex;
 	place-items: center;
@@ -48,48 +48,48 @@
 	color: var(--color-text);
 	animation: var(--animation-generic);
   }
-  
+
   h3 {
 	font-size: 1.2rem;
 	font-weight: 500;
 	margin-bottom: 0.5vh;
 	color: var(--color-heading);
   }
-  
+
   /* @mixin for-phone-only { */
   @media (max-width: 599px) {
-	.tile {
+	/* .tile {
 	  width: 85vw;
-	}
+	} */
   }
-  
+
   /* @mixin for-tablet-portrait-up { */
   @media (min-width: 600px) {
-	.tile {
+	/* .tile {
 	  width: 80vw;
-	}
-  
+	} */
+
   }
-  
+
   /* @mixin for-tablet-landscape-up { */
   @media (min-width: 900px) {
-	.tile {
+	/* .tile {
 	  width: 65vw;
-	}
+	} */
   }
-  
+
   /* @mixin for-desktop-up { */
   @media (min-width: 1200px) {
-	.tile {
+	/* .tile {
 	  width: 45vw;
 	  padding: 1.2vh 1vw;
 	}
-  
+
 	.item {
 	  margin-top: 0;
 	  padding: 0.4vh 0 1.5vh 2vw;
 	}
-  
+
 	.i-icon {
 	  top: calc(50% - 25px);
 	  left: -26px;
@@ -100,11 +100,10 @@
 	  border-radius: 16px;
 	  box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
 	  backdrop-filter: saturate(180%) blur(10px);
-	  /* stylelint-disable-next-line property-no-vendor-prefix */
 	  -webkit-backdrop-filter: saturate(180%) blur(10px);
 	  border: 1px solid rgb(121 121 121 / 51%);
 	}
-  
+
 	.item::before {
 	  content: " ";
 	  border-left: 1px solid var(--color-border);
@@ -113,7 +112,7 @@
 	  bottom: calc(50% + 25px);
 	  height: calc(50% - 25px);
 	}
-  
+
 	.item::after {
 	  content: " ";
 	  border-left: 1px solid var(--color-border);
@@ -122,22 +121,22 @@
 	  top: calc(50% + 25px);
 	  height: calc(50% - 25px);
 	}
-  
+
 	.item:first-of-type::before {
 	  display: none;
 	}
-  
+
 	.item:last-of-type::after {
 	  display: none;
-	}
-  
+	} */
+
 	/* @mixin for-med-desktop-up { */
 	@media (min-width: 1800px) {
 	  /* .tile {
 		width: 40vw;
 	  } */
 	}
-  
+
 	/* @mixin for-big-desktop-up { */
 	@media (min-width: 1921px) {
 	  /* .tile {

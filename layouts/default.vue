@@ -15,7 +15,6 @@ useHead({
         <header>
           <SiteHeader />
         </header>
-        <br>
         <slot />
       </Body>
     </NuxtErrorBoundary>
