@@ -10,6 +10,14 @@
       <NuxtLink to="/three/00">
         00
       </NuxtLink>
+      <br>
+      <NuxtLink to="/three/01">
+        01
+      </NuxtLink>
+      <br>
+      <NuxtLink to="/three/02">
+        02
+      </NuxtLink>
     </p>
   </div>
 </template>
