@@ -22,8 +22,15 @@ const meshBodies = ref<{ mesh: THREE.Object3D<THREE.Event>, body: CANNON.Body }[
 const createMesh = () => {
 	// const geometry = new THREE.BoxGeometry(2, 2, 2);
 	// Instead of a Box, create a decagon
-	const geometry = new THREE.DodecahedronGeometry(1, 0);
-	const material = new THREE.MeshBasicMaterial({ color: 0x0000FF, wireframe: true })
+	const geometry = new THREE.IcosahedronGeometry(1, 0);
+	const material = new THREE.MeshLambertMaterial({
+		color: new THREE.Color(
+			0,
+			0,
+			// Create blue colors. 0.5 is the mean, 0.25 is the standard deviation
+			Math.random() * 0.5 + 0.5 + 0.25 * (Math.random() > 0.5 ? 1 : -1)
+		)
+	})
 
 	const mesh = new THREE.Mesh(geometry, material)
 
@@ -77,10 +84,18 @@ const initThree = () => {
 	// Scene
 	scene = new THREE.Scene()
 
+	// Add lights
+	const light = new THREE.DirectionalLight(0xffffff, 1)
+	light.position.set(0, 0, 1)
+	scene.add(light)
+	// Ambient light
+	const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+	scene.add(ambientLight)
+
 	// Renderer
 	renderer = new THREE.WebGLRenderer({
 		antialias: true,
-		// alpha: true
+		alpha: true
 	})
 	renderer.setSize(dimensions.width, dimensions.height)
 
@@ -161,5 +176,20 @@ onMounted(() => {
   top: 0;
   left: 0;
   z-index: -1;
+  opacity: 0;
+  animation: fadein 1s ease-in-out forwards;
+  }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
 }
+
 </style>
