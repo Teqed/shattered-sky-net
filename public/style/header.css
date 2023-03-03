@@ -36,6 +36,8 @@
 
 
   header {
+	margin: auto;
+	max-width: fit-content;
   padding: 2rem 5vw 2rem 2rem;
 	line-height: 1.5;
 	min-height: 10vh;
