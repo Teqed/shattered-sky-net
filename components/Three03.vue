@@ -20,7 +20,6 @@ const initThree = () => {
 	const canvasWrapper = document.querySelector('#canvasWrapper') as HTMLDivElement;
 	// Camera
 	let dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
-	console.log(dimensions);
 	// camera = new THREE.PerspectiveCamera(75, dimensions.width / dimensions.height, 1, 100)
 	// Orthographic camera
 	camera = new THREE.OrthographicCamera(
