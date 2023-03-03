@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import * as THREE from 'three';
 
+// Import the images we need from the ./public/images/ folder
+import image5210 from '../assets/images/5210/5210.jpg';
+import image5210Normal from '../assets/images/5210/5210-normal.jpg';
+import image5210Bump from '../assets/images/5210/5210-bump.jpg';
+import image5210Diffuse from '../assets/images/5210/5210-diffuse.jpg';
+
 // Get toast notifications from plugin
 import { useNotificationStore } from '@dafcoe/vue-notification'
 const { setNotification } = useNotificationStore()
@@ -72,10 +78,10 @@ const scene = new THREE.Scene();
 
 			const geometry = new THREE.SphereGeometry(0.5, 32, 32);
 			// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
-      const texture = new THREE.TextureLoader().load('../images/5210/5210.jpg');
-      const normalMap = new THREE.TextureLoader().load('../images/5210/5210-normal.jpg');
-      const bumpMap = new THREE.TextureLoader().load('../images/5210/5210-bump.jpg');
-      const diffuseMap = new THREE.TextureLoader().load('../images/5210/5210-diffuse.jpg');
+      const texture = new THREE.TextureLoader().load(image5210);
+      const normalMap = new THREE.TextureLoader().load(image5210Normal);
+      const bumpMap = new THREE.TextureLoader().load(image5210Bump);
+      const diffuseMap = new THREE.TextureLoader().load(image5210Diffuse);
       const material = new THREE.MeshPhongMaterial({
         map: texture,
         normalMap,

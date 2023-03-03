@@ -143,8 +143,8 @@ export default defineNuxtConfig({
       alias: {
         // '@': fileURLToPath(new URL('./', import.meta.url)),
         // '~': fileURLToPath(new URL('./', import.meta.url)),
-        // '~~': fileURLToPath(new URL('./', import.meta.url)),
-        // '@@': fileURLToPath(new URL('./', import.meta.url)),
+        // '~~': fileURLToPath(new URL('../', import.meta.url)),
+        // '@@': fileURLToPath(new URL('../', import.meta.url)),
         // 'vue-router': 'https://cdn.jsdelivr.net/npm/vue-router@4/+esm',
       },
     },
