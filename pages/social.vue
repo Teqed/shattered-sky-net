@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useHead({
-  title: 'Social',
-  meta: [{ name: 'description', content: 'Social platforms for Shattered Sky.' }],
+	title: 'Social',
+	meta: [{ name: 'description', content: 'Social platforms for Shattered Sky.' }],
 });
 </script>
 

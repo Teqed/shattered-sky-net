@@ -5,4 +5,4 @@ export default {
 		exclude: ['/cdn-cgi/*']
 	},
 	debug: true,
-  }
+}

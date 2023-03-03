@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useHead({
-  title: 'Tabletop',
-  meta: [{ name: 'description', content: 'Pen & Paper RPGs without the paper.' }],
+	title: 'Tabletop',
+	meta: [{ name: 'description', content: 'Pen & Paper RPGs without the paper.' }],
 });
 </script>
 

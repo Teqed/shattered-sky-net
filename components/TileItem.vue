@@ -1,11 +1,11 @@
 <script setup lang="ts">
 useHead({
-  link: [
-    // {
-    //   rel: 'stylesheet',
-    //   href: 'https://shatteredsky.net/style/tileitem.css',
-    // },
-  ],
+	link: [
+		// {
+		//   rel: 'stylesheet',
+		//   href: 'https://shatteredsky.net/style/tileitem.css',
+		// },
+	],
 });
 </script>
 

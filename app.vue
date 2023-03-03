@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const head = useLocaleHead({
-  addDirAttribute: true,
-  identifierAttribute: 'id',
-  addSeoAttributes: true
+	addDirAttribute: true,
+	identifierAttribute: 'id',
+	addSeoAttributes: true
 });
 useHead({
-  meta: [
-    {
-      name: 'darkreader-lock',
-    },
-  ],
-  });
+	meta: [
+		{
+			name: 'darkreader-lock',
+		},
+	],
+});
 </script>
 <script lang="ts"></script>
 

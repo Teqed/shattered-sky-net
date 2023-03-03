@@ -7,14 +7,6 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 
-/**
-       * Really basic example to show cannon.js integration
-       * with three.js.
-       * Each frame the cannon.js world is stepped forward and then
-       * the position and rotation data of the boody is copied
-       * over to the three.js scene.
-       */
-
 // three.js variables
 let camera: THREE.OrthographicCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer
 let mesh: THREE.Object3D<THREE.Event>

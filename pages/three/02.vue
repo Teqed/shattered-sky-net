@@ -4,10 +4,10 @@
 import Three02 from '@/components/Three02.vue';
 
 export default {
-  name: 'Page02',
-  components: {
-    Three02,
-  },
+	name: 'Page02',
+	components: {
+		Three02,
+	},
 };
 </script>
 <template>

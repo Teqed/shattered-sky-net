@@ -5,11 +5,11 @@ import EcosystemIcon from '../assets/icons/IconEcosystem.vue';
 import CommunityIcon from '../assets/icons/IconCommunity.vue';
 import SupportIcon from '../assets/icons/IconSupport.vue';
 useHead({
-  title: 'Shattered Sky',
-  titleTemplate: '%s',
-  meta: [
-    { name: 'description', content: 'Home page for Shattered Sky community.' },
-  ],
+	title: 'Shattered Sky',
+	titleTemplate: '%s',
+	meta: [
+		{ name: 'description', content: 'Home page for Shattered Sky community.' },
+	],
 });
 </script>
 

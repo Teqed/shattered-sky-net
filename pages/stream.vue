@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useHead({
-  title: 'Streaming',
-  meta: [{ name: 'description', content: 'Streaming from Shattered Sky.' }],
+	title: 'Streaming',
+	meta: [{ name: 'description', content: 'Streaming from Shattered Sky.' }],
 });
 </script>
 

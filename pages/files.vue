@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useHead({
-  title: 'Files',
-  meta: [{ name: 'description', content: 'Files hosted at Shattered Sky.' }],
+	title: 'Files',
+	meta: [{ name: 'description', content: 'Files hosted at Shattered Sky.' }],
 });
 </script>
 

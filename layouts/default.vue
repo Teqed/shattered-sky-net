@@ -1,8 +1,8 @@
 <script setup lang="ts">
 // const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
-  meta: [
-  ],
+	meta: [
+	],
 });
 </script>
 
