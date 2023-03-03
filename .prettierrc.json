@@ -1,1 +1,6 @@
-{}
+{
+	"indent": {
+		"unit": "tab",
+		"size": 4
+	}
+}
