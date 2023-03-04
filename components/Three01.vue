@@ -40,6 +40,8 @@ class MassMesh extends THREE.Mesh {
 
 onMounted(() => {
 	if (process.client) {
+		// Prevent right click
+		document.addEventListener('contextmenu', event => event.preventDefault());
 		const scene = new THREE.Scene();
 		const canvasWrapper = document.querySelector('#canvasWrapper') as HTMLDivElement;
 		let dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
@@ -228,8 +230,8 @@ onMounted(() => {
 								}
 							} else {
 							// Apply the force to each sphere
-							spheres[i].velocity.add(direction.multiplyScalar(velocity));
-							spheres[j].velocity.add(direction2.multiplyScalar(velocity2));
+								spheres[i].velocity.add(direction.multiplyScalar(velocity));
+								spheres[j].velocity.add(direction2.multiplyScalar(velocity2));
 							}
 							// Place a maximum on the velocity
 							// if (spheres[i].velocity.length() > 0.1) {
