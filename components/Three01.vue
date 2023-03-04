@@ -211,15 +211,6 @@ onMounted(() => {
 							if (distanceFromSurface < 0) {
 								if (distanceFromCenters < 0.1) {
 									console.log('Singularity!')
-									// Show toast notification of singularity
-									// setNotification({
-									// 	message: '<strong>Singularity!</strong><br> <p>Two spheres have merged into one.</p>',
-									// 	type: 'info',
-									// 	showIcon: false,
-									// 	duration: 2000,
-									// 	appearance: 'dark',
-									// 	showDurationProgress: false,
-									// });
 									// Add mass to the first sphere
 									spheres[i].mass += spheres[j].mass;
 									// And shrink its radius by taking its current radius and dividing it by the square root of its mass
@@ -236,9 +227,9 @@ onMounted(() => {
 									spheres[j].velocity.add(direction2.multiplyScalar(emForce * 0.9));
 								}
 							} else {
-								// Apply the force to each sphere
-								spheres[i].velocity.add(direction.multiplyScalar(velocity));
-								spheres[j].velocity.add(direction2.multiplyScalar(velocity2));
+							// Apply the force to each sphere
+							spheres[i].velocity.add(direction.multiplyScalar(velocity));
+							spheres[j].velocity.add(direction2.multiplyScalar(velocity2));
 							}
 							// Place a maximum on the velocity
 							// if (spheres[i].velocity.length() > 0.1) {
@@ -274,27 +265,27 @@ onMounted(() => {
 				// If it's beyond the boundaries, start moving it back
 				if (spheres[i].position.x > 10) {
 					spheres[i].velocity.x += -0.05;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				if (spheres[i].position.x < -10) {
 					spheres[i].velocity.x += 0.05;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				if (spheres[i].position.y > 10) {
 					spheres[i].velocity.y += -0.05;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				if (spheres[i].position.y < -10) {
 					spheres[i].velocity.y += 0.05;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				if (spheres[i].position.z > -5) {
 					spheres[i].velocity.z += -0.1;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				if (spheres[i].position.z < -35) {
 					spheres[i].velocity.z += 0.01;
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(0.99);
 				}
 				spheres[i].position.add(spheres[i].velocity);
 			}
