@@ -2,7 +2,6 @@
 import * as THREE from 'three';
 
 // Import the images we need from the ./public/images/ folder
-import { useNotificationStore } from '@dafcoe/vue-notification'
 import image5210 from '../assets/images/5210/5210.jpg';
 import image5210Normal from '../assets/images/5210/5210-normal.jpg';
 import image5210Bump from '../assets/images/5210/5210-bump.jpg';
@@ -42,9 +41,9 @@ class MassMesh extends THREE.Mesh {
 onMounted(() => {
 	if (process.client) {
 		const scene = new THREE.Scene();
-		const threejsdiv = document.querySelector('#threejs');
-		const dimensions = document.querySelector('#threejs')?.clientWidth ?? 800;
-		const camera = new THREE.PerspectiveCamera(50, dimensions / dimensions, 0.1, 2000);
+		const canvasWrapper = document.querySelector('#canvasWrapper') as HTMLDivElement;
+		let dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
+		const camera = new THREE.PerspectiveCamera(50, dimensions.width / dimensions.height, 0.1, 2000);
 
 		const renderer = new THREE.WebGLRenderer(
 			{ alpha: true }
@@ -52,12 +51,10 @@ onMounted(() => {
 			// renderer.setSize(window.innerWidth, window.innerHeight);
 		// Keep the scene inside the div's width, but scale the height to keep the aspect ratio
 		renderer.setSize(
-			dimensions,
-			dimensions
+			dimensions.width,
+			dimensions.height
 		);
-		// Remove the "Not yet loaded" text
-		threejsdiv?.removeChild(threejsdiv.firstChild as Node);
-		threejsdiv?.appendChild(renderer.domElement);
+		canvasWrapper.appendChild(renderer.domElement);
 
 		camera.position.y = -0.3;
 		camera.position.z = 15;
@@ -72,9 +69,6 @@ onMounted(() => {
 		const light3 = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
 		light3.position.set(0, -10, 10);
 		scene.add(light3);
-
-		// Set the rendering quality to high
-		renderer.setPixelRatio(window.devicePixelRatio);
 
 		const geometry = new THREE.SphereGeometry(0.5, 32, 32);
 		// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
@@ -117,7 +111,9 @@ onMounted(() => {
 			};
 
 			// Create a new sphere
-			const sphereClick = new MassMesh(geometry, material);
+			// Give it its own geometry so we can change its size later
+			const varGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+			const sphereClick = new MassMesh(varGeometry, material);
 			// We want to add the sphere to the location the mouse appears to be at
 			// We'll use z = -15, and find the x and y coordinates where the mouse appears to be
 
@@ -158,6 +154,17 @@ onMounted(() => {
 			// Add it to the array of spheres
 			spheres.push(sphereClick);
 		});
+
+		// Resize
+		const onWindowResize = () => {
+			// dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
+			dimensions = { width: (window.innerWidth), height: (window.innerHeight)}
+			camera.aspect = dimensions.width / (dimensions.height)
+			camera.updateProjectionMatrix()
+			renderer.setSize(dimensions.width, dimensions.height)
+		}
+		onWindowResize();
+		window.addEventListener('resize', onWindowResize)
 
 		const animate = () => {
 			requestAnimationFrame(animate);
@@ -258,10 +265,10 @@ onMounted(() => {
 				// If the velocity is too large, slow it down
 				if (spheres[i].velocity.length() > 10) {
 					// Simulate friction
-					spheres[i].velocity.multiplyScalar(0.9);
+					spheres[i].velocity.multiplyScalar(1 - (0.5 * spheres[i].mass));
 				} else {
 					// Small friction
-					spheres[i].velocity.multiplyScalar(0.99);
+					spheres[i].velocity.multiplyScalar(1 - (0.01 * spheres[i].mass));
 				}
 				// Don't let the sphere go too far away
 				// If it's beyond the boundaries, start moving it back
@@ -327,13 +334,30 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="threejs">
-    Not yet loaded
-  </div>
-  <vue-notification-list />
+  <div id="canvasWrapper" />
 </template>
 
-<style scoped>
-body { margin: 0; }
-div { width: 100%; height: 100%; justify-content: center; align-items: center; display: flex;}
+<style>
+
+  canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  animation: fadein 1s ease-in-out forwards;
+  }
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+    filter: blur(10px);
+  }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 </style>

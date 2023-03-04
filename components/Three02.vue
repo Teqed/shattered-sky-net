@@ -114,16 +114,27 @@ onMounted(() => {
 <script lang="ts">
 </script>
 
-<style scoped>
-  body {
-    margin: 0;
+<style>
+
+  canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  opacity: 0;
+  animation: fadein 1s ease-in-out forwards;
   }
 
-  div {
-    width: 100%;
-    height: 100%;
-    justify-content: center;
-    align-items: center;
-    display: flex;
+@keyframes fadein {
+  from {
+    opacity: 0;
+    filter: blur(10px);
   }
+
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
 </style>
