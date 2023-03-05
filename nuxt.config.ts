@@ -2,6 +2,8 @@
 // import { fileURLToPath, URL } from 'node:url';
 // import { autoComplete, Plugin as importToCDN } from "vite-plugin-cdn-import";
 // import { defineNuxtConfig } from 'nuxt/config'
+// import wasm from 'vite-plugin-wasm';
+// import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineNuxtConfig({
 	modules: [
@@ -122,6 +124,11 @@ export default defineNuxtConfig({
 	build: {
 		analyze: true,
 	},
+	nitro: {
+		experimental: {
+			wasm: true,
+		}
+	},
 	vite: {
 		plugins: [
 			// importToCDN({
@@ -138,6 +145,8 @@ export default defineNuxtConfig({
 			// 	},
 			//   ],
 			// }),
+			// wasm(),
+			// topLevelAwait()
 		],
 		resolve: {
 			alias: {

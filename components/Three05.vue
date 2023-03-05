@@ -41,7 +41,7 @@ onMounted(() => {
 			const initRAPIER = () => {
 				// Create the world
 				// world = new CANNON.World()
-				const gravity = { x: 0.0, y: -9.81, z: 0.0 };
+				const gravity = { x: 0.0, y: 0.0, z: 0.0 };
 				// world = new RAPIER.World(gravity);
 				world = new RAPIER.World(gravity)
 				// world.gravity.set(0, -9.82, 0)
@@ -60,7 +60,7 @@ onMounted(() => {
 				renderer = new THREE.WebGLRenderer(
 					{
 						antialias: true,
-						// alpha: true
+						alpha: true
 					}
 				)
 				renderer.setSize(window.innerWidth, window.innerHeight)
@@ -111,7 +111,13 @@ onMounted(() => {
 					const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 						.setTranslation(position.x, position.y, position.z)
 						.setAdditionalMass(mass || 0)
+					rigidBodyDesc.angvel = new RAPIER.Vector3(
+						Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1),
+						Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1),
+						Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1)
+					)
 					const body = world.createRigidBody(rigidBodyDesc)
+					// body.applyTorqueImpulse(spin, true)
 					// Update the mesh position using the body position
 					mesh.position.set(position.x, position.y, position.z)
 					// randomAxis is a randomly chosen axis, either x, y, or z, the result as a Vec3
@@ -127,12 +133,13 @@ onMounted(() => {
 							y: randomAxis.y * Math.sin(Date.now() / 1000) * 0.05,
 							z: randomAxis.z * Math.sin(Date.now() / 1000) * 0.05,
 						})
+						const position = body.translation()
 						// Move it based on moveThisFrame
-						// body.setTranslation(
-							// body.translation.x + moveThisFrame.x,
-							// body.translation.y + moveThisFrame.y,
-							// body.translation.z + moveThisFrame.z
-						// )
+						body.setTranslation({
+							x: position.x + moveThisFrame.x,
+							y: position.y + moveThisFrame.y,
+							z: position.z + moveThisFrame.z,
+						}, true)
 						// Give it velocity based on moveThisFrame
 						// body.velocity.set(
 						// 	body.velocity.x + moveThisFrame.x,
@@ -155,8 +162,9 @@ onMounted(() => {
 						// 	body.position.z + body.velocity.z
 						// )
 						// Update the mesh position using the body position
-						// mesh.position.set(body.position.x, body.position.y, body.position.z)
-						// mesh.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w)
+						mesh.position.set(position.x, position.y, position.z)
+						const quaternion = body.rotation();
+						mesh.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w)
 					}
 					// world.addBody(body)
 					return { mesh, body, update };
@@ -181,16 +189,15 @@ onMounted(() => {
 
 				// Push 50 meshBodies array
 				for (let i = 0; i < 50; i++) {
+					console.log('pushing' + i)
 					meshBodies.push(
 						box(
-							0,
-							// new CANNON.Vec3(
+							1,
 							new RAPIER.Vector3(
-								Math.random() * 10 - 5,
-								Math.random() * 10 - 5,
-								Math.random() * 10 - 5
+								Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1),
+								Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1),
+								Math.random() * 10 * (Math.random() < 0.5 ? -1 : 1),
 							),
-							// new CANNON.Vec3(
 							new RAPIER.Vector3(
 								1,
 								1,
@@ -212,6 +219,7 @@ onMounted(() => {
 		const animate = () => {
 			// Update the world
 			// world.step(1 / 60)
+			world.step();
 			// Update the meshes by calling the update function
 			meshBodies.forEach((meshBody) => {
 				meshBody.update()
@@ -221,10 +229,15 @@ onMounted(() => {
 			// Call the function again
 			requestAnimationFrame(animate)
 		}
+		const gameLoop = () => {
+			world.step();
+			setTimeout(gameLoop, 16);
+		};
 		initScene();
 		console.log('Scene initialized')
 		animate();
 		console.log('Animation initialized')
+		gameLoop();
 	// camera.lookAt(0, 0, 0)
 	}
 	runSimulation();

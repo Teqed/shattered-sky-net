@@ -320,6 +320,16 @@
   resolved "https://registry.yarnpkg.com/@dafcoe/vue-notification/-/vue-notification-0.1.6.tgz#62b979ff9619259d9be6e9125da9afb63eb3db35"
   integrity sha512-tX/V1/4wgrxWKQ9QDPzBTYBrOSFFBzHhvqSSyZzboBL+kCHcGRDAnRM9hG316+ib0lgn5eIt1u3n9dRfc1gOZw==
 
+"@dimforge/rapier3d-compat@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@dimforge/rapier3d-compat/-/rapier3d-compat-0.11.2.tgz#ae2b335f545decf1e82ff45bb10368e143de0fcb"
+  integrity sha512-vdWmlkpS3G8nGAzLuK7GYTpNdrkn/0NKCe0l1Jqxc7ZZOB3N0q9uG/Ap9l9bothWuAvxscIt0U97GVLr0lXWLg==
+
+"@dimforge/rapier3d@^0.11.2":
+  version "0.11.2"
+  resolved "https://registry.yarnpkg.com/@dimforge/rapier3d/-/rapier3d-0.11.2.tgz#b81d64a6a86b5f04805da29ce7eec57424769c6a"
+  integrity sha512-B+AKkPmtJxED3goMTGU8v0ju8hUAUQGLgghzCos4G4OeN9X+mJ5lfN2xtNA0n8tJRJk2YfsMk9BOj/6AN89Acg==
+
 "@esbuild/android-arm64@0.16.17":
   version "0.16.17"
   resolved "https://registry.yarnpkg.com/@esbuild/android-arm64/-/android-arm64-0.16.17.tgz#cf91e86df127aa3d141744edafcba0abdc577d23"

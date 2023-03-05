@@ -85,11 +85,11 @@ const initThree = () => {
 	scene = new THREE.Scene()
 
 	// Add lights
-	const light = new THREE.DirectionalLight(0xffffff, 1)
+	const light = new THREE.DirectionalLight(0xFFFFFF, 1)
 	light.position.set(0, 0, 1)
 	scene.add(light)
 	// Ambient light
-	const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
+	const ambientLight = new THREE.AmbientLight(0xFFFFFF, 0.5)
 	scene.add(ambientLight)
 
 	// Renderer
