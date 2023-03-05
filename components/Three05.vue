@@ -7,7 +7,8 @@
 // a physics engine written in Rust
 
 // @ts-ignore-next-line
-import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
+// import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
+import * as RAPIER from '@dimforge/rapier3d-compat';
 
 import * as THREE from 'three';
 
@@ -96,54 +97,108 @@ onMounted(() => {
 			}
 
 			const initMeshes = () => {
-				// Add the meshes
-				// Create the geometry
-				const geometry = new THREE.BoxGeometry(1, 1, 1)
-				// Create the material
-				const material = new THREE.MeshStandardMaterial({ color: 0x00FF00 })
-				// Create the mesh
-				const mesh = new THREE.Mesh(geometry, material)
-				// Add the mesh to the scene
-				scene.add(mesh)
-				// Create the body
-				// const body = new CANNON.Body({
-				// 	mass: 1,
-				// 	position: new CANNON.Vec3(0, 0, 0),
-				// 	shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5))
-				// })
-				const bodyDesc = RAPIER.RigidBodyDesc.dynamic()
-					.setTranslation(0.0, 0.0, 0.0);
-
-				const body = world.createRigidBody(bodyDesc);
-				const colliderDesc = RAPIER.ColliderDesc.cuboid(0.5, 0.5, 0.5);
-				world.createCollider(
-					colliderDesc
-				);
-				// Add the body to the world
-				// world.addBody(body)
-				// Create the update function
-				const update = () => {
-					// mesh.position.copy(body.position)
-					// mesh.quaternion.copy(body.quaternion)
-					// Copy the RAPIER body position to the THREE mesh position
-					mesh.position.copy(
-						new THREE.Vector3(
-							body.translation().x,
-							body.translation().y,
-							body.translation().z
+				const initBody = (
+					mesh: THREE.Object3D<THREE.Event>,
+					mass: number,
+					// position?: CANNON.Vec3,
+					position: RAPIER.Vector,
+					// shape?: CANNON.Shape
+					shape?: RAPIER.Shape
+				) => {
+					console.log(position)
+					// Create the body
+					// const body = new CANNON.Body({
+					const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
+						.setTranslation(position.x, position.y, position.z)
+						.setAdditionalMass(mass || 0)
+					const body = world.createRigidBody(rigidBodyDesc)
+					// Update the mesh position using the body position
+					mesh.position.set(position.x, position.y, position.z)
+					// randomAxis is a randomly chosen axis, either x, y, or z, the result as a Vec3
+					// const randomAxis = new CANNON.Vec3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+					const randomAxis = new RAPIER.Vector3(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+					const update = () => {
+						// Apply some drag to the body's current velocity
+						// body.velocity.scale(0.5)
+						// Move the body back and forth on the provided axis from randomAxis
+						// back and forth: Math.sin(Date.now() / 1000) * 2
+						const moveThisFrame = ({
+							x: randomAxis.x * Math.sin(Date.now() / 1000) * 0.05,
+							y: randomAxis.y * Math.sin(Date.now() / 1000) * 0.05,
+							z: randomAxis.z * Math.sin(Date.now() / 1000) * 0.05,
+						})
+						// Move it based on moveThisFrame
+						// body.setTranslation(
+							// body.translation.x + moveThisFrame.x,
+							// body.translation.y + moveThisFrame.y,
+							// body.translation.z + moveThisFrame.z
+						// )
+						// Give it velocity based on moveThisFrame
+						// body.velocity.set(
+						// 	body.velocity.x + moveThisFrame.x,
+						// 	body.velocity.y + moveThisFrame.y,
+						// 	body.velocity.z + moveThisFrame.z
+						// )
+						// Make sure the body isn't moving or spinning too fast. If it is, cap it.
+						// if (body.velocity.length() > 10) {
+						// 	body.velocity.normalize()
+						// 	body.velocity.scale(10)
+						// }
+						// if (body.angularVelocity.length() > 10) {
+						// 	body.angularVelocity.normalize()
+						// 	body.angularVelocity.scale(10)
+						// }
+						// Move the body according to its velocity
+						// body.position.set(
+						// 	body.position.x + body.velocity.x,
+						// 	body.position.y + body.velocity.y,
+						// 	body.position.z + body.velocity.z
+						// )
+						// Update the mesh position using the body position
+						// mesh.position.set(body.position.x, body.position.y, body.position.z)
+						// mesh.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w)
+					}
+					// world.addBody(body)
+					return { mesh, body, update };
+				}
+				// const box = (mass?: number, position?: CANNON.Vec3, size?: CANNON.Vec3) => {
+				const box = (mass?: number, position?: RAPIER.Vector, size?: RAPIER.Vector) => {
+					// Create the mesh
+					const mesh = new THREE.Mesh(
+						new THREE.BoxGeometry(size?.x || 1, size?.y || 1, size?.z || 1),
+						new THREE.MeshStandardMaterial({
+							// Pick a random color
+							color: Math.random() * 0xFFFFFF,
+						},
 						)
-					);
-					mesh.quaternion.copy(
-						new THREE.Quaternion(
-							body.rotation().x,
-							body.rotation().y,
-							body.rotation().z,
-							body.rotation().w
-						)
+					)
+					scene.add(mesh)
+					return initBody(
+						// mesh, mass, position, new CANNON.Box(new CANNON.Vec3(size?.x || 1, size?.y || 1, size?.z || 1))
+						mesh, (mass || 1), (position || new THREE.Vector3(0, 0, 0)), new RAPIER.Cuboid(size?.x || 1, size?.y || 1, size?.z || 1)
 					);
 				}
-				// Add the mesh, body and update function to the meshBodies array
-				meshBodies.push({ mesh, body, update })
+
+				// Push 50 meshBodies array
+				for (let i = 0; i < 50; i++) {
+					meshBodies.push(
+						box(
+							0,
+							// new CANNON.Vec3(
+							new RAPIER.Vector3(
+								Math.random() * 10 - 5,
+								Math.random() * 10 - 5,
+								Math.random() * 10 - 5
+							),
+							// new CANNON.Vec3(
+							new RAPIER.Vector3(
+								1,
+								1,
+								1
+							)
+						)
+					)
+				}
 			}
 
 			initRAPIER()
