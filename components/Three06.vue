@@ -51,10 +51,13 @@ const indices = new Uint32Array([
 	9, 10, 11,
 	10, 6, 11,
 ]);
+const load = async () => {
+	return await RAPIER.init();
+}
 
 onMounted(() => {
 	const runSimulation = async () => {
-		await RAPIER.init();
+		await load();
 		// browser variables
 		let dimensions = { width: (window.innerWidth), height: (window.innerHeight)}
 
@@ -159,22 +162,30 @@ onMounted(() => {
 			}
 		}
 
-		const animate = () => {
+		const animate = async () => {
 			meshBodies.forEach((meshBody) => {
 				meshBody.update();
 			})
 			renderer.render(scene, camera)
+			await new Promise(resolve => setTimeout(resolve, 32));
 			requestAnimationFrame(animate)
 		}
-		const gameLoop = () => {
-			world.step();
-			setTimeout(gameLoop, 16);
+		const asyncGameLoop = () => {
+			const doLoop = async () => {
+				world.step();
+				await new Promise(resolve => setTimeout(resolve, 32));
+			}
+			const loop = async () => {
+				await doLoop();
+				loop();
+			}
+			loop();
 		};
 
 		initScene();
 		console.log('Scene initialized')
 		animate();
-		gameLoop();
+		asyncGameLoop();
 	}
 	runSimulation();
 }
