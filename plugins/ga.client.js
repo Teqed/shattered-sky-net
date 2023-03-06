@@ -10,6 +10,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 		onError: (_error) => {
 			return true;
 		},
+		enabled: false,
 		deferScriptLoad: true,
 	}, nuxtApp.vueApp.router);
 })
