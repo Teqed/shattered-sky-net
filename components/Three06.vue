@@ -10,6 +10,9 @@ import * as RAPIER from '@dimforge/rapier3d-compat';
 
 import * as THREE from 'three';
 
+import * as RANDOMJS from 'random-js';
+const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
+
 // Icosahedron, twenty-sided, triangle faces
 const vertices = new Float32Array([
 	0, 0, -1,
@@ -77,18 +80,6 @@ onMounted(() => {
 		// rapier.rs variables
 		const gravity = { x: 0.0, y: 0.0, z: 0.0 };
 		const world = new RAPIER.World(gravity)
-		const groundSize = 100.0;
-		const groundMaterial = new THREE.MeshLambertMaterial({
-			color: new THREE.Color(0.5, 0.5, 0.5)
-		})
-		const groundGeometry = new THREE.PlaneGeometry(groundSize, groundSize)
-		const groundMesh = new THREE.Mesh(groundGeometry, groundMaterial)
-		groundMesh.rotation.x = -Math.PI / 2
-		scene.add(groundMesh)
-		const groundBodyDesc = new RAPIER.RigidBodyDesc(RAPIER.RigidBodyType.Fixed)
-		const groundBody = world.createRigidBody(groundBodyDesc)
-		const groundColliderDesc = new RAPIER.ColliderDesc(new RAPIER.Cuboid(groundSize / 2, 0.1, groundSize / 2))
-		world.createCollider(groundColliderDesc)
 
 		// combined variables
 		const meshBodies: { mesh: THREE.Object3D<THREE.Event>, body: RAPIER.RigidBody, update: Function }[] = []
@@ -102,31 +93,33 @@ onMounted(() => {
 		}
 		onWindowResize();
 		window.addEventListener('resize', onWindowResize)
-
-		const spin: RAPIER.Vector = {
-			x: 5.0,
-			y: 0.0,
-			z: 0.0,
-		}
 		const initScene = () => {
 			const initBody = (mesh: THREE.Object3D<THREE.Event>, mass: number, position: RAPIER.Vector) => {
 				const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
+					.setCanSleep(false)
 					.setTranslation(position.x, position.y, position.z)
-					.setAdditionalMass(mass || 0)
+					// .setAdditionalMass(mass || 0)
+					.setAngularDamping(0)
+					.setLinearDamping(0)
+					.setLinvel(
+						random.real(-1, 1),
+						random.real(-1, 1),
+						random.real(-1, 1)
+					)
 				rigidBodyDesc.angvel = new RAPIER.Vector3(
-					spin.x,
-					spin.y,
-					spin.z
-					// Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1),
-					// Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1),
-					// Math.random() + 0.01 * (Math.random() > 0.5 ? 1 : -1)
+					random.real(-1, 1),
+					random.real(-1, 1),
+					random.real(-1, 1)
 				)
 				const body = world.createRigidBody(rigidBodyDesc)
-				// const colliderDesc = RAPIER.ColliderDesc.convexMesh(vertices, indices)
+				const colliderDesc = RAPIER.ColliderDesc.convexMesh(vertices, indices)
+				// @ts-ignore-next-line - colliderDesc is possibly null
+				world.createCollider(colliderDesc, body)
+					.setMass(mass || 0)
 				mesh.position.set(position.x, position.y, position.z)
 				const update = () => {
 					const rotation = body.rotation();
-					mesh.rotation.set(rotation.x, rotation.y, rotation.z)
+					mesh.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w)
 					const translation = body.translation();
 					mesh.position.set(translation.x, translation.y, translation.z)
 				}
@@ -138,18 +131,11 @@ onMounted(() => {
 					color: new THREE.Color(
 						0,
 						0,
-						Math.random() * 0.5 + 0.5 + 0.25 * (Math.random() > 0.5 ? 1 : -1)
+						// Standard deviation of 0.25, mean of 0.5
+						random.real(0, 1) * 0.5 + 0.25 + 0.25 * (random.real(-1, 1))
 					)
 				})
-				// const mesh = new THREE.Mesh(geometry, material)
-				const mesh = new THREE.Mesh(
-					new THREE.BoxGeometry(size?.x || 1, size?.y || 1, size?.z || 1),
-					new THREE.MeshStandardMaterial({
-						// Pick a random color
-						color: Math.random() * 0xFFFFFF,
-					},
-					)
-				)
+				const mesh = new THREE.Mesh(geometry, material)
 				scene.add(mesh)
 				return initBody(mesh, mass, position);
 			}
@@ -159,9 +145,9 @@ onMounted(() => {
 					icosahedron(
 						10,
 						new RAPIER.Vector3(
-							Math.random() * 40 - 20,
-							Math.random() * 40 - 20,
-							Math.random() * 40 - 20
+							random.integer(-20, 20),
+							random.integer(-20, 20),
+							random.integer(-20, 20),
 						),
 						new RAPIER.Vector3(
 							1,
