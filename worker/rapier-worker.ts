@@ -1,3 +1,4 @@
+// @ts-ignore-next-line
 // import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 import * as RAPIER from '@dimforge/rapier3d-compat';
 import * as RANDOMJS from 'random-js';
@@ -64,7 +65,7 @@ const main = async () => {
 	// Function to create bodies
 	const initBody = (meshId: string, meshUpdate: {
 		p: {x: number, y: number, z: number},
-		q: { x: number, y: number, z: number, w: number}}, mass: number) => {
+		q: { x: number, y: number, z: number, w: number}}, mass: number, size: number) => {
 	// const initBody = (meshUpdate, mass) => {
 		const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 			.setCanSleep(false)
@@ -82,11 +83,25 @@ const main = async () => {
 			random.real(-1, 1),
 			random.real(-1, 1)
 		)
+		rigidBodyDesc.rotation = new RAPIER.Quaternion(
+			meshUpdate.q.x,
+			meshUpdate.q.y,
+			meshUpdate.q.z,
+			meshUpdate.q.w
+		)
+		rigidBodyDesc.translation = new RAPIER.Vector3(
+			meshUpdate.p.x,
+			meshUpdate.p.y,
+			meshUpdate.p.z
+		)
+		rigidBodyDesc.mass = mass
 		const body = world.createRigidBody(rigidBodyDesc)
-		const colliderDesc = RAPIER.ColliderDesc.convexMesh(vertices, indices)
+		const points = new Float32Array(
+			vertices.map(v => v * size)
+		)
+		const colliderDesc = RAPIER.ColliderDesc.convexMesh(points)
 		// @ts-ignore-next-line - colliderDesc is possibly null
 		world.createCollider(colliderDesc, body)
-			.setMass(mass || 0)
 		const update = () => {
 			const rotation = body.rotation();
 			// meshUpdate.quaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
@@ -131,9 +146,9 @@ const main = async () => {
 				const meshval = meshBodies.map(({ meshId, meshUpdate }) => ({ meshId, meshUpdate }))
 				let meshBodiesUpdate = {};
 				meshBodiesUpdate = meshval.reduce(
-					(acc: { [x: string]: any; }, meshBody: { meshId: number | string; meshUpdate: any; }) => {
-						acc[meshBody.meshId] = meshBody.meshUpdate;
-						return acc;
+					(accumulator: { [x: string]: any; }, meshBody: { meshId: number | string; meshUpdate: any; }) => {
+						accumulator[meshBody.meshId] = meshBody.meshUpdate;
+						return accumulator;
 					}, meshBodiesUpdate
 				);
 				self.postMessage({
@@ -151,8 +166,8 @@ const main = async () => {
 			}, 1000 / 30);
 		}
 		if (data.type === 'newBody') {
-			const { meshId, meshUpdate, mass } = data;
-			meshBodies.push(initBody(meshId, meshUpdate, mass));
+			const { meshId, meshUpdate, mass, size } = data;
+			meshBodies.push(initBody(meshId, meshUpdate, mass, size));
 		}
 	};
 
