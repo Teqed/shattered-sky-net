@@ -99,7 +99,7 @@ const main = async () => {
 		const points = new Float32Array(
 			vertices.map(v => v * size)
 		)
-		const colliderDesc = RAPIER.ColliderDesc.convexMesh(points)
+		const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
 		// @ts-ignore-next-line - colliderDesc is possibly null
 		world.createCollider(colliderDesc, body)
 		const update = () => {
