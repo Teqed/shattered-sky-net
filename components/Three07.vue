@@ -82,8 +82,10 @@ worker.onmessage = (event) => {
 		}
 	}
 	if (data.type === 'physics-update') {
+		const jsonString = new TextDecoder().decode(event.data.content as ArrayBufferLike);
+		const object = JSON.parse(jsonString);
 		// Update the mesh positions
-		data.meshBodies.forEach((meshBody: {
+		object.meshBodies.forEach((meshBody: {
 			meshUuid: string,
 			meshUpdate: {
 				position: {x: number, y: number, z: number},
@@ -93,16 +95,6 @@ worker.onmessage = (event) => {
 		) => {
 			const meshBodyIndex = meshBodies.findIndex(meshBodyItem => meshBodyItem.meshUuid === meshBody.meshUuid);
 			meshBodies[meshBodyIndex].meshUpdate = meshBody.meshUpdate;
-		});
-		// Update the mesh positions
-		meshBodies.forEach((meshBody) => {
-			meshBody.mesh.position.set(
-				meshBody.meshUpdate.position.x, meshBody.meshUpdate.position.y, meshBody.meshUpdate.position.z)
-			meshBody.mesh.quaternion.set(
-				meshBody.meshUpdate.quaternion.x,
-				meshBody.meshUpdate.quaternion.y,
-				meshBody.meshUpdate.quaternion.z,
-				meshBody.meshUpdate.quaternion.w)
 		});
 	}
 	// Release the data object back to the pool
@@ -159,7 +151,18 @@ onMounted(() => {
 		window.addEventListener('resize', onWindowResize)
 
 		console.log('Scene initialized')
+
 		const animate = () => {
+		// Update the mesh positions
+			meshBodies.forEach((meshBody) => {
+				meshBody.mesh.position.set(
+					meshBody.meshUpdate.position.x, meshBody.meshUpdate.position.y, meshBody.meshUpdate.position.z)
+				meshBody.mesh.quaternion.set(
+					meshBody.meshUpdate.quaternion.x,
+					meshBody.meshUpdate.quaternion.y,
+					meshBody.meshUpdate.quaternion.z,
+					meshBody.meshUpdate.quaternion.w)
+			});
 			renderer.render(scene, camera)
 			requestAnimationFrame(animate)
 		}

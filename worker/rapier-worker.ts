@@ -89,9 +89,22 @@ const main = async () => {
 			.setMass(mass || 0)
 		const update = () => {
 			const rotation = body.rotation();
-			meshUpdate.quaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
+			// meshUpdate.quaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
+			// Round the values off to x.xxx precision
+			meshUpdate.quaternion = {
+				x: Math.round(rotation.x * 1000) / 1000,
+				y: Math.round(rotation.y * 1000) / 1000,
+				z: Math.round(rotation.z * 1000) / 1000,
+				w: Math.round(rotation.w * 1000) / 1000
+			}
 			const translation = body.translation();
-			meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
+			// meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
+			// Round the values off to x.xxx precision
+			meshUpdate.position = {
+				x: Math.round(translation.x * 1000) / 1000,
+				y: Math.round(translation.y * 1000) / 1000,
+				z: Math.round(translation.z * 1000) / 1000
+			}
 		}
 		update();
 		return { meshUuid, meshUpdate, body, update };
@@ -115,9 +128,14 @@ const main = async () => {
 			};
 
 			const messagingUpdate = () => {
+				const jsonString = JSON.stringify({
+					meshBodies: meshBodies.map(({ meshUuid, meshUpdate }) => ({ meshUuid, meshUpdate }))
+				})
+				const arrayBuffer = new TextEncoder().encode(jsonString).buffer;
 				self.postMessage({
 					type: 'physics-update',
-					meshBodies: meshBodies.map(({ meshUuid, meshUpdate }) => ({ meshUuid, meshUpdate })) });
+					content: arrayBuffer
+				})
 			};
 
 			// Send a message back to the main thread
