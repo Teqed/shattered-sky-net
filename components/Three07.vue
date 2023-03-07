@@ -8,9 +8,7 @@
 // import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 
 import * as THREE from 'three';
-
 import * as RANDOMJS from 'random-js';
-import { C } from 'html-validate/dist/cjs/core';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
 // Initialize object pool
