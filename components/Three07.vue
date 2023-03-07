@@ -12,6 +12,22 @@ import * as THREE from 'three';
 import * as RANDOMJS from 'random-js';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
+// Initialize object pool
+const objectPool: any[] = [];
+
+// Create an object in the pool or create a new object if the pool is empty
+const createObject = () => {
+	return objectPool.length > 0 ? objectPool.pop() : {};
+};
+
+// Release an object back to the pool
+const releaseObject = (obj: { [x: string]: any; }) => {
+	Object.keys(obj).forEach((key) => {
+		delete obj[key];
+	});
+	objectPool.push(obj);
+};
+
 // three.js variables
 const scene = new THREE.Scene()
 const meshBodies: {
@@ -44,7 +60,8 @@ const worker = new Worker(new URL('../worker/rapier-worker.ts', import.meta.url)
 
 // Listen for messages from the worker
 worker.onmessage = (event) => {
-	const { data } = event;
+	// Use data pool to avoid creating new objects
+	const data = createObject();
 	if (data.type === 'ready') {
 		// The worker is ready to receive messages
 		// Send a message to the worker to initialize the physics world
@@ -63,21 +80,17 @@ worker.onmessage = (event) => {
 		}
 	}
 	if (data.type === 'physics-update') {
-		console.log(data)
-		console.log(data.meshBodies[0].meshUuid)
-		// Update the mesh positions
-		data.meshBodies.forEach((meshBody: {
-			meshUuid: string,
-			meshUpdate: {
-				position: {x: number, y: number, z: number},
-				quaternion: { x: number, y: number, z: number, w: number}
-			},
+		// Update the mesh positions and rotations
+		for (let i = 0; i < data.meshUpdates.length; i++) {
+			const meshUpdate = data.meshUpdates[i];
+			const meshBody = meshBodies.find(meshBody => meshBody.meshUuid === meshUpdate.meshUuid);
+			if (meshBody) {
+				meshBody.meshUpdate = meshUpdate;
+			}
 		}
-		) => {
-			const meshBodyIndex = meshBodies.findIndex(meshBodyItem => meshBodyItem.meshUuid === meshBody.meshUuid);
-			meshBodies[meshBodyIndex].meshUpdate = meshBody.meshUpdate;
-		});
 	}
+	// Release the data object back to the pool
+	releaseObject(data);
 };
 
 // Send a message to the worker when initBody is called
@@ -130,15 +143,8 @@ onMounted(() => {
 		window.addEventListener('resize', onWindowResize)
 
 		console.log('Scene initialized')
-		const animate = async () => {
-			console.log('animate')
-			// Update the mesh positions
-			meshBodies.forEach((meshBody) => {
-				meshBody.mesh.position.set(meshBody.meshUpdate.position.x, meshBody.meshUpdate.position.y, meshBody.meshUpdate.position.z)
-				meshBody.mesh.quaternion.set(meshBody.meshUpdate.quaternion.x, meshBody.meshUpdate.quaternion.y, meshBody.meshUpdate.quaternion.z, meshBody.meshUpdate.quaternion.w)
-			});
+		const animate = () => {
 			renderer.render(scene, camera)
-			await new Promise(resolve => setTimeout(resolve, 32));
 			requestAnimationFrame(animate)
 		}
 		animate();

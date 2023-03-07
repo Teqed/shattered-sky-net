@@ -109,24 +109,24 @@ const main = async () => {
 			// Perform your Rapier calculations and send the results back to the main thread
 			const physicsUpdate = () => {
 				world.step();
-				// Send back the new position data array to the main thread, using uuid to match
-				// First run update on all bodies
-				// Then, send back the updated mesh data by putting it in an array
 				meshBodies.forEach((meshBody) => {
 					meshBody.update();
 				})
-				// Don't send back the entire meshBodies array, just the meshUuid and meshUpdate
-				self.postMessage({ type: 'physics-update', meshBodies: meshBodies.map(({ meshUuid, meshUpdate }) => ({ meshUuid, meshUpdate })) });
+			};
 
-				// Schedule the next update
-				setTimeout(physicsUpdate, 32); // Run at 30fps
+			const messagingUpdate = () => {
+				self.postMessage({
+					type: 'physics-update',
+					meshBodies: meshBodies.map(({ meshUuid, meshUpdate }) => ({ meshUuid, meshUpdate })) });
 			};
 
 			// Send a message back to the main thread
 			self.postMessage({ type: 'initialized' });
 
-			// Start the physics simulation loop
-			physicsUpdate();
+			setInterval(() => {
+				physicsUpdate();
+				messagingUpdate();
+			}, 1000 / 30);
 		}
 		if (data.type === 'newBody') {
 			console.log('new body', data)
