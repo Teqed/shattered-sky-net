@@ -48,10 +48,10 @@ const main = async () => {
 	]);
 
 	const meshBodies: {
-		meshUuid: string,
+		meshId: string,
 		meshUpdate: {
-			position: {x: number, y: number, z: number},
-			quaternion: { x: number, y: number, z: number, w: number}},
+			p: {x: number, y: number, z: number},
+			q: { x: number, y: number, z: number, w: number}},
 		body: RAPIER.RigidBody, update: Function }[] = []
 	// const meshBodies = []
 
@@ -62,13 +62,13 @@ const main = async () => {
 	await load();
 
 	// Function to create bodies
-	const initBody = (meshUuid: string, meshUpdate: {
-		position: {x: number, y: number, z: number},
-		quaternion: { x: number, y: number, z: number, w: number}}, mass: number) => {
+	const initBody = (meshId: string, meshUpdate: {
+		p: {x: number, y: number, z: number},
+		q: { x: number, y: number, z: number, w: number}}, mass: number) => {
 	// const initBody = (meshUpdate, mass) => {
 		const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 			.setCanSleep(false)
-			.setTranslation(meshUpdate.position.x, meshUpdate.position.y, meshUpdate.position.z)
+			.setTranslation(meshUpdate.p.x, meshUpdate.p.y, meshUpdate.p.z)
 			// .setAdditionalMass(mass || 0)
 			.setAngularDamping(0)
 			.setLinearDamping(0)
@@ -91,7 +91,7 @@ const main = async () => {
 			const rotation = body.rotation();
 			// meshUpdate.quaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
 			// Round the values off to x.xxx precision
-			meshUpdate.quaternion = {
+			meshUpdate.q = {
 				x: Math.round(rotation.x * 1000) / 1000,
 				y: Math.round(rotation.y * 1000) / 1000,
 				z: Math.round(rotation.z * 1000) / 1000,
@@ -100,14 +100,14 @@ const main = async () => {
 			const translation = body.translation();
 			// meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
 			// Round the values off to x.xxx precision
-			meshUpdate.position = {
+			meshUpdate.p = {
 				x: Math.round(translation.x * 1000) / 1000,
 				y: Math.round(translation.y * 1000) / 1000,
 				z: Math.round(translation.z * 1000) / 1000
 			}
 		}
 		update();
-		return { meshUuid, meshUpdate, body, update };
+		return { meshId, meshUpdate, body, update };
 	}
 
 	// Listen for messages from the main thread
@@ -128,13 +128,17 @@ const main = async () => {
 			};
 
 			const messagingUpdate = () => {
-				const jsonString = JSON.stringify({
-					meshBodies: meshBodies.map(({ meshUuid, meshUpdate }) => ({ meshUuid, meshUpdate }))
-				})
-				const arrayBuffer = new TextEncoder().encode(jsonString).buffer;
+				const meshval = meshBodies.map(({ meshId, meshUpdate }) => ({ meshId, meshUpdate }))
+				let meshBodiesUpdate = {};
+				meshBodiesUpdate = meshval.reduce(
+					(acc: { [x: string]: any; }, meshBody: { meshId: number | string; meshUpdate: any; }) => {
+						acc[meshBody.meshId] = meshBody.meshUpdate;
+						return acc;
+					}, meshBodiesUpdate
+				);
 				self.postMessage({
 					type: 'physics-update',
-					content: arrayBuffer
+					meshBodiesUpdate,
 				})
 			};
 
@@ -147,9 +151,8 @@ const main = async () => {
 			}, 1000 / 30);
 		}
 		if (data.type === 'newBody') {
-			console.log('new body', data)
-			const { meshUuid, meshUpdate, mass } = data;
-			meshBodies.push(initBody(meshUuid, meshUpdate, mass));
+			const { meshId, meshUpdate, mass } = data;
+			meshBodies.push(initBody(meshId, meshUpdate, mass));
 		}
 	};
 

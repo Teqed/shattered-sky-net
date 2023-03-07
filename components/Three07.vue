@@ -10,6 +10,7 @@
 import * as THREE from 'three';
 
 import * as RANDOMJS from 'random-js';
+import { C } from 'html-validate/dist/cjs/core';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
 // Initialize object pool
@@ -31,13 +32,14 @@ const releaseObject = (obj: { [x: string]: any; }) => {
 // three.js variables
 const scene = new THREE.Scene()
 const meshBodies: {
-	meshUuid: string,
+	meshId: number,
 	meshUpdate: {
-		position: {x: number, y: number, z: number},
-		quaternion: { x: number, y: number, z: number, w: number}
+		p: {x: number, y: number, z: number},
+		q: { x: number, y: number, z: number, w: number}
 	},
 	mesh: THREE.Object3D<THREE.Event>,
-}[] = []
+}[] = [];
+let meshBodiesUpdate: { [x: string]: any; } = {};
 
 const icosahedron = (mass: number, position: { x: number, y: number, z: number }) => {
 	const geometry = new THREE.IcosahedronGeometry(1, 0);
@@ -58,64 +60,53 @@ const worker = new Worker(new URL('../worker/rapier-worker.ts', import.meta.url)
 	type: 'module',
 })
 
+const physicsUpdate = (
+	update: { [x: string]: { p: { x: number, y: number, z: number }, q: { x: number, y: number, z: number, w: number } } },
+) => {
+	meshBodiesUpdate = update;
+}
+
 // Listen for messages from the worker
 worker.onmessage = (event) => {
-	// Use data pool to avoid creating new objects
-	const data = createObject();
-	// Copy the data from the event
-	Object.assign(data, event.data);
-	if (data.type === 'ready') {
-		// The worker is ready to receive messages
-		// Send a message to the worker to initialize the physics world
-		worker.postMessage({ type: 'initialize' });
+	switch (event.data.type) {
+		case 'ready':
+			worker.postMessage({ type: 'initialize' });
+			break;
+		case 'initialized':
+			for (let i = 0; i < 2000; i++) {
+				icosahedron(
+					10,
+					{
+						x: random.integer(-20, 20),
+						y: random.integer(-20, 20),
+						z: random.integer(-20, 20),
+					},
+				)
+			}
+			break;
+		case 'physics-update':
+			physicsUpdate(event.data.meshBodiesUpdate);
+			break;
+		default:
+			console.log('Unknown message type', event.data.type);
 	}
-	if (data.type === 'initialized') {
-		for (let i = 0; i < 500; i++) {
-			icosahedron(
-				10,
-				{
-					x: random.integer(-20, 20),
-					y: random.integer(-20, 20),
-					z: random.integer(-20, 20),
-				},
-			)
-		}
-	}
-	if (data.type === 'physics-update') {
-		const jsonString = new TextDecoder().decode(event.data.content as ArrayBufferLike);
-		const object = JSON.parse(jsonString);
-		// Update the mesh positions
-		object.meshBodies.forEach((meshBody: {
-			meshUuid: string,
-			meshUpdate: {
-				position: {x: number, y: number, z: number},
-				quaternion: { x: number, y: number, z: number, w: number}
-			},
-		}
-		) => {
-			const meshBodyIndex = meshBodies.findIndex(meshBodyItem => meshBodyItem.meshUuid === meshBody.meshUuid);
-			meshBodies[meshBodyIndex].meshUpdate = meshBody.meshUpdate;
-		});
-	}
-	// Release the data object back to the pool
-	releaseObject(data);
 };
 
 // Send a message to the worker when initBody is called
 const initBody = (mesh: THREE.Object3D<THREE.Event>, mass: number, position: { x: number; y: number; z: number; }) => {
 	scene.add(mesh)
 	// Push the mesh to the meshBodies array
-	meshBodies.push({ meshUuid: mesh.uuid,
+	meshBodies.push({ meshId: mesh.id,
 		meshUpdate: {
-			position: {x: position.x, y: position.y, z: position.z},
-			quaternion: { x: 0, y: 0, z: 0, w: 0}},
+			p: {x: position.x, y: position.y, z: position.z},
+			q: { x: 0, y: 0, z: 0, w: 0}},
 		mesh });
 	// Send a message to the worker
 	worker.postMessage({ type: 'newBody',
-		meshUuid: mesh.uuid,
+		meshId: mesh.id,
 		meshUpdate: {
-			position: {x: position.x, y: position.y, z: position.z},
-			quaternion: { x: 0, y: 0, z: 0, w: 0}},
+			p: {x: position.x, y: position.y, z: position.z},
+			q: { x: 0, y: 0, z: 0, w: 0}},
 		mass });
 	return meshBodies[meshBodies.length - 1];
 };
@@ -152,21 +143,37 @@ onMounted(() => {
 
 		console.log('Scene initialized')
 
-		const animate = () => {
+		const updateMeshes = () => {
 		// Update the mesh positions
-			meshBodies.forEach((meshBody) => {
-				meshBody.mesh.position.set(
-					meshBody.meshUpdate.position.x, meshBody.meshUpdate.position.y, meshBody.meshUpdate.position.z)
-				meshBody.mesh.quaternion.set(
-					meshBody.meshUpdate.quaternion.x,
-					meshBody.meshUpdate.quaternion.y,
-					meshBody.meshUpdate.quaternion.z,
-					meshBody.meshUpdate.quaternion.w)
-			});
+		// check if the meshBodiesUpdate object has any keys
+			if (meshBodiesUpdate && Object.keys(meshBodiesUpdate).length > 0) {
+				meshBodies.forEach((meshBody) => {
+					if (meshBodiesUpdate[meshBody.meshId]) {
+						meshBody.meshUpdate = meshBodiesUpdate[meshBody.meshId];
+					}
+					meshBody.mesh.position.set(
+						meshBody.meshUpdate.p.x,
+						meshBody.meshUpdate.p.y,
+						meshBody.meshUpdate.p.z,
+					);
+					meshBody.mesh.quaternion.set(
+						meshBody.meshUpdate.q.x,
+						meshBody.meshUpdate.q.y,
+						meshBody.meshUpdate.q.z,
+						meshBody.meshUpdate.q.w,
+					);
+				});
+			}
+		}
+		const animate = () => {
+			updateMeshes();
 			renderer.render(scene, camera)
 			requestAnimationFrame(animate)
 		}
 		animate();
+		// setInterval(() => {
+		// 	updateMeshes();
+		// }, 1000 / 30)
 	}
 	threeSimulation();
 }
