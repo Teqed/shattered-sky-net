@@ -62,6 +62,8 @@ const worker = new Worker(new URL('../worker/rapier-worker.ts', import.meta.url)
 worker.onmessage = (event) => {
 	// Use data pool to avoid creating new objects
 	const data = createObject();
+	// Copy the data from the event
+	Object.assign(data, event.data);
 	if (data.type === 'ready') {
 		// The worker is ready to receive messages
 		// Send a message to the worker to initialize the physics world
@@ -80,14 +82,28 @@ worker.onmessage = (event) => {
 		}
 	}
 	if (data.type === 'physics-update') {
-		// Update the mesh positions and rotations
-		for (let i = 0; i < data.meshUpdates.length; i++) {
-			const meshUpdate = data.meshUpdates[i];
-			const meshBody = meshBodies.find(meshBody => meshBody.meshUuid === meshUpdate.meshUuid);
-			if (meshBody) {
-				meshBody.meshUpdate = meshUpdate;
-			}
+		// Update the mesh positions
+		data.meshBodies.forEach((meshBody: {
+			meshUuid: string,
+			meshUpdate: {
+				position: {x: number, y: number, z: number},
+				quaternion: { x: number, y: number, z: number, w: number}
+			},
 		}
+		) => {
+			const meshBodyIndex = meshBodies.findIndex(meshBodyItem => meshBodyItem.meshUuid === meshBody.meshUuid);
+			meshBodies[meshBodyIndex].meshUpdate = meshBody.meshUpdate;
+		});
+		// Update the mesh positions
+		meshBodies.forEach((meshBody) => {
+			meshBody.mesh.position.set(
+				meshBody.meshUpdate.position.x, meshBody.meshUpdate.position.y, meshBody.meshUpdate.position.z)
+			meshBody.mesh.quaternion.set(
+				meshBody.meshUpdate.quaternion.x,
+				meshBody.meshUpdate.quaternion.y,
+				meshBody.meshUpdate.quaternion.z,
+				meshBody.meshUpdate.quaternion.w)
+		});
 	}
 	// Release the data object back to the pool
 	releaseObject(data);
