@@ -56,13 +56,31 @@ const indices = new Uint32Array([
 	10, 6, 11,
 ]);
 
+const meshBodies: {
+	meshId: number,
+	body: RAPIER.RigidBody, update: Function }[] = []
+
+const meshUpdate: {[meshId: number]: {
+	p: {x: number,
+		y: number,
+		z: number},
+	r: {x: number,
+		y: number,
+		z: number,
+		w: number} } } = {};
+
 // Function to create bodies
-const initBody = (meshId: string, meshPos: {
-	p: {x: number, y: number, z: number},
-	q: { x: number, y: number, z: number, w: number}}, mass: number, size: number) => {
+const initBody = (meshId: number,
+	p: { x: number, y: number, z: number },
+	r: { x: number, y: number, z: number, w: number },
+	mass: number, size: number) => {
 	const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 		.setCanSleep(false)
-		.setTranslation(meshPos.p.x, meshPos.p.y, meshPos.p.z)
+		.setTranslation(
+			p.x ?? 0,
+			p.y ?? 0,
+			p.z ?? 0,
+		)
 		.setAngularDamping(0.001)
 		.setLinearDamping(0.001)
 		.setLinvel(
@@ -70,12 +88,13 @@ const initBody = (meshId: string, meshPos: {
 			random.real(-1, 1),
 			random.real(-1, 1)
 		)
-		.setRotation(new RAPIER.Quaternion(
-			meshPos.q.x,
-			meshPos.q.y,
-			meshPos.q.z,
-			meshPos.q.w
-		))
+		.setRotation({
+			x: r.x ?? 0,
+			y: r.y ?? 0,
+			z: r.z ?? 0,
+			w: r.w ?? 0,
+		}
+		)
 		.setAngvel(new RAPIER.Vector3(
 			random.real(-1, 1),
 			random.real(-1, 1),
@@ -89,18 +108,16 @@ const initBody = (meshId: string, meshPos: {
 	const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
 	// @ts-ignore-next-line - colliderDesc is possibly null
 	world.createCollider(colliderDesc, body)
-	const meshUpdate: {
-		p: { x: number, y: number, z: number },
-		q: { x: number, y: number, z: number, w: number },
-	} = {
-		p: { x: 0, y: 0, z: 0 },
-		q: { x: 0, y: 0, z: 0, w: 0 },
-	}
+	// Push the meshId and body into the meshUpdate object
+	meshUpdate[meshId] = {
+		p: { x: p.x, y: p.y, z: p.z },
+		r: { x: r.x, y: r.y, z: r.z, w: r.w }
+	};
 	const update = () => {
 		const rotation = body.rotation();
-		// meshUpdate.quaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
+		// meshUpdate.ruaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
 		// Round the values off to x.xxx precision
-		meshUpdate.q = {
+		meshUpdate[meshId].r = {
 			x: Math.round(rotation.x * 1000) / 1000,
 			y: Math.round(rotation.y * 1000) / 1000,
 			z: Math.round(rotation.z * 1000) / 1000,
@@ -109,14 +126,20 @@ const initBody = (meshId: string, meshPos: {
 		const translation = body.translation();
 		// meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
 		// Round the values off to x.xxx precision
-		meshUpdate.p = {
+		meshUpdate[meshId].p = {
 			x: Math.round(translation.x * 1000) / 1000,
 			y: Math.round(translation.y * 1000) / 1000,
 			z: Math.round(translation.z * 1000) / 1000
 		}
 	}
 	update();
-	return { meshId, meshUpdate, body, update };
+	return { meshId,
+		meshPos: {
+			p: { x: p.x, y: p.y, z: p.z },
+			r: { x: r.x, y: r.y, z: r.z, w: r.w }
+		},
+		body,
+		update };
 }
 
 const physicsUpdate = () => {
@@ -125,30 +148,6 @@ const physicsUpdate = () => {
 		meshBody.update();
 	})
 };
-
-const meshBodies: {
-	meshId: string,
-	meshUpdate: {
-		p: {x: number, y: number, z: number},
-		q: { x: number, y: number, z: number, w: number}},
-	body: RAPIER.RigidBody, update: Function }[] = []
-
-const meshPos: {
-	meshId: string;
-	meshUpdate: {
-		p: {
-			x: number;
-			y: number;
-			z: number;
-		};
-		q: {
-			x: number;
-			y: number;
-			z: number;
-			w: number;
-		};
-	};
-}[] = [];
 
 const startPhysics = async () => {
 	console.log('starting physics...')
@@ -165,39 +164,46 @@ const startPhysics = async () => {
 };
 
 const rapierExport = {
-	meshPos,
 	startPhysics () {
 		return startPhysics();
 	},
 	getUpdate () {
 		if (worldloaded === true) {
-			meshPos.length = 0;
-			meshBodies.forEach((meshBody) => {
-				meshPos.push({
-					meshId: meshBody.meshId,
-					meshUpdate: meshBody.meshUpdate
-				});
+			const update = new Float32Array(Object.entries(meshUpdate).length * 8);
+			let index = 0;
+			Object.entries(meshUpdate).forEach(([key, value]) => {
+				update[index] = Number(key);
+				update[index + 1] = value.p.x;
+				update[index + 2] = value.p.y;
+				update[index + 3] = value.p.z;
+				update[index + 4] = value.r.x;
+				update[index + 5] = value.r.y;
+				update[index + 6] = value.r.z;
+				update[index + 7] = value.r.w;
+				index += 8;
 			});
-			return (meshPos);
+			return update.buffer;
 		} else {
 			console.log('world not loaded yet');
 			return [];
 		}
 	},
-	newBody (meshId: string, meshPos: {
+	newBody (meshId: number,
 		p: {
 			x: number;
 			y: number;
 			z: number;
-		};
-		q: {
+		},
+		r: {
 			x: number;
 			y: number;
 			z: number;
 			w: number;
-		};
-	}, mass?: number, size?: number) {
-		meshBodies.push(initBody(meshId, meshPos, mass ?? 1, size ?? 1));
+		}, mass?: number, size?: number) {
+		meshBodies.push(
+			initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1)
+		);
+		return true;
 	},
 }
 
