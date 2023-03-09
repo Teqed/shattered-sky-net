@@ -75,7 +75,7 @@ const initBody = (meshId: number,
 	r: { x: number, y: number, z: number, w: number },
 	mass: number, size: number) => {
 	const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-		.setCanSleep(true)
+		.setCanSleep(false)
 		.setTranslation(
 			p.x ?? 0,
 			p.y ?? 0,
@@ -89,10 +89,10 @@ const initBody = (meshId: number,
 			random.real(-1, 1)
 		)
 		.setRotation({
-			x: 0,
-			y: 0,
-			z: 0,
-			w: 0,
+			x: r.x ?? 0,
+			y: r.y ?? 0,
+			z: r.z ?? 0,
+			w: r.w ?? 0,
 		}
 		)
 		.setAngvel(new RAPIER.Vector3(
@@ -157,7 +157,7 @@ const startPhysics = async () => {
 	physicsUpdate();
 	setInterval(() => {
 		physicsUpdate();
-	}, 1000 / 60);
+	}, 1000 / 30);
 	worldloaded = true;
 	console.log('physics started')
 	return true;

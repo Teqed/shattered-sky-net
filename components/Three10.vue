@@ -10,7 +10,7 @@ import * as RANDOMJS from 'random-js';
 import * as Comlink from 'comlink';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
-const worker = new Worker(new URL('../worker/rapier-worker-comlink_back0.ts', import.meta.url), {
+const worker = new Worker(new URL('../worker/rapier-worker-comlink.ts', import.meta.url), {
 	type: 'module',
 });
 
@@ -27,6 +27,15 @@ const meshBodies: {
 	mesh: THREE.Object3D<THREE.Event>,
 }[] = [];
 
+const geometry = (new THREE.IcosahedronGeometry(1, 0))
+const material = (new THREE.MeshLambertMaterial({
+	color: new THREE.Color(
+		0,
+		0,
+		0.75
+	)
+}))
+
 const icosahedron = (
 	arg: {
 		position?: {x: number, y: number, z: number},
@@ -34,30 +43,19 @@ const icosahedron = (
 		mass?: number,
 		size?: number}
 ) => {
-	const mesh = (new THREE.Mesh(
-		(new THREE.IcosahedronGeometry(arg.size ?? 1, 0)),
-		(new THREE.MeshLambertMaterial({
-			color: new THREE.Color(
-				0,
-				0,
-				random.real(0, 1) * 0.5 + 0.25 + 0.25 * (random.real(-1, 1))
-			)
-		}))
-		// (new THREE.MeshBasicMaterial({
-		// 	color: new THREE.Color(
-		// 		0,
-		// 		0,
-		// 		random.real(0, 1) * 0.5 + 0.25 + 0.25 * (random.real(-1, 1))
-		// 	)}))
+	const THREEmesh = (new THREE.Mesh(
+		geometry,
+		material
 	))
-	mesh.position.set(arg.position?.x ?? 0, arg.position?.y ?? 0, arg.position?.z ?? 0)
-	mesh.rotation.setFromQuaternion(new THREE.Quaternion(
+	THREEmesh.position.set(arg.position?.x ?? 0, arg.position?.y ?? 0, arg.position?.z ?? 0)
+	THREEmesh.rotation.setFromQuaternion(new THREE.Quaternion(
 		arg.rotation?.x ?? 0,
 		arg.rotation?.y ?? 0,
 		arg.rotation?.z ?? 0,
 		arg.rotation?.w ?? 0))
+	THREEmesh.matrixAutoUpdate = false;
 	return initBody(
-		mesh,
+		THREEmesh,
 		{
 			p: {
 				x: arg.position?.x ?? 0,
@@ -86,6 +84,7 @@ const initBody = async (
 	size?: number,
 ) => {
 	scene.add(mesh)
+	mesh.updateMatrix();
 	meshBodies.push({ meshId: mesh.id,
 		meshPos: {
 			p: {x: meshPos.p.x, y: meshPos.p.y, z: meshPos.p.z},
@@ -226,12 +225,12 @@ const updatePositions = (meshBodiesUpdate: {[meshId: number]: {
 			meshUpdateTop.p.y,
 			meshUpdateTop.p.z
 		);
-		meshBodyArg.mesh.rotation.setFromQuaternion(new THREE.Quaternion(
-			meshUpdateTop.r.x,
-			meshUpdateTop.r.y,
-			meshUpdateTop.r.z,
-			meshUpdateTop.r.w
-		));
+		// meshBodyArg.mesh.rotation.setFromQuaternion(new THREE.Quaternion(
+		// 	meshUpdateTop.r.x,
+		// 	meshUpdateTop.r.y,
+		// 	meshUpdateTop.r.z,
+		// 	meshUpdateTop.r.w
+		// ));
 	});
 }
 
@@ -287,6 +286,13 @@ onMounted(() => {
 					};
 				};
 			});
+			// use object.updateMatrix() on every mesh in the scene
+			for (let i = 0; i < scene.children.length; i++) {
+				const object = scene.children[i];
+				if (object instanceof THREE.Mesh) {
+					object.updateMatrix();
+				}
+			}
 		}
 		const animate = () => {
 			// @ts-expect-error - html element might not exist
