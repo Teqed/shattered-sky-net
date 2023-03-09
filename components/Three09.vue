@@ -1,4 +1,5 @@
 <template>
+  <div id="meshcount" class="flex flex-col items-center justify-center h-screen" />
   <div id="canvasWrapper" />
 </template>
 
@@ -41,15 +42,21 @@ const icosahedron = (
 		mass?: number,
 		size?: number}
 ) => {
-	const geometry = new THREE.IcosahedronGeometry(arg.size ?? 1, 0);
-	const material = new THREE.MeshLambertMaterial({
-		color: new THREE.Color(
-			0,
-			0,
-			random.real(0, 1) * 0.5 + 0.25 + 0.25 * (random.real(-1, 1))
-		)
-	})
-	const mesh = new THREE.Mesh(geometry, material)
+	const mesh = (new THREE.Mesh(
+		(new THREE.IcosahedronGeometry(arg.size ?? 1, 0)),
+		(new THREE.MeshLambertMaterial({
+			color: new THREE.Color(
+				0,
+				0,
+				random.real(0, 1) * 0.5 + 0.25 + 0.25 * (random.real(-1, 1))
+			)
+		}))))
+	mesh.position.set(arg.position?.x ?? 0, arg.position?.y ?? 0, arg.position?.z ?? 0)
+	mesh.rotation.setFromQuaternion(new THREE.Quaternion(
+		arg.rotation?.x ?? 0,
+		arg.rotation?.y ?? 0,
+		arg.rotation?.z ?? 0,
+		arg.rotation?.w ?? 0))
 	return initBody(
 		mesh,
 		arg.position ?? {x: 0, y: 0, z: 0},
@@ -79,37 +86,78 @@ const createExample = async () => {
 	// wait for worker to be ready
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const wait = (ms: number) => new Promise((resolve: (value: any) => void) => setTimeout(resolve, ms));
-	await wait(2000);
-	for (let i = 0; i < 8000; i++) {
-		const newBodyObj = icosahedron({
-			position: {
-				x: random.integer(-20, 20),
-				y: random.integer(-20, 20),
-				z: random.integer(-20, 20),
-			},
-			rotation: {
-				x: random.real(-1, 1),
-				y: random.real(-1, 1),
-				z: random.real(-1, 1),
-				w: random.real(-1, 1),
-			},
-			size: random.real(0.5, 1.5),
-		});
-		// everNewerBodyObj has the contents of newBodyObj, expect for the mesh,
-		// and is indexed by meshId
-		const everNewerBodyObj = {
-			...newBodyObj,
-			mesh: undefined,
-		};
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		(rapierExport as any).newBody(everNewerBodyObj)
-		// Wait 5ms
-		await wait(5);
+	for (let i = 0; i < 10; i++) {
+		const makeObject = () => {
+			const newBodyObj = icosahedron({
+				position: {
+					x: random.integer(-20, 20),
+					y: random.integer(-20, 20),
+					z: random.integer(-20, 20),
+				},
+				rotation: {
+					x: random.real(-1, 1),
+					y: random.real(-1, 1),
+					z: random.real(-1, 1),
+					w: random.real(-1, 1),
+				},
+				size: random.real(0.5, 1.5),
+			});
+			// everNewerBodyObj will look like
+			// { meshId: string, meshPos: {
+			// 	p: {
+			// 		x: number;
+			// 		y: number;
+			// 		z: number;
+			// 	};
+			// 	q: {
+			// 		x: number;
+			// 		y: number;
+			// 		z: number;
+			// 		w: number;
+			// 	};
+			// }, mass?: number, size?: number }
+			const everNewerBodyObj = {
+				meshId: newBodyObj.meshId,
+				meshPos: {
+					p: {
+						x: newBodyObj.meshUpdate.p.x,
+						y: newBodyObj.meshUpdate.p.y,
+						z: newBodyObj.meshUpdate.p.z,
+					},
+					q: {
+						x: newBodyObj.meshUpdate.q.x,
+						y: newBodyObj.meshUpdate.q.y,
+						z: newBodyObj.meshUpdate.q.z,
+						w: newBodyObj.meshUpdate.q.w,
+					},
+				},
+				mass: newBodyObj.mesh.userData.mass,
+				size: newBodyObj.mesh.userData.size,
+			};
+			// Put newBodyObj into everNewerBodyObj where their properties overlap (aka no mesh)
+			everNewerBodyObj.meshPos.p.x = newBodyObj.mesh.position.x;
+			everNewerBodyObj.meshPos.p.y = newBodyObj.mesh.position.y;
+			everNewerBodyObj.meshPos.p.z = newBodyObj.mesh.position.z;
+			everNewerBodyObj.meshPos.q.x = newBodyObj.mesh.quaternion.x;
+			everNewerBodyObj.meshPos.q.y = newBodyObj.mesh.quaternion.y;
+			everNewerBodyObj.meshPos.q.z = newBodyObj.mesh.quaternion.z;
+			everNewerBodyObj.meshPos.q.w = newBodyObj.mesh.quaternion.w;
+			everNewerBodyObj.meshId = newBodyObj.mesh.id;
+
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			(rapierExport as any).newBody(everNewerBodyObj)
+		}
+		for (let i = 0; i < 50; i++) {
+			makeObject();
+		}
+		await wait(1)
 	}
 }
 
-onMounted(() => {
-	const threeSimulation = () => {
+onMounted(async () => {
+	const threeSimulation = async () => {
+		// init physics
+		const waitForWorld = rapierExport.startPhysics();
 		// browser variables
 		let dimensions = {width: (window.innerWidth), height: (window.innerHeight)}
 		const camera = new THREE.PerspectiveCamera(75, dimensions.width / dimensions.height, 1, 100)
@@ -142,28 +190,37 @@ onMounted(() => {
 		const updateMeshes = async () => {
 			// Run update function
 			meshBodiesUpdate = await (rapierExport as any).getUpdate();
-
-			if (meshBodiesUpdate && Object.keys(meshBodiesUpdate).length > 0) {
-				meshBodies.forEach((meshBody) => {
-					const meshUpdateTop = meshBodiesUpdate[meshBody.meshId];
-					if (meshUpdateTop) {
-						meshBody.mesh.position.set(meshUpdateTop.meshUpdate.p.x, meshUpdateTop.meshUpdate.p.y, meshUpdateTop.meshUpdate.p.z);
-						meshBody.mesh.quaternion.set(meshUpdateTop.meshUpdate.q.x, meshUpdateTop.meshUpdate.q.y, meshUpdateTop.meshUpdate.q.z, meshUpdateTop.meshUpdate.q.w);
-					}
-				});
-			}
+			meshBodies.forEach((meshBody) => {
+				const meshUpdateTop = meshBodiesUpdate[meshBody.meshId];
+				if (meshUpdateTop) {
+					meshBody.mesh.position.set(
+						meshUpdateTop.meshUpdate.p.x,
+						meshUpdateTop.meshUpdate.p.y,
+						meshUpdateTop.meshUpdate.p.z,
+					);
+					meshBody.mesh.rotation.setFromQuaternion(new THREE.Quaternion(
+						meshUpdateTop.meshUpdate.q.x,
+						meshUpdateTop.meshUpdate.q.y,
+						meshUpdateTop.meshUpdate.q.z,
+						meshUpdateTop.meshUpdate.q.w,
+					));
+				}
+			});
 		}
 		const animate = () => {
+			document.querySelector('#meshcount').textContent = meshBodies.length.toString();
 			renderer.render(scene, camera)
 			requestAnimationFrame(animate)
 		}
+		await waitForWorld
 		animate();
 		setInterval(() => {
 			updateMeshes();
 		}, 1000 / 30)
+		updateMeshes();
+		createExample();
 	}
 	threeSimulation();
-	createExample();
 }
 )
 

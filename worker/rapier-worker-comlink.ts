@@ -14,17 +14,8 @@ let world: RAPIER.World;
 // let world;
 
 const init = async () => {
-	const load = async () => {
-		console.log('loading rapier...')
-		return await RAPIER.init();
-	}
-	await load();
-	const gravity = { x: 0.0, y: 0.0, z: 0.0 };
-	world = new RAPIER.World(gravity);
-	console.log('rapier loaded')
-	return 'rapier loaded'
+	return await RAPIER.init();
 }
-init()
 
 // Icosahedron, twenty-sided, triangle faces
 const vertices = new Float32Array([
@@ -72,29 +63,24 @@ const initBody = (meshId: string, meshPos: {
 	const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 		.setCanSleep(false)
 		.setTranslation(meshPos.p.x, meshPos.p.y, meshPos.p.z)
-		.setAngularDamping(0)
-		.setLinearDamping(0)
+		.setAngularDamping(0.001)
+		.setLinearDamping(0.001)
 		.setLinvel(
 			random.real(-1, 1),
 			random.real(-1, 1),
 			random.real(-1, 1)
 		)
-	rigidBodyDesc.angvel = new RAPIER.Vector3(
-		random.real(-1, 1),
-		random.real(-1, 1),
-		random.real(-1, 1)
-	)
-	rigidBodyDesc.rotation = new RAPIER.Quaternion(
-		meshPos.q.x,
-		meshPos.q.y,
-		meshPos.q.z,
-		meshPos.q.w
-	)
-	rigidBodyDesc.translation = new RAPIER.Vector3(
-		meshPos.p.x,
-		meshPos.p.y,
-		meshPos.p.z
-	)
+		.setRotation(new RAPIER.Quaternion(
+			meshPos.q.x,
+			meshPos.q.y,
+			meshPos.q.z,
+			meshPos.q.w
+		))
+		.setAngvel(new RAPIER.Vector3(
+			random.real(-1, 1),
+			random.real(-1, 1),
+			random.real(-1, 1)
+		))
 	rigidBodyDesc.mass = mass
 	const body = world.createRigidBody(rigidBodyDesc)
 	const points = new Float32Array(
@@ -164,19 +150,25 @@ const meshPos: {
 	};
 }[] = [];
 
-const startPhysics = () => {
+const startPhysics = async () => {
 	console.log('starting physics...')
+	await init()
+	const gravity = { x: 0.0, y: 0.0, z: 0.0 };
+	world = new RAPIER.World(gravity);
+	physicsUpdate();
 	setInterval(() => {
 		physicsUpdate();
 	}, 1000 / 30);
+	worldloaded = true;
+	console.log('physics started')
+	return true;
 };
-startPhysics();
-worldloaded = true;
-
-console.log('physics started')
 
 const rapierExport = {
 	meshPos,
+	startPhysics () {
+		return startPhysics();
+	},
 	getUpdate () {
 		if (worldloaded === true) {
 			meshPos.length = 0;
@@ -184,11 +176,11 @@ const rapierExport = {
 				meshPos.push({
 					meshId: meshBody.meshId,
 					meshUpdate: meshBody.meshUpdate
-				})
-			})
-			return meshPos;
+				});
+			});
+			return (meshPos);
 		} else {
-			console.log('world not loaded yet')
+			console.log('world not loaded yet');
 			return [];
 		}
 	},
@@ -205,7 +197,7 @@ const rapierExport = {
 			w: number;
 		};
 	}, mass?: number, size?: number) {
-		meshBodies.push(initBody(meshId.meshId, meshId.meshUpdate, meshId.mass ?? 1, meshId.size ?? 1));
+		meshBodies.push(initBody(meshId, meshPos, mass ?? 1, size ?? 1));
 	},
 }
 
