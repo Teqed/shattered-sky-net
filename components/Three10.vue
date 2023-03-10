@@ -127,7 +127,7 @@ const createExample = async () => {
 	// wait for worker to be ready
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const wait = (ms: number) => new Promise((resolve: (value: any) => void) => setTimeout(resolve, ms));
-	for (let i = 0; i < 50; i++) {
+	for (let i = 0; i < 100; i++) {
 		// eslint-disable-next-line no-await-in-loop
 		await wait(100);
 		const makeObject = () => {
@@ -147,7 +147,7 @@ const createExample = async () => {
 				size: random.real(0.5, 1.5),
 			});
 		}
-		for (let i = 0; i < 50; i++) {
+		for (let i = 0; i < 10; i++) {
 			makeObject();
 		}
 	}
@@ -225,12 +225,12 @@ const updatePositions = (meshBodiesUpdate: {[meshId: number]: {
 			meshUpdateTop.p.y,
 			meshUpdateTop.p.z
 		);
-		// meshBodyArg.mesh.rotation.setFromQuaternion(new THREE.Quaternion(
-		// 	meshUpdateTop.r.x,
-		// 	meshUpdateTop.r.y,
-		// 	meshUpdateTop.r.z,
-		// 	meshUpdateTop.r.w
-		// ));
+		meshBodyArg.mesh.rotation.setFromQuaternion(new THREE.Quaternion(
+			meshUpdateTop.r.x,
+			meshUpdateTop.r.y,
+			meshUpdateTop.r.z,
+			meshUpdateTop.r.w
+		));
 	});
 }
 
