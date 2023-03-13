@@ -159,7 +159,7 @@ const createExample = async () => {
 // 	return JSON.parse(await Promise.resolve(decoder.decode(arrayBuffer)));
 // };
 
-const decode = async (arrayBuffer: ArrayBuffer): Promise<{
+const decode = (arrayBuffer: ArrayBuffer): Promise<{
 	[meshId: number]: {
 		p: {
 			x: number;
@@ -205,7 +205,7 @@ const decode = async (arrayBuffer: ArrayBuffer): Promise<{
 		};
 		meshUpdate[key] = { p, r };
 	}
-	return meshUpdate;
+	return Promise.resolve(meshUpdate);
 };
 const updatePositions = (meshBodiesUpdate: {[meshId: number]: {
 	p: {x: number,
@@ -236,19 +236,17 @@ const updatePositions = (meshBodiesUpdate: {[meshId: number]: {
 
 onMounted(() => {
 	const threeSimulation = async () => {
-		// init physics
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		const waitForWorld = (rapierExport as any).startPhysics() as Promise<boolean>;
-		// browser variables
-		let dimensions = {width: (window.innerWidth), height: (window.innerHeight)}
-		const camera = new THREE.PerspectiveCamera(75, dimensions.width / dimensions.height, 0.01, 1000)
-		camera.position.z = 30
 		const renderer = new THREE.WebGLRenderer(
 			{	antialias: true,
 				alpha: true	})
-		renderer.setSize(window.innerWidth, window.innerHeight)
 		renderer.setPixelRatio(window.devicePixelRatio)
 		document.querySelector('#canvasWrapper')?.appendChild(renderer.domElement)
+		let dimensions = {width: (window.innerWidth), height: (window.innerHeight)}
+		const camera = new THREE.PerspectiveCamera(75, dimensions.width / dimensions.height, 0.01, 1000)
+		renderer.setSize(dimensions.width, dimensions.height)
+		camera.position.z = 30
 
 		const onWindowResize = () => {
 			dimensions = { width: (window.innerWidth), height: (window.innerHeight)}
