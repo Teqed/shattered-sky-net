@@ -105,8 +105,7 @@ const state = reactive({
 	] as ChatMessage[],
 	loading: false,
 	rules: [
-		(v: string) => !!v || 'Please enter a message.',
-		(v: string) => v.length <= 100 || 'Please enter a message less than 100 characters.',
+		(v: string) => v.length <= 255 || 'Please enter a message less than 255 characters.',
 	],
 })
 
