@@ -54,13 +54,22 @@
           <v-textarea
             id="input"
             v-model="state.newMessage"
+            class="mx-auto"
+            color="grey-lighten-3"
             auto-grow
-            hint="Ask a question"
+            label="Ask a question"
             type="text"
-            rows="3"
+            :rules="state.rules"
+            single-line
+            density="compact"
+            :loading="state.loading"
+            :disabled="state.loading"
+            hide-details="auto"
+            append-inner-icon="mdi-send"
+            @click:append-inner="handleSendClick"
             @keyup.enter="handleSendClick"
           />
-          <v-btn
+          <!-- <v-btn
             id="send"
             :loading="state.loading"
             :disabled="state.loading"
@@ -70,7 +79,7 @@
             @keyup.enter="handleSendClick"
           >
             Ask
-          </v-btn>
+          </v-btn> -->
         </div>
       </TileItem>
     </div>
@@ -95,6 +104,10 @@ const state = reactive({
 		{ role: 'system', content: 'You answer questions. You try to be as brief as possible.'}
 	] as ChatMessage[],
 	loading: false,
+	rules: [
+		(v: string) => !!v || 'Please enter a message.',
+		(v: string) => v.length <= 100 || 'Please enter a message less than 100 characters.',
+	],
 })
 
 // let messages: ChatMessage[] = [
@@ -172,12 +185,6 @@ const handleSendClick = () => {
 	width: 95%;
 	/* float: right; */
 	white-space: pre-wrap;
-  }
-  #input {
-  }
-  #inputbox {
-	/* justify contents */
-	/* display: flex; */
   }
   #headchat {
 	padding: 5px;
