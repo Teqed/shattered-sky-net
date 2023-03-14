@@ -6,6 +6,10 @@
 // import topLevelAwait from 'vite-plugin-top-level-await';
 
 export default defineNuxtConfig({
+	css: [
+		'vuetify/lib/styles/main.sass',
+		'@mdi/font/css/materialdesignicons.min.css',
+	],
 	modules: [
 		'@unlighthouse/nuxt',
 		'nuxt-security',
@@ -122,6 +126,7 @@ export default defineNuxtConfig({
 	// 	}
 	// },
 	build: {
+		transpile: ['vuetify'],
 		analyze: true,
 	},
 	nitro: {
@@ -130,6 +135,9 @@ export default defineNuxtConfig({
 		}
 	},
 	vite: {
+		define: {
+			'process.env.DEBUG': false,
+		},
 		plugins: [
 			// importToCDN({
 			//   modules: [
