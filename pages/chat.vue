@@ -15,5 +15,5 @@ export default {
 };
 </script>
 <template>
-	<Chat />
+  <Chat />
 </template>

@@ -44,6 +44,25 @@
           </TileItem>
         </div>
       </div>
+      <div v-else-if="message.role === 'loading'">
+        <div>
+          <TileItemReversed>
+            <div id="assistant">
+              <p>
+                <v-progress-linear
+                  indeterminate
+                  stream
+                  rounded
+                  color="cyan"
+                />
+              </p>
+            </div>
+            <template #icon>
+              🤖
+            </template>
+          </TileItemReversed>
+        </div>
+      </div>
     </div>
     <div>
       <TileItem>
@@ -59,7 +78,7 @@
             auto-grow
             label="Ask a question"
             type="text"
-            :rules="state.rules"
+            :rules="rules"
             single-line
             density="compact"
             :loading="state.loading"
@@ -69,17 +88,6 @@
             @click:append-inner="handleSendClick"
             @keyup.enter="handleSendClick"
           />
-          <!-- <v-btn
-            id="send"
-            :loading="state.loading"
-            :disabled="state.loading"
-            block
-            color="grey"
-            @click="handleSendClick"
-            @keyup.enter="handleSendClick"
-          >
-            Ask
-          </v-btn> -->
         </div>
       </TileItem>
     </div>
@@ -87,31 +95,28 @@
 </template>
 
 <script setup lang="ts">
-// We'll be using openai.server.ts to make requests to the OpenAI API.
-// We'll be posting to the /api/openai endpoint.
 import { reactive } from 'vue';
 
 interface ChatMessage {
-	role: 'assistant' | 'system' | 'user';
+	role: 'assistant' | 'loading' | 'system' | 'user';
 	content: string;
 	image?: string;
 }
+
+const rules = [
+	(v: string) => v.length <= 255 || 'Please enter a message less than 255 characters.',
+]
 
 // let newMessage: string;
 const state = reactive({
 	newMessage: '',
 	messages: [
-		{ role: 'system', content: 'You answer questions. You try to be as brief as possible.'}
+		{ role: 'system', content: 'Shattered Sky is a community for hosting services online.'},
+		{ role: 'system', content: 'You are embedded on the Shattered Sky website.'},
+		{ role: 'system', content: 'You answer questions for users. You try to be as brief as possible.'},
 	] as ChatMessage[],
 	loading: false,
-	rules: [
-		(v: string) => v.length <= 255 || 'Please enter a message less than 255 characters.',
-	],
 })
-
-// let messages: ChatMessage[] = [
-// 	{ role: 'system', content: 'You are a helpful assistant.'}
-// ];
 
 const chat = async () => {
 	state.messages = [
@@ -125,31 +130,39 @@ const chat = async () => {
 	// Set state.loading to true so the button is disabled.
 	state.loading = true;
 
-	// Use the api/openai endpoint to get a response from the GPT-3 model.
-	// It's in openai.server.ts and is waiting for
-	// event.on('openai', async (request: { body: { messages: any; }; })
-	// to be called.
-	// You'll be getting back
-	// const conversation: AxiosResponse<CreateChatCompletionResponse, any>
-	// from openai.server.ts.
-	const chatGPTMessage: any = await $fetch('/api/openai', {
+	const chatGPTMessage: any = $fetch('/api/openai', {
 		method: 'POST',
 		body: JSON.stringify({
 			messages: state.messages,
 		}),
 	});
 
+	await new Promise(resolve => setTimeout(resolve, 3000));
+
+	// Place the loading message in the messages array.
+	state.messages = [
+		...state.messages,
+		{ role: 'loading', content: 'Loading...' },
+	]
+
+	const replyMessage = await chatGPTMessage;
+
+	// Remove the loading message from the messages array.
+	state.messages = state.messages.filter(
+		message => message.role !== 'loading'
+	)
+
 	// Add the GPT-3 response to the messages array.
 
 	state.messages = [
 		...state.messages,
-		chatGPTMessage,
+		replyMessage,
 	]
 
-	// Scroll to the bottom of the chat log.
-	const log = document.querySelector('#log');
-	// @ts-ignore
-	log.scrollTop = log.scrollHeight;
+	const el = document.querySelector('log')?.lastElementChild;
+	if (el) {
+		el.scrollIntoView({ behavior: 'smooth' });
+	}
 
 	// Set state.loading to false so the button is enabled.
 	state.loading = false;
@@ -171,7 +184,7 @@ const handleSendClick = () => {
   <style>
   #user {
 	border-radius: 1px;
-	padding: 1px;
+	padding: 2px;
 	margin: 1px;
 	width: 95%;
 	/* float: left; */
@@ -179,7 +192,7 @@ const handleSendClick = () => {
   }
   #assistant {
 	border-radius: 1px;
-	padding: 1px;
+	padding: 2px;
 	margin: 1px;
 	width: 95%;
 	/* float: right; */
