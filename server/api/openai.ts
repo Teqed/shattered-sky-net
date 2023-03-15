@@ -6,21 +6,12 @@ const logger = winston.createLogger({
 	format: winston.format.json(),
 	defaultMeta: { service: 'user-service' },
 	transports: [
-	//
-	// - Write all logs with importance level of `error` or less to `error.log`
-	// - Write all logs with importance level of `info` or less to `combined.log`
-	//
 		new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
 		new winston.transports.File({ filename: 'logs/combined.log' }),
-		// Create a file just for message logging
 		new winston.transports.File({ filename: 'logs/messages.log', level: 'verbose' }),
 	],
 });
 
-//
-// If we're not in production then log to the `console` with the format:
-// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-//
 if (process.env.NODE_ENV !== 'production') {
 	logger.add(new winston.transports.Console({
 		format: winston.format.simple(),
@@ -51,10 +42,7 @@ const writeLog = (message: string, question: boolean) => {
 export default defineEventHandler(async (event) => {
 	const body = await readBody(event)
 	const { messages } = body
-	// Write messages[messages.length - 1].content to a file
-
 	writeLog(messages[messages.length - 1].content, true)
-
 	console.time('moderation')
 	const moderation = await openai.createModeration({
 		input: messages[messages.length - 1].content,
@@ -75,7 +63,6 @@ export default defineEventHandler(async (event) => {
 			reply?.content ?? 'No reply',
 			false
 		)
-
 		return reply;
 	}
 })
