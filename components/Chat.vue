@@ -143,6 +143,7 @@ const chat = async () => {
 		method: 'POST',
 		body: JSON.stringify({
 			messages: state.messages,
+			requestType: 'chatCompletion',
 		}),
 	});
 

@@ -1,5 +1,30 @@
 import { ChatCompletionRequestMessage, Configuration, CreateChatCompletionRequest, OpenAIApi } from 'openai'
+import { OpenAIClient } from '@fern-api/openai'
 import * as winston from 'winston'
+
+declare type AuthorRole = 'assistant' | 'system' | 'user';
+declare const AuthorRole: {
+	readonly System: 'system';
+	readonly User: 'user';
+	readonly Assistant: 'assistant';
+};
+
+interface ChatItemsDelta {
+	role?: AuthorRole;
+	content?: string;
+}
+interface ChatItemsChunk {
+	delta: ChatItemsDelta;
+	index: number;
+	finishReason?: string;
+}
+interface CreateChatCompletionResponseChunk {
+	id: string;
+	object: string;
+	created: number;
+	model: string;
+	choices: ChatItemsChunk[];
+}
 
 const logger = winston.createLogger({
 	level: 'info',
@@ -22,9 +47,14 @@ const configuration = new Configuration({
 	apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
+const openaiClient = new OpenAIClient({ token: process.env.OPENAI_API_KEY ?? '' });
 const deniedReply: ChatCompletionRequestMessage = {
 	role: 'assistant',
 	content: 'Your message was deemed potentially unsafe by the automated moderation API and not sent.',
+}
+const errorReply: ChatCompletionRequestMessage = {
+	role: 'assistant',
+	content: 'There was an error processing your message. Please try again.',
 }
 
 const writeLog = (message: string, question: boolean) => {
@@ -49,58 +79,97 @@ const baseMessages = [
 	{ role: 'system', content: 'You explain things in technical terms suitable for a college graduate. You use bullet points, numbered lists and code blocks when possible.'},
 	{ role: 'system', content: 'For complicated answers, you finish by saying "Ask me:" and give several examples of good follow-up questions in bullet points.'},
 	{ role: 'user', content: 'What\'s your name?'},
-	{ role: 'assistant', content: 'My name is Teqbot.'},
-	{ role: 'user', content: 'How do I make bread?'},
-	{ role: 'assistant', content: `Here are the general steps for making bread:
-
-1. Gather your ingredients. You'll need flour, water, yeast, salt, and sometimes sugar or oil.
-
-2. Mix the dough. Combine the flour, yeast, salt, and any other dry ingredients in a large bowl. Gradually add water while stirring the mixture with a wooden spoon or dough hook until it comes together in a sticky dough.
-
-3. Knead the dough. Turn the dough out onto a floured surface and knead it for about 10 minutes. Kneading helps develop the gluten in the dough, which gives bread its structure and texture.
-
-4. Let the dough rise. Place the dough in a lightly oiled bowl and cover it with plastic wrap or a damp towel. Let it sit in a warm, draft-free place for 1-2 hours, or until it doubles in size.
-
-5. Shape the dough. Punch down the dough to release any air bubbles, then shape it into a loaf or rolls.
-
-6. Let it rise again. Place the shaped dough in a lightly oiled loaf pan or on a baking sheet, then cover it with plastic wrap or a damp towel and let it rise for another 30-60 minutes.
-
-7. Bake the bread. Preheat your oven to 375-425°F (190-220°C), depending on the recipe, and bake the bread for about 30-40 minutes, or until it's golden brown and sounds hollow when tapped on the bottom.
-
-8. Cool and slice. Transfer the bread to a wire rack and let it cool for at least 30 minutes before slicing and serving.
+	{ role: 'assistant', content: `My name is Teqbot.
 
 Ask me:
-- What are some common variations on basic bread recipes?
-- How can I tell if my dough has risen enough?
-- Can I use whole wheat flour instead of all-purpose flour?`},
+- How do I make a pizza?
+- Explain how to write fizzbuzz in javascript.
+- When was the airplane invented?`},
 ] as ChatCompletionRequestMessage[]
 
 export default defineEventHandler(async (event) => {
 	const body = await readBody(event)
-	// const { messages } = body
-	// get the messages from the body and add them to the base messages
-	const messages = baseMessages.concat(body.messages)
-	writeLog(messages[messages.length - 1].content, true)
-	console.time('moderation')
-	const moderation = await openai.createModeration({
-		input: messages[messages.length - 1].content,
-	});
-	console.timeEnd('moderation')
-	if (moderation.data.results[0].flagged === true) {
-		messages.pop()
-		return deniedReply;
-	} else {
-		console.time('conversation')
-		const conversation = await openai.createChatCompletion({
-			model: 'gpt-3.5-turbo',
-			messages,
-		});
-		console.timeEnd('conversation')
-		const reply = conversation.data.choices[0].message
-		writeLog(
-			reply?.content ?? 'No reply',
-			false
-		)
-		return reply;
+	if (body.requestType === 'chatCompletion') {
+		const messages = baseMessages.concat(body.messages)
+		writeLog(messages[messages.length - 1].content, true)
+		try {
+			console.time('moderation');
+			const moderation = await openai.createModeration({
+				input: messages[messages.length - 1].content,
+			});
+			console.timeEnd('moderation');
+			if (moderation.data.results[0].flagged === true) {
+				messages.pop();
+				return deniedReply;
+			} else {
+				console.time('conversation');
+				const conversation = await openai.createChatCompletion({
+					model: 'gpt-3.5-turbo',
+					messages,
+				});
+				console.timeEnd('conversation');
+				const reply = conversation.data.choices[0].message;
+				// return { role: 'assistant', content: reply };
+				return reply
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			return errorReply;
+		}
 	}
-})
+	if (body.requestType === 'chatCompletionStreaming') {
+		const messages = baseMessages.concat(body.messages)
+		writeLog(messages[messages.length - 1].content, true)
+		try {
+			console.time('moderation');
+			// const moderation = await openai.createModeration({
+			// 	input: messages[messages.length - 1].content,
+			// });
+			const moderation = await openaiClient.moderation.create({
+				input: messages[messages.length - 1].content,
+			});
+			console.timeEnd('moderation');
+			if (moderation.results[0].flagged === true) {
+				messages.pop();
+				return deniedReply;
+			} else {
+				console.time('conversation');
+				let reply = '';
+				const handleResponse = (chunkData: CreateChatCompletionResponseChunk) => {
+					console.log('Response text:', chunkData.choices[0].delta.content);
+					if (chunkData.choices[0].delta.content) {
+						reply += chunkData.choices[0].delta.content;
+					}
+				};
+				let streaming = false;
+				const streamingOptions = {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					onError: (error: any) => console.error(error.message),
+					onFinish: () => {
+						console.log('Streaming finished')
+						console.timeEnd('conversation');
+						writeLog(reply, false)
+						streaming = false;
+					},
+					abortController: new AbortController(),
+					timeoutMs: 5000
+				};
+				await openaiClient.chat.createCompletion({
+					model: 'gpt-3.5-turbo',
+					messages,
+					stream: true
+				}, handleResponse, streamingOptions);
+				streaming = true;
+				// eslint-disable-next-line no-unmodified-loop-condition
+				while (streaming) {
+					// eslint-disable-next-line no-await-in-loop
+					await new Promise(resolve => setTimeout(resolve, 100));
+				}
+				return { role: 'assistant', content: reply };
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			return errorReply;
+		}
+	}
+});
