@@ -54,5 +54,7 @@
     "vue-gtag": "^2.0.1",
     "vuetify": "^3.1.4"
   },
-  "dependencies": {}
+  "dependencies": {
+    "winston": "^3.8.2"
+  }
 }
