@@ -104,16 +104,14 @@ interface ChatMessage {
 }
 
 const rules = [
-	(v: string) => v.length <= 255 || 'Please enter a message less than 255 characters.',
+	(v: string) => v.length <= 512 || 'Please enter a message less than 512 characters.',
 ]
 
 // let newMessage: string;
 const state = reactive({
 	newMessage: '',
 	messages: [
-		{ role: 'system', content: 'Shattered Sky is a community for hosting services online.'},
-		{ role: 'system', content: 'You are embedded on the Shattered Sky website.'},
-		{ role: 'system', content: 'You answer questions for users. You try to be as brief as possible.'},
+		{ role: 'system', content: 'You were installed in a website so that users could interact with you.'},
 	] as ChatMessage[],
 	loading: false,
 })
