@@ -45,7 +45,7 @@ module.exports = {
 		],
 		'object-curly-spacing': ['off'],
 		'@typescript-eslint/object-curly-spacing': 'off',
-		'max-len': ['warn', { code: 120 }],
+		'max-len': ['warn', { code: 180 }],
 		'no-plusplus': ['warn', { allowForLoopAfterthoughts: true }],
 		'implicit-arrow-linebreak': ['off', 'beside'], // Interferes with Prettier
 		// 'prettier/prettier': [
