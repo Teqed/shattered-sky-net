@@ -118,6 +118,17 @@ const state = reactive({
 	loading: false,
 })
 
+const loadingBar = async () => {
+	await new Promise(resolve => setTimeout(resolve, 2000));
+	if (state.loading) {
+		state.messages = [
+			...state.messages,
+			{ role: 'loading', content: 'Loading...' },
+		]
+	}
+	return new Promise<void>(resolve => resolve());
+}
+
 const chat = async () => {
 	state.messages = [
 		...state.messages,
@@ -137,13 +148,7 @@ const chat = async () => {
 		}),
 	});
 
-	await new Promise(resolve => setTimeout(resolve, 3000));
-
-	// Place the loading message in the messages array.
-	state.messages = [
-		...state.messages,
-		{ role: 'loading', content: 'Loading...' },
-	]
+	loadingBar();
 
 	const replyMessage = await chatGPTMessage;
 
