@@ -1,14 +1,14 @@
-import { io } from 'socket.io-client';
+// import { io } from 'socket.io-client';
 
-// Socket Client
-const socket = io(
-	'https://shatteredsky.net',
-);
+// // Socket Client
+// const socket = io(
+// 	'https://shatteredsky.net',
+// );
 
 export default defineNuxtPlugin(() => {
-	return {
-		provide: {
-			io: socket
-		}
-	}
+// 	return {
+// 		provide: {
+// 			io: socket
+// 		}
+// 	}
 });

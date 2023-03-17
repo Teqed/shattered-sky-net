@@ -95,8 +95,12 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue';
+import { io } from 'socket.io-client';
 
-const { $io } = useNuxtApp();
+// const { socket } = useNuxtApp();
+
+// Socket Client
+const socket = io();
 
 interface ChatMessage {
 	role: 'assistant' | 'loading' | 'system' | 'user';
@@ -175,13 +179,13 @@ const chat = () => {
 		// );
 
 		receivedMessageInitator = false;
-		$io.emit('GPTquestion', state.messages);
+		socket.emit('GPTquestion', state.messages);
 
 		slowLoad = true;
 		loadingBar();
 		let receivedMessage = '';
 
-		$io.on('GPTanswer', (data: string) => {
+		socket.on('GPTanswer', (data: string) => {
 			// If this is the first message, then...
 			if (!receivedMessageInitator) {
 			// Remove the loading message from the messages array.
