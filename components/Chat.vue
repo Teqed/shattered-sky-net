@@ -100,7 +100,10 @@ import { io } from 'socket.io-client';
 // const { socket } = useNuxtApp();
 
 // Socket Client
-const socket = io('https://wsio.shatteredsky.net/');
+const socket = io(
+	'https://wsio.shatteredsky.net/',
+	{transports: ['websocket'],}
+);
 // const socket = io('http://localhost:3355/');
 
 interface ChatMessage {
