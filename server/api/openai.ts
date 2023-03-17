@@ -116,7 +116,7 @@ const chatCompletion = async (body: { messages: ConcatArray<ChatCompletionReques
 export default defineEventHandler(async (event) => {
 	const body = await readBody(event)
 	if (body.requestType === 'chatCompletion') {
-		chatCompletion(body);
+		return chatCompletion(body);
 	}
 	return 'No requestType specified.'
 });
