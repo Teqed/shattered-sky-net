@@ -1,7 +1,8 @@
 import { Server } from 'socket.io';
 import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
 import { defineNuxtModule } from '@nuxt/kit'
-import writeLog from '../server/utils/writeLog'
+import type { NitroApp } from 'nitropack'
+import writeLog from '../utils/writeLog'
 
 interface ResponseChunk {
 	id: string;
@@ -118,45 +119,44 @@ const chatCompletionStreaming = async (messages: ChatCompletionRequestMessage[],
 	}
 }
 
-export default defineNuxtModule({
-	setup (_options, nuxt) {
-		console.log('WebSocket Listener Module Loaded')
-		nuxt.hook('listen', (server) => {
-			const io = new Server(server, {
-				cors: {
-					origin: '*',
-				}
-			});
+// eslint-disable-next-line require-await
+export default defineNitroPlugin(async (nitroApp: NitroApp) => {
+	console.log('WebSocket Listener Plugin Loaded')
+	nitroApp.hooks.hook('server:listen:ready', (server) => {
+		const io = new Server(server, {
+			cors: {
+				origin: '*',
+			}
+		});
 
-			nuxt.hook('close', () => io.close())
+		nitroApp.hooks.hook('close', () => io.close())
 
-			io.on('connection', (socket) => {
-				console.log('Connection', socket.id)
+		io.on('connection', (socket) => {
+			console.log('Connection', socket.id)
+		})
+
+		io.on('connect', (socket) => {
+			socket.emit('message', `welcome ${socket.id}`)
+			socket.broadcast.emit('message', `${socket.id} joined`)
+
+			socket.on('message', function message (data) {
+				console.log('message received: %s', data)
+				socket.emit('message', { data })
 			})
 
-			io.on('connect', (socket) => {
-				socket.emit('message', `welcome ${socket.id}`)
-				socket.broadcast.emit('message', `${socket.id} joined`)
+			socket.on('disconnecting', () => {
+				console.log('disconnected', socket.id)
+				socket.broadcast.emit('message', `${socket.id} left`)
+			})
 
-				socket.on('message', function message (data) {
-					console.log('message received: %s', data)
-					socket.emit('message', { data })
-				})
+			socket.on('GPTquestion', (data) => {
+				chatCompletionStreaming(data, socket)
+			})
+		});
 
-				socket.on('disconnecting', () => {
-					console.log('disconnected', socket.id)
-					socket.broadcast.emit('message', `${socket.id} left`)
-				})
-
-				socket.on('GPTquestion', (data) => {
-					chatCompletionStreaming(data, socket)
-				})
-			});
-
-			// export default function (request, res, next) {
-			// 	res.statusCode = 200
-			// 	res.end()
-			// }
-		})
-	}
+		// export default function (request, res, next) {
+		// 	res.statusCode = 200
+		// 	res.end()
+		// }
+	})
 })

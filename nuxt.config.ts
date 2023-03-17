@@ -4,6 +4,7 @@
 // import { defineNuxtConfig } from 'nuxt/config'
 // import wasm from 'vite-plugin-wasm';
 // import topLevelAwait from 'vite-plugin-top-level-await';
+import { resolve } from 'pathe';
 
 export default defineNuxtConfig({
 	css: [
@@ -17,7 +18,7 @@ export default defineNuxtConfig({
 	// 	}
 	// ],
 	modules: [
-		'./modules/socket',
+		// './modules/socket',
 		// 'nuxt-socket-io',
 		// '@unlighthouse/nuxt',
 		'nuxt-security',
@@ -145,9 +146,7 @@ export default defineNuxtConfig({
 		analyze: true,
 	},
 	nitro: {
-		experimental: {
-			wasm: true,
-		}
+		preset: resolve(__dirname, './nitroPreset.ts'),
 	},
 	vite: {
 		define: {
