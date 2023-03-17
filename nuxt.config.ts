@@ -10,13 +10,14 @@ export default defineNuxtConfig({
 		'vuetify/lib/styles/main.sass',
 		'@mdi/font/css/materialdesignicons.min.css',
 	],
-	serverHandlers: [
-		{
-			route: '/ws',
-			handler: '~/server-middleware/socket'
-		}
-	],
+	// serverHandlers: [
+	// 	{
+	// 		route: '/ws',
+	// 		handler: '~/server-middleware/socket'
+	// 	}
+	// ],
 	modules: [
+		'./modules/socket',
 		// 'nuxt-socket-io',
 		// '@unlighthouse/nuxt',
 		'nuxt-security',
