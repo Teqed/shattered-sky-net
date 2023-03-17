@@ -146,7 +146,9 @@ export default defineNuxtConfig({
 		analyze: true,
 	},
 	nitro: {
-		preset: resolve(__dirname, './nitroPreset.ts'),
+		experimental: {
+			wasm: true,
+		}
 	},
 	vite: {
 		define: {

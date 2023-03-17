@@ -120,43 +120,39 @@ const chatCompletionStreaming = async (messages: ChatCompletionRequestMessage[],
 }
 
 // eslint-disable-next-line require-await
-export default defineNitroPlugin(async (nitroApp: NitroApp) => {
+export default defineNitroPlugin(async () => {
 	console.log('WebSocket Listener Plugin Loaded')
-	nitroApp.hooks.hook('server:listen:ready', (server) => {
-		const io = new Server(server, {
-			cors: {
-				origin: '*',
-			}
-		});
+	const io = new Server(3355, {
+		cors: {
+			origin: '*',
+		}
+	});
 
-		nitroApp.hooks.hook('close', () => io.close())
+	io.on('connection', (socket) => {
+		console.log('Connection', socket.id)
+	})
 
-		io.on('connection', (socket) => {
-			console.log('Connection', socket.id)
+	io.on('connect', (socket) => {
+		socket.emit('message', `welcome ${socket.id}`)
+		socket.broadcast.emit('message', `${socket.id} joined`)
+
+		socket.on('message', function message (data) {
+			console.log('message received: %s', data)
+			socket.emit('message', { data })
 		})
 
-		io.on('connect', (socket) => {
-			socket.emit('message', `welcome ${socket.id}`)
-			socket.broadcast.emit('message', `${socket.id} joined`)
+		socket.on('disconnecting', () => {
+			console.log('disconnected', socket.id)
+			socket.broadcast.emit('message', `${socket.id} left`)
+		})
 
-			socket.on('message', function message (data) {
-				console.log('message received: %s', data)
-				socket.emit('message', { data })
-			})
+		socket.on('GPTquestion', (data) => {
+			chatCompletionStreaming(data, socket)
+		})
+	});
 
-			socket.on('disconnecting', () => {
-				console.log('disconnected', socket.id)
-				socket.broadcast.emit('message', `${socket.id} left`)
-			})
-
-			socket.on('GPTquestion', (data) => {
-				chatCompletionStreaming(data, socket)
-			})
-		});
-
-		// export default function (request, res, next) {
-		// 	res.statusCode = 200
-		// 	res.end()
-		// }
-	})
+	// export default function (request, res, next) {
+	// 	res.statusCode = 200
+	// 	res.end()
+	// }
 })

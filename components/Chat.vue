@@ -100,7 +100,7 @@ import { io } from 'socket.io-client';
 // const { socket } = useNuxtApp();
 
 // Socket Client
-const socket = io();
+const socket = io('https://wsio.shatteredsky.net/');
 
 interface ChatMessage {
 	role: 'assistant' | 'loading' | 'system' | 'user';
