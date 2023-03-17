@@ -1,7 +1,7 @@
 import { io } from 'socket.io-client';
 
 // Socket Client
-const socket = io('http://localhost:3000');
+const socket = io();
 
 export default defineNuxtPlugin(() => {
 	return {
