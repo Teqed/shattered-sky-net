@@ -17,12 +17,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 export default (message: string, question: boolean) => {
 	if (question) {
-		logger.verbose(
-			`Question: ${message}`
-		);
+		// logger.verbose(
+		// 	`Question: ${message}`
+		// );
 	} else {
-		logger.verbose(
-			`Answer: ${message}`
-		);
+		// logger.verbose(
+		// 	`Answer: ${message}`
+		// );
 	}
 };
