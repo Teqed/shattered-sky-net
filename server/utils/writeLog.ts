@@ -5,9 +5,9 @@ const logger = winston.createLogger({
 	format: winston.format.json(),
 	defaultMeta: { service: 'user-service' },
 	transports: [
-		// new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
-		// new winston.transports.File({ filename: 'logs/combined.log' }),
-		// new winston.transports.File({ filename: 'logs/messages.log', level: 'verbose' }),
+		new winston.transports.File({ filename: 'logs/error.log', level: 'error' }),
+		new winston.transports.File({ filename: 'logs/combined.log' }),
+		new winston.transports.File({ filename: 'logs/messages.log', level: 'verbose' }),
 	],
 });
 if (process.env.NODE_ENV !== 'production') {
@@ -17,12 +17,12 @@ if (process.env.NODE_ENV !== 'production') {
 }
 export default (message: string, question: boolean) => {
 	if (question) {
-		// logger.verbose(
-		// 	`Question: ${message}`
-		// );
+		logger.verbose(
+			`Question: ${message}`
+		);
 	} else {
-		// logger.verbose(
-		// 	`Answer: ${message}`
-		// );
+		logger.verbose(
+			`Answer: ${message}`
+		);
 	}
 };
