@@ -82,7 +82,6 @@
             single-line
             density="compact"
             :loading="state.loading"
-            :disabled="state.loading"
             hide-details="auto"
             append-inner-icon="mdi-send"
             @click:append-inner="handleSendClick"
@@ -96,6 +95,8 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue';
+
+const { $io } = useNuxtApp();
 
 interface ChatMessage {
 	role: 'assistant' | 'loading' | 'system' | 'user';
@@ -116,9 +117,10 @@ const state = reactive({
 	loading: false,
 })
 
+let slowLoad = false;
 const loadingBar = async () => {
 	await new Promise(resolve => setTimeout(resolve, 2000));
-	if (state.loading) {
+	if (slowLoad) {
 		state.messages = [
 			...state.messages,
 			{ role: 'loading', content: 'Loading...' },
@@ -127,53 +129,116 @@ const loadingBar = async () => {
 	return new Promise<void>(resolve => resolve());
 }
 
-const chat = async () => {
-	state.messages = [
-		...state.messages,
-		{ role: 'user', content: state.newMessage },
-	]
+let receivedMessageInitator = false;
 
-	// Clear the input field.
-	state.newMessage = '';
+const chat = () => {
+	try {
+		state.messages = [
+			...state.messages,
+			{ role: 'user', content: state.newMessage },
+		]
 
-	// Set state.loading to true so the button is disabled.
-	state.loading = true;
+		// Clear the input field.
+		state.newMessage = '';
 
-	const chatGPTMessage: any = $fetch('/api/openai', {
-		method: 'POST',
-		body: JSON.stringify({
-			messages: state.messages,
-			requestType: 'chatCompletion',
-		}),
-	});
+		// Set state.loading to true so the button is disabled.
+		state.loading = true;
 
-	loadingBar();
+		// const chatGPTMessage: Promise<string> = $fetch('/api/openai', {
+		// 	method: 'POST',
+		// 	body: JSON.stringify({
+		// 		messages: state.messages,
+		// 		requestType: 'chatCompletion',
+		// 		// requestType: 'chatCompletionStreaming',
+		// 	}),
+		// });
 
-	const replyMessage = await chatGPTMessage;
+		// const chatGPTMessage = fetchEventSource('/api/openai', {
+		// 	method: 'POST',
+		// 	// headers: {
+		// 	// 	'Content-Type': 'application/json',
+		// 	// },
+		// 	body: JSON.stringify({
+		// 		messages: state.messages,
+		// 		// requestType: 'chatCompletion',
+		// 		requestType: 'chatCompletionStreaming',
+		// 	}),
+		// }) as unknown as Promise<string>;
 
-	// Remove the loading message from the messages array.
-	state.messages = state.messages.filter(
-		message => message.role !== 'loading'
-	)
+		// const chatGPTMessage = useAsyncData('openai', () => $fetch('/api/openai', {
+		// 	method: 'POST',
+		// 	body: JSON.stringify({
+		// 		messages: state.messages,
+		// 		requestType: 'chatCompletion',
+		// 	}),
+		// })
+		// );
 
-	// Add the GPT-3 response to the messages array.
+		receivedMessageInitator = false;
+		$io.emit('GPTquestion', state.messages);
 
-	state.messages = [
-		...state.messages,
-		replyMessage,
-	]
+		slowLoad = true;
+		loadingBar();
+		let receivedMessage = '';
 
-	const el = document.querySelector('log')?.lastElementChild;
-	if (el) {
-		el.scrollIntoView({ behavior: 'smooth' });
+		$io.on('GPTanswer', (data: string) => {
+			// If this is the first message, then...
+			if (!receivedMessageInitator) {
+			// Remove the loading message from the messages array.
+				slowLoad = false;
+				state.messages = state.messages.filter(
+					message => message.role !== 'loading'
+				)
+				// Add the data to the receivedMessage object
+				receivedMessage = data;
+				// Add the GPT-3 response to the messages array.
+				state.messages = [
+					...state.messages,
+					{ role: 'assistant', content: receivedMessage },
+				]
+				receivedMessageInitator = true;
+			} else if (data === '[DONE]') {
+				// Set state.loading to false so the button is enabled.
+				state.loading = false;
+				receivedMessageInitator = false;
+			} else {
+				// Add the data to the receivedMessage object
+				receivedMessage = receivedMessage + data;
+				// Update the last message in the messages array.
+				state.messages[state.messages.length - 1] = { role: 'assistant', content: receivedMessage };
+			}
+		});
+
+		// const { data } = await chatGPTMessage;
+		// const replyMessage: string = data as unknown as string;
+		// const replyMessage: string = await chatGPTMessage
+
+		// Remove the loading message from the messages array.
+		// state.messages = state.messages.filter(
+		// 	message => message.role !== 'loading'
+		// )
+
+		// Add the GPT-3 response to the messages array.
+
+		// state.messages = [
+		// 	...state.messages,
+		// 	{ role: 'assistant', content: replyMessage },
+		// ]
+
+		// const el = document.querySelector('log')?.lastElementChild;
+		// if (el) {
+		// 	el.scrollIntoView({ behavior: 'smooth' });
+		// }
+
+		// Set state.loading to false so the button is enabled.
+		// state.loading = false;
+
+		state.messages = [
+			...state.messages,
+		]
+	} catch (e) {
+		console.error(e);
 	}
-
-	// Set state.loading to false so the button is enabled.
-	state.loading = false;
-
-	state.messages = [
-		...state.messages,
-	]
 }
 
 // When the send button is clicked, send the message.

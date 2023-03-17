@@ -10,8 +10,15 @@ export default defineNuxtConfig({
 		'vuetify/lib/styles/main.sass',
 		'@mdi/font/css/materialdesignicons.min.css',
 	],
+	serverHandlers: [
+		{
+			route: '/ws',
+			handler: '~/server-middleware/socket'
+		}
+	],
 	modules: [
-		'@unlighthouse/nuxt',
+		// 'nuxt-socket-io',
+		// '@unlighthouse/nuxt',
 		'nuxt-security',
 		'nuxt-delay-hydration',
 		// 'nuxt-purgecss',
@@ -59,6 +66,13 @@ export default defineNuxtConfig({
 			}
 		}],
 	],
+	// io: {
+	// 	sockets: [{
+	// 		name: 'chatcompletion',
+	// 		url: 'http://localhost:3000',
+	// 		default: true,
+	// 	}]
+	// },
 	security: {
 		headers: {
 			crossOriginResourcePolicy: {

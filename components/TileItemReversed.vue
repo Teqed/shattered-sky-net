@@ -10,14 +10,14 @@ useHead({
 </script>
 
 <template>
-  <div class="item">
-    <div class="details tile">
+  <div id="reverse" class="reitem">
+    <div class="redetails retile">
       <h3>
         <slot name="heading" />
       </h3>
       <slot />
     </div>
-    <div class="i-icon">
+    <div class="rei-icon">
       <slot name="icon" />
     </div>
   </div>
