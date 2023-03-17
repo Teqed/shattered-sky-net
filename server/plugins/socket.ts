@@ -70,7 +70,6 @@ const chatCompletionStreaming = async (messages: ChatCompletionRequestMessage[],
 						} else {
 							try {
 								const parsed: ResponseChunk = JSON.parse(message);
-								console.log('parsing message' + parsed.choices[0].delta.content)
 								// if undefined, don't add to reply
 								if (parsed.choices[0].delta.content) {
 									reply += parsed.choices[0].delta.content;
