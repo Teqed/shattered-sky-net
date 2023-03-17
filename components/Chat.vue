@@ -101,6 +101,7 @@ import { io } from 'socket.io-client';
 
 // Socket Client
 const socket = io('https://wsio.shatteredsky.net/');
+// const socket = io('http://localhost:3355/');
 
 interface ChatMessage {
 	role: 'assistant' | 'loading' | 'system' | 'user';
