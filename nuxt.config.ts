@@ -97,12 +97,12 @@ export default defineNuxtConfig({
 			// xXSSProtection: false,
 		}
 	},
-	unlighthouse: {
-		site: 'shatteredsky.net',
-		scanner: {
-			exclude: ['/cdn-cgi/*']
-		},
-	},
+	// unlighthouse: {
+	// 	site: 'shatteredsky.net',
+	// 	scanner: {
+	// 		exclude: ['/cdn-cgi/*']
+	// 	},
+	// },
 	delayHydration: {
 		mode: 'init'
 	},
