@@ -4,7 +4,6 @@
 // import { defineNuxtConfig } from 'nuxt/config'
 // import wasm from 'vite-plugin-wasm';
 // import topLevelAwait from 'vite-plugin-top-level-await';
-import { resolve } from 'pathe';
 
 export default defineNuxtConfig({
 	css: [
