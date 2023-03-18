@@ -1,10 +1,30 @@
 <script setup lang="ts">
-import * as THREE from 'three';
+// import * as THREE from 'three';
+// Import just the parts we need from threejs
+import { BufferGeometry,
+	Material,
+	Mesh,
+	MeshBasicMaterial,
+	MeshPhongMaterial,
+	PerspectiveCamera,
+	PointLight,
+	PlaneGeometry,
+	Raycaster,
+	DoubleSide,
+	Scene,
+	SphereGeometry,
+	TextureLoader,
+	Vector3,
+	WebGLRenderer } from 'three';
 
 // Import the images we need from the ./public/images/ folder
+// @ts-ignore
 import image5210 from '../assets/images/5210/5210.jpg';
+// @ts-ignore
 import image5210Normal from '../assets/images/5210/5210-normal.jpg';
+// @ts-ignore
 import image5210Bump from '../assets/images/5210/5210-bump.jpg';
+// @ts-ignore
 import image5210Diffuse from '../assets/images/5210/5210-diffuse.jpg';
 
 // Get toast notifications from plugin
@@ -17,37 +37,37 @@ import image5210Diffuse from '../assets/images/5210/5210-diffuse.jpg';
 // We'll use the formula a = v / t to calculate the velocity.
 // When the spheres collide, we'll have them stop moving, so they won't bounce off each other.
 
-class MassMesh extends THREE.Mesh {
+class MassMesh extends Mesh {
 	mass: number;
 	radius: number;
-	velocity: THREE.Vector3;
+	velocity: Vector3;
 	constructor (
-		geometry: THREE.BufferGeometry | undefined,
-		material: THREE.Material | THREE.Material[] | undefined,
+		geometry: BufferGeometry | undefined,
+		material: Material | Material[] | undefined,
 		radius?: number,
 		mass?: number,
-		velocity?: THREE.Vector3
+		velocity?: Vector3
 	) {
 		super(geometry, material);
 		this.radius = radius ?? 0.5;
 		this.mass = mass ?? 1;
-		this.velocity = velocity ?? new THREE.Vector3(0, 0, 0);
+		this.velocity = velocity ?? new Vector3(0, 0, 0);
 	}
 }
 
 // Once the component is mounted, we can access the DOM element
-// and use it to create a Three.js scene.
+// and use it to create a js scene.
 
 onMounted(() => {
 	if (process.client) {
 		// Prevent right click
 		document.addEventListener('contextmenu', event => event.preventDefault());
-		const scene = new THREE.Scene();
+		const scene = new Scene();
 		const canvasWrapper = document.querySelector('#canvasWrapper') as HTMLDivElement;
 		let dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
-		const camera = new THREE.PerspectiveCamera(50, dimensions.width / dimensions.height, 0.1, 2000);
+		const camera = new PerspectiveCamera(50, dimensions.width / dimensions.height, 0.1, 2000);
 
-		const renderer = new THREE.WebGLRenderer(
+		const renderer = new WebGLRenderer(
 			{ alpha: true }
 		);
 			// renderer.setSize(window.innerWidth, window.innerHeight);
@@ -62,23 +82,23 @@ onMounted(() => {
 		camera.position.z = 15;
 
 		// Add a light
-		const light = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+		const light = new PointLight(0xFFFFFF, 1, 100, 2);
 		light.position.set(0, 10, -10);
 		scene.add(light);
-		const light2 = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+		const light2 = new PointLight(0xFFFFFF, 1, 100, 2);
 		light2.position.set(0, 10, 10);
 		scene.add(light2);
-		const light3 = new THREE.PointLight(0xFFFFFF, 1, 100, 2);
+		const light3 = new PointLight(0xFFFFFF, 1, 100, 2);
 		light3.position.set(0, -10, 10);
 		scene.add(light3);
 
-		const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-		// const material = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
-		const texture = new THREE.TextureLoader().load(image5210);
-		const normalMap = new THREE.TextureLoader().load(image5210Normal);
-		const bumpMap = new THREE.TextureLoader().load(image5210Bump);
-		const diffuseMap = new THREE.TextureLoader().load(image5210Diffuse);
-		const material = new THREE.MeshPhongMaterial({
+		const geometry = new SphereGeometry(0.5, 32, 32);
+		// const material = new MeshBasicMaterial({ color: 0xA0A0A0 });
+		const texture = new TextureLoader().load(image5210);
+		const normalMap = new TextureLoader().load(image5210Normal);
+		const bumpMap = new TextureLoader().load(image5210Bump);
+		const diffuseMap = new TextureLoader().load(image5210Diffuse);
+		const material = new MeshPhongMaterial({
 			map: texture,
 			normalMap,
 			bumpMap,
@@ -91,16 +111,16 @@ onMounted(() => {
 		sphere.position.x = -2;
 		sphere.position.y = -2;
 		// Give it a spin
-		sphere.velocity = new THREE.Vector3(0.001, 0.001, 0.001);
+		sphere.velocity = new Vector3(0.001, 0.001, 0.001);
 
 		// Create an array to hold all the spheres
 		const spheres: MassMesh[] = [];
 		spheres.push(sphere);
 
 		// Draw the plane on the screen
-		const planeGeometry = new THREE.PlaneGeometry(100, 100);
-		const planeMaterial = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.DoubleSide, opacity: 0, transparent: true });
-		const planeMesh = new THREE.Mesh(planeGeometry, planeMaterial);
+		const planeGeometry = new PlaneGeometry(100, 100);
+		const planeMaterial = new MeshBasicMaterial({ color: 0x000000, side: DoubleSide, opacity: 0, transparent: true });
+		const planeMesh = new Mesh(planeGeometry, planeMaterial);
 		planeMesh.position.z = -15;
 		scene.add(planeMesh);
 
@@ -114,13 +134,13 @@ onMounted(() => {
 
 			// Create a new sphere
 			// Give it its own geometry so we can change its size later
-			const varGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+			const varGeometry = new SphereGeometry(0.5, 32, 32);
 			const sphereClick = new MassMesh(varGeometry, material);
 			// We want to add the sphere to the location the mouse appears to be at
 			// We'll use z = -15, and find the x and y coordinates where the mouse appears to be
 
 			// Cast a ray from the camera to the mouse position
-			const raycaster = new THREE.Raycaster();
+			const raycaster = new Raycaster();
 			raycaster.setFromCamera(mouse, camera);
 			// Make sure the ray adjusts to the camera's position
 			raycaster.ray.origin.copy(camera.position);
@@ -146,7 +166,7 @@ onMounted(() => {
 			sphereClick.rotation.y = Math.random() * 2 * Math.PI;
 			sphereClick.rotation.z = Math.random() * 2 * Math.PI;
 			// and random spin
-			sphereClick.velocity = new THREE.Vector3(
+			sphereClick.velocity = new Vector3(
 				// Random positive or negative number
 				(Math.random() * 0.01) + 0.001 * (Math.random() > 0.5 ? 1 : -1),
 				(Math.random() * 0.01) + 0.001 * (Math.random() > 0.5 ? 1 : -1),
@@ -187,7 +207,7 @@ onMounted(() => {
 
 							// Check if the spheres are overlapping
 							const radiusSum: number = spheres[i].radius + spheres[j].radius;
-							const surfaceVector: THREE.Vector3 = new THREE.Vector3().copy(spheres[j].position).sub(spheres[i].position);
+							const surfaceVector: Vector3 = new Vector3().copy(spheres[j].position).sub(spheres[i].position);
 							const distanceFromSurface: number = surfaceVector.length() - radiusSum;
 							const distanceFromCenters: number = spheres[i].position.distanceTo(spheres[j].position);
 

@@ -4,10 +4,11 @@
 // import { defineNuxtConfig } from 'nuxt/config'
 // import wasm from 'vite-plugin-wasm';
 // import topLevelAwait from 'vite-plugin-top-level-await';
+import vuetify from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
 	css: [
-		'vuetify/lib/styles/main.sass',
+		// 'vuetify/lib/styles/main.sass',
 		'@mdi/font/css/materialdesignicons.min.css',
 	],
 	// serverHandlers: [
@@ -17,6 +18,15 @@ export default defineNuxtConfig({
 	// 	}
 	// ],
 	modules: [
+		['unplugin-icons/nuxt', { /* options */ }],
+		// eslint-disable-next-line require-await
+		async (_options, nuxt) => {
+			nuxt.hooks.hook('vite:extendConfig', (config) => {
+				config.plugins?.push(
+					vuetify()
+				)
+			})
+		},
 		// './modules/socket',
 		// 'nuxt-socket-io',
 		// '@unlighthouse/nuxt',
@@ -186,12 +196,17 @@ export default defineNuxtConfig({
 				external: [
 					// 'vue',
 					// 'vue-router'
+					'@dimforge/rapier3d-compat'
 				],
 				output: {
+					manualChunks: {
+						// rapier: ['@dimforge/rapier3d-compat'],
+					},
 					// format: 'iife',
 					globals: {
 						// vue: 'Vue',
 						// 'vue-router': 'VueRouter',
+						'@dimforge/rapier3d-compat': 'RAPIER'
 					},
 					// entryFileNames: "_nuxt/ss-entry.js",
 					// chunkFileNames: "_nuxt/ss-chunk.js",

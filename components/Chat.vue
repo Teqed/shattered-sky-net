@@ -27,9 +27,7 @@
           </TileItemReversed>
         </div>
       </div>
-      <div v-else-if="message.role === 'system'">
-        <!-- <p>{{ message.content }}</p> -->
-      </div>
+      <div v-else-if="message.role === 'system'" />
       <div v-else-if="message.role === 'user'">
         <div>
           <TileItem>
@@ -81,11 +79,11 @@
             :rules="rules"
             single-line
             density="compact"
-            :loading="state.loading"
+            :disabled="state.loading"
             hide-details="auto"
             append-inner-icon="mdi-send"
-            @click:append-inner="handleSendClick"
-            @keyup.enter="handleSendClick"
+            @click:append-inner="chat"
+            @keyup.enter="chat"
           />
         </div>
       </TileItem>
@@ -136,39 +134,38 @@ const chat = () => {
 		state.newMessage = '';
 		state.loading = true;
 		receivedMessageInitator = false;
-		socket.emit('GPTquestion', state.messages);
 		slowLoad = true;
-		loadingBar();
 		let receivedMessage = '';
 		socket.on('GPTanswer', (data: string) => {
-			if (!receivedMessageInitator) {
-				slowLoad = false;
-				state.messages = state.messages.filter(
-					message => message.role !== 'loading'
-				)
-				receivedMessage = data;
-				state.messages = [
-					...state.messages,
-					{ role: 'assistant', content: receivedMessage },
-				]
-				receivedMessageInitator = true;
-			} else if (data === '[DONE]') {
-				state.loading = false;
-				receivedMessageInitator = false;
-			} else {
-				receivedMessage = receivedMessage + data;
-				state.messages[state.messages.length - 1] = { role: 'assistant', content: receivedMessage };
+			try {
+				if (!receivedMessageInitator) {
+					receivedMessageInitator = true;
+					slowLoad = false;
+					state.messages = state.messages.filter(
+						message => message.role !== 'loading'
+					)
+					receivedMessage = data;
+					state.messages = [
+						...state.messages,
+						{ role: 'assistant', content: receivedMessage },
+					]
+				} else if (data === '[DONE]') {
+					state.loading = false;
+					receivedMessageInitator = false;
+					socket.off('GPTanswer');
+				} else {
+					receivedMessage = receivedMessage + data;
+					state.messages[state.messages.length - 1] = { role: 'assistant', content: receivedMessage };
+				}
+			} catch (e) {
+				console.error(e);
 			}
 		});
-		state.messages = [
-			...state.messages,
-		]
+		loadingBar();
+		socket.emit('GPTquestion', state.messages);
 	} catch (e) {
 		console.error(e);
 	}
-}
-const handleSendClick = () => {
-	chat();
 }
 </script>
 <script lang="ts">

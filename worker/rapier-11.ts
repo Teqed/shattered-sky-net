@@ -1,8 +1,9 @@
 // @ts-ignore-next-line
 // import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
-import * as RAPIER from '@dimforge/rapier3d-compat';
+// import RAPIER from '@dimforge/rapier3d-compat';
 import * as RANDOMJS from 'random-js';
 import * as Comlink from 'comlink';
+import RAPIER from './rapier';
 // importScripts('https://unpkg.com/comlink/dist/umd/comlink.js');
 // importScripts('../node_modules/comlink/dist/esm/comlink.js');
 

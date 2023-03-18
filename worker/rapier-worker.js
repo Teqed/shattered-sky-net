@@ -1,7 +1,8 @@
 // @ts-ignore-next-line
 // import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
-import * as RAPIER from '@dimforge/rapier3d-compat';
+// import RAPIER from '@dimforge/rapier3d-compat';
 import * as RANDOMJS from 'random-js';
+import RAPIER from './rapier';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
 // let world: RAPIER.World;
