@@ -2,17 +2,31 @@
   <canvas id="renderCanvas" touch-action="none" />
 </template>
 <script setup lang="ts">
+// import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
+// import * as Comlink from 'comlink';
+import {
+	wrap,
+	transfer
+} from 'comlink';
+const worker = new Worker(new URL('../../worker/babylon.ts', import.meta.url), {
+	type: 'module',
+});
+const babylonWorker: {
+	init: (canvas: OffscreenCanvas) => {
+		/* ... */
+	},
+	resize: (width: number, height: number) => {
+		/* ... */
+	},
+} = wrap(worker);
 onMounted(() => {
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!; // Get the canvas element
 	canvas.width = canvas.clientWidth;
 	canvas.height = canvas.clientHeight;
 	const offscreen = canvas.transferControlToOffscreen();
-	const worker = new Worker(new URL('../../worker/babylon.ts', import.meta.url), {
-		type: 'module',
-	});
-	worker.postMessage({canvas: offscreen}, [offscreen]);
+	babylonWorker.init(transfer(offscreen, [offscreen]));
 	window.addEventListener('resize', () => {
-		worker.postMessage({width: canvas.clientWidth, height: canvas.clientHeight});
+		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
 	});
 });
 

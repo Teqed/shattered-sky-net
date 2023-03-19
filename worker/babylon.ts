@@ -1,42 +1,26 @@
 // import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
+// import * as Comlink from 'comlink';
+import { expose } from 'comlink';
 import ballOnGround from './babylon/ballOnGround';
 
-onmessage = (event_) => {
-	const canvas = event_.data.canvas;
-	const engine = new Engine(canvas, true);
+let engine: Engine;
+let canvas: HTMLCanvasElement;
 
-	onmessage = function (event__) {
-		if (event__.data.width) {
-			canvas.width = event__.data.width;
-			canvas.height = event__.data.height;
+const babylonWorker = {
+	init: (initCanvas: OffscreenCanvas) => {
+		canvas = initCanvas as unknown as HTMLCanvasElement;
+		engine = new Engine(canvas, true);
+		const scene = ballOnGround(engine, canvas);
+		engine.runRenderLoop(() => {
+			scene.render();
 		}
+		);
+	},
+	resize: (width: number, height: number) => {
+		canvas.width = width;
+		canvas.height = height;
 	}
-	const scene = ballOnGround(engine, canvas);
-	engine.runRenderLoop(() => {
-		scene.render();
-	}
-	);
-
-	// // depending on which scene is requested, load the appropriate module
-	// const scene = await import(`./babylon/${event_.data.scene}.ts`).then((module) => {
-	// 	return module.default(engine, canvas);
-	// }
-	// );
-
-	// engine.runRenderLoop(() => {
-	// 	scene.render();
-	// }
-	// );
-
-	// call ballOnGround.ts
-	// const scene = await import('./babylon/ballOnGround').then((module) => {
-	// 	return module.default(engine, canvas);
-	// }
-	// );
-
-	// engine.runRenderLoop(() => {
-	// 	scene.render();
-	// }
-	// );
 }
+
+expose(babylonWorker);
