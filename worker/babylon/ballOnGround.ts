@@ -1,5 +1,14 @@
 // import * as BABYLON from '@babylonjs/core'
-import { Engine, Scene, Color4, FreeCamera, Vector3, HemisphericLight, MeshBuilder } from '@babylonjs/core';
+// import { Engine, Scene, Color4, FreeCamera, Vector3, HemisphericLight, MeshBuilder } from '@babylonjs/core';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { Scene } from '@babylonjs/core/scene';
+import { Color4 } from '@babylonjs/core/Maths/math.color';
+import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
+import '@babylonjs/core/Materials/standardMaterial';
+
 export default (engine: Engine, canvas: HTMLCanvasElement) => {
 	// Creates a basic Babylon Scene object
 	const scene = new Scene(engine);
