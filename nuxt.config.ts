@@ -9,7 +9,7 @@ import vuetify from 'vite-plugin-vuetify';
 export default defineNuxtConfig({
 	css: [
 		// 'vuetify/lib/styles/main.sass',
-		'@mdi/font/css/materialdesignicons.min.css',
+		// '@mdi/font/css/materialdesignicons.min.css',
 	],
 	// serverHandlers: [
 	// 	{
@@ -18,12 +18,29 @@ export default defineNuxtConfig({
 	// 	}
 	// ],
 	modules: [
-		['unplugin-icons/nuxt', { /* options */ }],
+		// 'nuxt-purgecss',
+		['@unocss/nuxt', {
+			// presets
+			// uno: true, // enabled `@unocss/preset-uno`
+			icons: {
+				// enabled `@unocss/preset-icons`
+				prefix: 'i-',
+				extraProperties: {
+					display: 'inline-block',
+				},
+			},
+			// attributify: true, // enabled `@unocss/preset-attributify`,
+
+			// core options
+			// shortcuts: [],
+			// rules: [],
+		}],
+		// ['unplugin-icons/nuxt', { /* options */ }],
 		// eslint-disable-next-line require-await
 		async (_options, nuxt) => {
 			nuxt.hooks.hook('vite:extendConfig', (config) => {
 				config.plugins?.push(
-					vuetify()
+					vuetify({ autoImport: true })
 				)
 			})
 		},
@@ -196,7 +213,7 @@ export default defineNuxtConfig({
 				external: [
 					// 'vue',
 					// 'vue-router'
-					'@dimforge/rapier3d-compat'
+					// '@dimforge/rapier3d-compat'
 				],
 				output: {
 					manualChunks: {
@@ -206,7 +223,7 @@ export default defineNuxtConfig({
 					globals: {
 						// vue: 'Vue',
 						// 'vue-router': 'VueRouter',
-						'@dimforge/rapier3d-compat': 'RAPIER'
+						// '@dimforge/rapier3d-compat': 'RAPIER'
 					},
 					// entryFileNames: "_nuxt/ss-entry.js",
 					// chunkFileNames: "_nuxt/ss-chunk.js",
