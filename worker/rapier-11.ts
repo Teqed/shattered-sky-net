@@ -190,18 +190,19 @@ const rapierExport = {
 		}
 	},
 	newBody (meshId: number,
-		p: {
+		_p: {
 			x: number;
 			y: number;
 			z: number;
 		},
-		r: {
+		_r: {
 			x: number;
 			y: number;
 			z: number;
 			w: number;
-		}, mass?: number, size?: number) {
+		}, _mass?: number, _size?: number) {
 		meshBodies.push(
+			// @ts-ignore-next-line - meshId is holding values
 			initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1)
 		);
 		return true;

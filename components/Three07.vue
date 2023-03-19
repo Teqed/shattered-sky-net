@@ -12,14 +12,17 @@ import * as RANDOMJS from 'random-js';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
 // Initialize object pool
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const objectPool: any[] = [];
 
 // Create an object in the pool or create a new object if the pool is empty
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const createObject = () => {
 	return objectPool.length > 0 ? objectPool.pop() : {};
 };
 
 // Release an object back to the pool
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any
 const releaseObject = (obj: { [x: string]: any; }) => {
 	Object.keys(obj).forEach((key) => {
 		delete obj[key];
@@ -37,6 +40,7 @@ const meshBodies: {
 	},
 	mesh: THREE.Object3D<THREE.Event>,
 }[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let meshBodiesUpdate: { [x: string]: any; } = {};
 
 const icosahedron = (mass: number, position: { x: number, y: number, z: number }) => {

@@ -2,7 +2,7 @@
 
 // import VueGtag from 'vue-gtag';
 
-export default defineNuxtPlugin((nuxtApp) => {
+export default defineNuxtPlugin((_nuxtApp) => {
 	// nuxtApp.vueApp.use(VueGtag, {
 	// 	config: {
 	// 		id: 'G-2FGMFZNKDY'

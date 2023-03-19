@@ -147,6 +147,7 @@ const main = async () => {
 				const meshval = meshBodies.map(({ meshId, meshUpdate }) => ({ meshId, meshUpdate }))
 				let meshBodiesUpdate = {};
 				meshBodiesUpdate = meshval.reduce(
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(accumulator: { [x: string]: any; }, meshBody: { meshId: number | string; meshUpdate: any; }) => {
 						accumulator[meshBody.meshId] = meshBody.meshUpdate;
 						return accumulator;

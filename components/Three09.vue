@@ -174,6 +174,7 @@ const decode = async (arrayBuffer: ArrayBuffer): Promise<{
 			w: number;
 		};
 	};
+// eslint-disable-next-line require-await
 }> => {
 	const update = new Float32Array(arrayBuffer);
 	const meshUpdate: {

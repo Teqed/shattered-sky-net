@@ -1,6 +1,6 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 
-test.describe('visits all pages', async () => {
+test.describe('visits all pages', () => {
 	test.describe.configure({ mode: 'parallel' });
 	test('visits the app root url', async ({ page, baseURL }) => {
 		await page.goto(baseURL + '/');

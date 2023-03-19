@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { setup, $fetch, createPage } from '@nuxt/test-utils';
+import { setup, createPage } from '@nuxt/test-utils';
 
 describe('HomePage', async () => {
 	await setup({

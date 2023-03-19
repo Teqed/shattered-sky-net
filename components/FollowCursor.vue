@@ -21,7 +21,7 @@ const windowSize = {
 };
 
 // Create a function to update the background position
-function updateBackground () {
+const updateBackground = () => {
 	// Update the target position
 	target.x = lerp(mouse.x, target.x, 0.9);
 	target.y = lerp(mouse.y, target.y, 0.9);
@@ -33,7 +33,7 @@ function updateBackground () {
 }
 
 // Create a function to animate the background
-function animateBackground () {
+const animateBackground = () => {
 	// Update the background position
 	updateBackground();
 
@@ -42,21 +42,21 @@ function animateBackground () {
 }
 
 // Create a function to update the window size
-function updateWindowSize () {
+const updateWindowSize = () => {
 	// Update the window size
 	windowSize.width = window.innerWidth;
 	windowSize.height = window.innerHeight;
 }
 
 // Create a function to update the mouse position
-function updateMousePosition (event: MouseEvent) {
+const updateMousePosition = (event: MouseEvent) => {
 	// Update the mouse position
 	mouse.x = event.clientX;
 	mouse.y = event.clientY;
 }
 
 // Create a function to run when the page loads
-function initialize () {
+const initialize = () => {
 	// Add an event listener to update the mouse position
 	document.addEventListener('mousemove', updateMousePosition);
 
