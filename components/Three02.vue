@@ -4,33 +4,45 @@
 
 <script setup lang="ts">
 
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
+// import * as THREE from 'three';
+// import * as CANNON from 'cannon-es';
+import { Object3D,
+	Scene,
+	OrthographicCamera,
+	WebGLRenderer,
+	Mesh,
+	BoxGeometry,
+	MeshBasicMaterial,
+	Vector3,
+	Quaternion,
+	Event,
+} from 'three';
+import { World, Body, Box, Vec3 } from 'cannon-es';
 
 /**
-       * Really basic example to show cannon.js integration
-       * with three.js.
-       * Each frame the cannon.js world is stepped forward and then
+       * Really basic example to show js integration
+       * with js.
+       * Each frame the js world is stepped forward and then
        * the position and rotation data of the boody is copied
-       * over to the three.js scene.
+       * over to the js scene.
        */
 
-// three.js variables
-let camera: THREE.OrthographicCamera, scene: THREE.Scene, renderer: THREE.WebGLRenderer
-let mesh: THREE.Object3D<THREE.Event>
+// js variables
+let camera: OrthographicCamera, myScene: Scene, renderer: WebGLRenderer
+let mesh: Object3D<Event>
 
-// cannon.js variables
-let world: CANNON.World
-let body: CANNON.Body
+// js variables
+let myWorld: World
+let myBody: Body
 
 const initThree = () => {
 	// Div to hold the canvas
 	const canvasWrapper = document.querySelector('#canvasWrapper') as HTMLDivElement;
 	// Camera
 	let dimensions = { width: (window.innerHeight * 0.65), height: (window.innerHeight * 0.65)}
-	// camera = new THREE.PerspectiveCamera(75, dimensions.width / dimensions.height, 1, 100)
+	// camera = new PerspectiveCamera(75, dimensions.width / dimensions.height, 1, 100)
 	// Orthographic camera
-	camera = new THREE.OrthographicCamera(
+	camera = new OrthographicCamera(
 		dimensions.width / -320,
 		dimensions.width / 320,
 		dimensions.height / 320,
@@ -41,10 +53,10 @@ const initThree = () => {
 	camera.position.z = 5
 
 	// Scene
-	scene = new THREE.Scene()
+	myScene = new Scene()
 
 	// Renderer
-	renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+	renderer = new WebGLRenderer({ antialias: true, alpha: true })
 	// const dimensions = document.querySelector('#canvasWrapper')?.clientWidth ?? 800;
 	//  renderer.setSize(dimensions, dimensions);
 	renderer.setSize(dimensions.width, dimensions.height)
@@ -65,43 +77,43 @@ const initThree = () => {
 	window.addEventListener('resize', onWindowResize)
 
 	// Box
-	const geometry = new THREE.BoxGeometry(2, 2, 2);
-	const material = new THREE.MeshBasicMaterial({ color: 0xFF0000, wireframe: true })
+	const geometry = new BoxGeometry(2, 2, 2);
+	const material = new MeshBasicMaterial({ color: 0xFF0000, wireframe: true })
 
-	mesh = new THREE.Mesh(geometry, material)
-	scene.add(mesh)
+	mesh = new Mesh(geometry, material)
+	myScene.add(mesh)
 }
 
 const initCannon = () => {
-	world = new CANNON.World()
+	myWorld = new World()
 
 	// Box
-	const shape = new CANNON.Box(new CANNON.Vec3(1, 1, 1))
-	body = new CANNON.Body({
+	const shape = new Box(new Vec3(1, 1, 1))
+	myBody = new Body({
 		mass: 1,
 	})
-	body.addShape(shape)
-	body.angularVelocity.set(0, 10, 0)
-	body.angularDamping = 0.5
-	world.addBody(body)
+	myBody.addShape(shape)
+	myBody.angularVelocity.set(0, 10, 0)
+	myBody.angularDamping = 0.5
+	myWorld.addBody(myBody)
 }
 
 const animate = () => {
 	requestAnimationFrame(animate)
 
 	// Step the physics world
-	world.fixedStep();
+	myWorld.fixedStep();
 
-	// Copy coordinates from cannon.js to three.js
-	mesh.position.copy(new THREE.Vector3(body.position.x, body.position.y, body.position.z));
-	mesh.quaternion.copy(new THREE.Quaternion(
-		body.quaternion.x,
-		body.quaternion.y,
-		body.quaternion.z,
-		body.quaternion.w));
+	// Copy coordinates from js to js
+	mesh.position.copy(new Vector3(myBody.position.x, myBody.position.y, myBody.position.z));
+	mesh.quaternion.copy(new Quaternion(
+		myBody.quaternion.x,
+		myBody.quaternion.y,
+		myBody.quaternion.z,
+		myBody.quaternion.w));
 
-	// Render three.js
-	renderer.render(scene, camera);
+	// Render js
+	renderer.render(myScene, camera);
 }
 
 onMounted(() => {
