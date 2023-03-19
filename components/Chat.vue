@@ -2,7 +2,7 @@
   <div>
     <TileItem>
       <template #icon>
-        <div class="i-mdi:message" />
+        <div class="i-mdi:message text-2xl" />
       </template>
       <template #heading>
         <div id="headChat">
@@ -22,7 +22,7 @@
               </p>
             </div>
             <template #icon>
-              <div class="i-mdi:robot-outline" />
+              <div class="i-mdi:robot-outline text-2xl" />
             </template>
           </TileItemReversed>
         </div>
@@ -32,7 +32,7 @@
         <div>
           <TileItem>
             <template #icon>
-              <div class="i-mdi:account-voice" />
+              <div class="i-mdi:account-voice text-2xl" />
             </template>
             <div id="user">
               <p>
@@ -56,7 +56,7 @@
               </p>
             </div>
             <template #icon>
-              <div class="i-mdi:robot-outline" />
+              <div class="i-mdi:robot-outline text-2xl" />
             </template>
           </TileItemReversed>
         </div>
@@ -65,7 +65,7 @@
     <div>
       <TileItem>
         <template #icon>
-          <div class="i-mdi:keyboard" />
+          <div class="i-mdi:keyboard text-2xl" />
         </template>
         <div id="inputbox">
           <v-textarea
@@ -88,8 +88,8 @@
             block
             @click="chat"
           >
-            <div v-if="state.loading" class="i-svg-spinners:ring-resize text-black-400" />
-            <div v-else class="i-mdi:send text-black-400" />
+            <div v-if="state.loading" class="i-svg-spinners:ring-resize text-2xl" />
+            <div v-else class="i-mdi:send text-2xl" />
           </v-btn>
         </div>
       </TileItem>

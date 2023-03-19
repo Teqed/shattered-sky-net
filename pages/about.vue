@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 useHead({
-  title: 'About',
-  meta: [{ name: 'description', content: 'About Shattered Sky.' }],
+	title: 'About',
+	meta: [{ name: 'description', content: 'About Shattered Sky.' }],
 });
 </script>
 
@@ -10,7 +10,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        🕮
+        <div class="i-mdi:information-outline text-2xl" />
       </template>
       <template #heading>
         {{ $t('about.card0.title') }}
@@ -20,7 +20,7 @@ useHead({
     </TileItem>
     <TileItem>
       <template #icon>
-        ✏️
+        <div class="i-mdi:pencil-outline text-2xl" />
       </template>
       <template #heading>
         {{ $t('about.card1.title') }}

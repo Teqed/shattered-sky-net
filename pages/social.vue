@@ -9,7 +9,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        📚
+        <div class="i-mdi:forum text-2xl" />
       </template>
       <template #heading>
         {{ $t('social.card0.title') }}
@@ -51,7 +51,7 @@ useHead({
     </TileItem>
     <TileItem>
       <template #icon>
-        🐘
+        <div class="i-mdi:elephant text-2xl" />
       </template>
       <template #heading>
         {{ $t('social.card2.title') }}

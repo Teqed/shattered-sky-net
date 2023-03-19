@@ -9,7 +9,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        📺
+        <div class="i-mdi:youtube-tv text-2xl" />
       </template>
       <template #heading>
         {{ $t('stream.card0.title') }}

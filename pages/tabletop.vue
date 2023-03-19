@@ -20,7 +20,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        🌌
+        <div class="i-mdi:space-station text-2xl" />
       </template>
       <template #heading>
         {{ $t('tabletop.card1.title') }}
@@ -57,7 +57,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        🧙
+        <div class="i-mdi:magic-staff text-2xl" />
       </template>
       <template #heading>
         {{ $t('tabletop.card2.title') }}
@@ -91,7 +91,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        🐦
+        <div class="i-mdi:bird text-2xl" />
       </template>
       <template #heading>
         {{ $t('tabletop.card3.title') }}

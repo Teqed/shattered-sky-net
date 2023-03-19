@@ -9,7 +9,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        📂
+        <div class="i-mdi:file-document-multiple-outline text-2xl" />
       </template>
       <template #heading>
         {{ $t('files.card0.title') }}

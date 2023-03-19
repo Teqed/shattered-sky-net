@@ -1,9 +1,4 @@
 <script setup lang="ts">
-import DocumentationIcon from '../assets/icons/IconDocumentation.vue';
-import ToolingIcon from '../assets/icons/IconTooling.vue';
-import EcosystemIcon from '../assets/icons/IconEcosystem.vue';
-import CommunityIcon from '../assets/icons/IconCommunity.vue';
-import SupportIcon from '../assets/icons/IconSupport.vue';
 useHead({
 	title: 'Shattered Sky',
 	titleTemplate: '%s',
@@ -17,7 +12,7 @@ useHead({
   <div>
     <TileItem>
       <template #icon>
-        <DocumentationIcon />
+        <div class="i-mdi:file-document-multiple-outline text-2xl" />
       </template>
       <template #heading>
         {{ $t('index.files.title') }}
@@ -34,7 +29,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        <ToolingIcon />
+        <div class="i-mdi:dice-d20-outline text-2xl" />
       </template>
       <template #heading>
         {{ $t('index.tabletop.title') }}
@@ -49,7 +44,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        <EcosystemIcon />
+        <div class="i-mdi:youtube-tv text-2xl" />
       </template>
       <template #heading>
         {{ $t('index.streaming.title') }}
@@ -67,7 +62,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        <CommunityIcon />
+        <div class="i-mdi:forum text-2xl" />
       </template>
       <template #heading>
         {{ $t('index.social.title') }}
@@ -85,7 +80,7 @@ useHead({
 
     <TileItem>
       <template #icon>
-        <SupportIcon />
+        <div class="i-mdi:playlist-check text-2xl" />
       </template>
       <template #heading>
         {{ $t('index.whitelisting.title') }}
