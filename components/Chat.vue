@@ -99,6 +99,7 @@
 <script setup lang="ts">
 import { reactive } from 'vue';
 import { io } from 'socket.io-client';
+// import hljs from 'highlight.js';
 const socket = io(
 	'https://wsio.shatteredsky.net/',
 	// 'http://localhost:3355/',
@@ -142,6 +143,7 @@ const chat = () => {
 		receivedMessageInitator = false;
 		slowLoad = true;
 		let receivedMessage = '';
+		// const codeCounter = 0;
 		socket.on('GPTanswer', (data: string) => {
 			try {
 				if (!receivedMessageInitator) {
@@ -158,8 +160,19 @@ const chat = () => {
 				} else if (data === '[DONE]') {
 					state.loading = false;
 					socket.off('GPTanswer');
+					// hljs.highlightAll();
 				} else {
-					receivedMessage = receivedMessage + data;
+					console.log(data)
+					receivedMessage += data;
+					// if (receivedMessage.includes('```')) {
+					// 	codeCounter += 1;
+					// 	if (codeCounter === 1) {
+					// 		receivedMessage = receivedMessage.replace('```', '<pre><code>');
+					// 	} else if (codeCounter === 2) {
+					// 		receivedMessage = receivedMessage.replace('```', '</code></pre>');
+					// 		codeCounter = 0;
+					// 	}
+					// }
 					state.messages[state.messages.length - 1] = { role: 'assistant', content: receivedMessage };
 				}
 			} catch (e) {
@@ -186,6 +199,13 @@ const chat = () => {
 		console.error(e);
 	}
 }
+onUpdated(() => {
+	const chatbox = document.querySelector('#inputbox');
+	console.log(chatbox)
+	if (chatbox) {
+		chatbox.scrollIntoView({ behavior: 'smooth', block: 'end', inline: 'nearest' });
+	}
+})
 </script>
 <script lang="ts">
 </script>
