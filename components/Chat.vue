@@ -2,7 +2,7 @@
   <div>
     <TileItem>
       <template #icon>
-        💬
+        <div class="i-mdi:message" />
       </template>
       <template #heading>
         <div id="headChat">
@@ -22,7 +22,7 @@
               </p>
             </div>
             <template #icon>
-              🤖
+              <div class="i-mdi:robot-outline" />
             </template>
           </TileItemReversed>
         </div>
@@ -32,7 +32,7 @@
         <div>
           <TileItem>
             <template #icon>
-              🗣️
+              <div class="i-mdi:account-voice" />
             </template>
             <div id="user">
               <p>
@@ -56,7 +56,7 @@
               </p>
             </div>
             <template #icon>
-              🤖
+              <div class="i-mdi:robot-outline" />
             </template>
           </TileItemReversed>
         </div>
@@ -65,14 +65,12 @@
     <div>
       <TileItem>
         <template #icon>
-          ⌨️
+          <div class="i-mdi:keyboard" />
         </template>
         <div id="inputbox">
           <v-textarea
             id="input"
             v-model="state.newMessage"
-            class="mx-auto"
-            color="grey-lighten-3"
             auto-grow
             label="Ask a question"
             type="text"
@@ -81,10 +79,18 @@
             density="compact"
             :disabled="state.loading"
             hide-details="auto"
-            append-inner-icon="mdi-send"
-            @click:append-inner="chat"
             @keyup.enter="chat"
           />
+          <v-btn
+            :disabled="state.loading"
+            theme="dark"
+            color="transparent"
+            block
+            @click="chat"
+          >
+            <div v-if="state.loading" class="i-svg-spinners:ring-resize text-black-400" />
+            <div v-else class="i-mdi:send text-black-400" />
+          </v-btn>
         </div>
       </TileItem>
     </div>
@@ -95,9 +101,9 @@ import { reactive } from 'vue';
 import { io } from 'socket.io-client';
 const socket = io(
 	'https://wsio.shatteredsky.net/',
+	// 'http://localhost:3355/',
 	{transports: ['websocket'],}
 );
-// const socket = io('http://localhost:3355/');
 interface ChatMessage {
 	role: 'assistant' | 'loading' | 'system' | 'user';
 	content: string;
@@ -151,7 +157,6 @@ const chat = () => {
 					]
 				} else if (data === '[DONE]') {
 					state.loading = false;
-					receivedMessageInitator = false;
 					socket.off('GPTanswer');
 				} else {
 					receivedMessage = receivedMessage + data;
@@ -163,6 +168,20 @@ const chat = () => {
 		});
 		loadingBar();
 		socket.emit('GPTquestion', state.messages);
+		const timeout = async () => {
+			await new Promise(resolve => setTimeout(resolve, 120000));
+			if (!receivedMessageInitator) {
+				state.loading = false;
+				state.messages = state.messages.filter(
+					message => message.role !== 'loading'
+				)
+				socket.off('GPTanswer');
+			} else if (state.loading) {
+				state.loading = false;
+				socket.off('GPTanswer');
+			}
+		}
+		timeout();
 	} catch (e) {
 		console.error(e);
 	}
@@ -171,6 +190,7 @@ const chat = () => {
 <script lang="ts">
 </script>
   <style>
+  @import 'vuetify/styles';
   #user {
 	border-radius: 1px;
 	padding: 2px;

@@ -45,50 +45,41 @@ const chatCompletionStreaming = async (messages: ChatCompletionRequestMessage[],
 		} else {
 			console.time('conversation');
 			try {
-				let reply = '';
 				const response = await openai.createChatCompletion({
 					model: 'gpt-3.5-turbo',
 					messages,
 					stream: true,
 				}, { responseType: 'stream' });
-				let streaming = true;
 				const readableStream = response.data as unknown as NodeJS.ReadableStream;
 				readableStream.on('data', (data: { toString: () => string; }) => {
 					const lines = data.toString().split('\n').filter((line: string) => line.trim() !== '');
 					for (const line of lines) {
 						const message = line.replace(/^data: /, '');
 						if (message === '[DONE]') {
-							streaming = false;
+							io.emit('GPTanswer', message)
 							console.timeEnd('conversation');
+							readableStream.off('data', () => { });
+							return message;
 						} else {
-							try {
-								const parsed: ResponseChunk = JSON.parse(message);
-								if (parsed.choices[0].delta.content) {
-									reply += parsed.choices[0].delta.content;
-									io.emit('GPTanswer', parsed.choices[0].delta.content)
-								}
-							} catch (error) {
-								console.error('Could not JSON parse stream message', message, error);
+							const parsed: ResponseChunk = JSON.parse(message);
+							const token: string = parsed.choices[0].delta.content;
+							if (token) {
+								io.emit('GPTanswer', token)
 							}
 						}
 					}
 				});
-				let timeout = 0;
-				// eslint-disable-next-line no-unmodified-loop-condition
-				while (streaming && timeout < 240) {
-					// eslint-disable-next-line no-await-in-loop
-					await new Promise(resolve => setTimeout(resolve, 500));
-					timeout += 1;
-				}
-				writeLog(reply, false)
-				return reply;
 			} catch (error) {
 				console.error('An error occurred during OpenAI request', error);
+				io.emit('GPTanswer', errorReply);
+				io.emit('GPTanswer', '[DONE]');
 				return errorReply;
 			}
 		}
 	} catch (error) {
 		console.error('An error occurred during OpenAI request', error);
+		io.emit('GPTanswer', errorReply);
+		io.emit('GPTanswer', '[DONE]');
 		return errorReply;
 	}
 }
@@ -108,16 +99,16 @@ export default defineNitroPlugin(async () => {
 
 	io.on('connect', (socket) => {
 		socket.emit('message', `welcome ${socket.id}`)
-		socket.broadcast.emit('message', `${socket.id} joined`)
+		// socket.broadcast.emit('message', `${socket.id} joined`)
 
-		socket.on('message', function message (data) {
-			console.log('message received: %s', data)
-			socket.emit('message', { data })
-		})
+		// socket.on('message', function message (data) {
+		// 	console.log('message received: %s', data)
+		// 	socket.emit('message', { data })
+		// })
 
 		socket.on('disconnecting', () => {
 			console.log('disconnected', socket.id)
-			socket.broadcast.emit('message', `${socket.id} left`)
+			// socket.broadcast.emit('message', `${socket.id} left`)
 		})
 
 		socket.on('GPTquestion', (data) => {
