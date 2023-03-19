@@ -310,6 +310,11 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@babylonjs/core@^5.51.0":
+  version "5.51.0"
+  resolved "https://registry.yarnpkg.com/@babylonjs/core/-/core-5.51.0.tgz#dff104a0c9bd72a1e75f5a9b6d1d2d3d8f7b5314"
+  integrity sha512-MIbUD6HdlhNCBaBHlWE06LS25eH649EQQcpINNhlIYTvoaTVQAa3O/M2zpbiZoGESnWO8LSfQYTWc370AWcbCQ==
+
 "@cloudflare/kv-asset-handler@^0.3.0":
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/@cloudflare/kv-asset-handler/-/kv-asset-handler-0.3.0.tgz#11f0af0749a400ddadcca16dcd6f4696d7036991"
