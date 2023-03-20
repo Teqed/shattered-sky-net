@@ -1,13 +1,16 @@
 <template>
   <canvas id="renderCanvas" touch-action="none" />
+  <div id="meshcount" class="meshcount" />
 </template>
 <script setup lang="ts">
 // import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
 // import * as Comlink from 'comlink';
 import {
 	wrap,
-	transfer
+	transfer,
 } from 'comlink';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import manyCubes from '../../worker/babylon/manyCubes';
 const worker = new Worker(new URL('../../worker/babylon.ts', import.meta.url), {
 	type: 'module',
 });
@@ -18,15 +21,62 @@ const babylonWorker: {
 	resize: (width: number, height: number) => {
 		/* ... */
 	},
+	mouseEvent: (
+		type: string,
+		x: number,
+		y: number
+	) => {
+		/* ... */
+	},
 } = wrap(worker);
+
+let engine: Engine;
+let canvas: HTMLCanvasElement;
+
+const babylonGlobal = {
+	init: async (initCanvas: HTMLCanvasElement) => {
+		canvas = initCanvas;
+		engine = new Engine(canvas, true);
+		// const scene = ballOnGround(engine, canvas);
+		const scene = await manyCubes(engine, canvas);
+		engine.runRenderLoop(() => {
+			scene.render();
+		}
+		);
+		return scene;
+	},
+	resize: (width: number, height: number) => {
+		canvas.width = width;
+		canvas.height = height;
+	},
+	mouseEvent: () => {
+	}
+}
 onMounted(() => {
+	let babylon: typeof babylonGlobal | typeof babylonWorker;
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!; // Get the canvas element
-	canvas.width = canvas.clientWidth;
-	canvas.height = canvas.clientHeight;
-	const offscreen = canvas.transferControlToOffscreen();
-	babylonWorker.init(transfer(offscreen, [offscreen]));
+	// if ('OffscreenCanvas' in window && 'transferControlToOffscreen' in canvas) {
+	// eslint-disable-next-line no-constant-condition
+	if (false) {
+		babylon = babylonWorker;
+		const offscreen = canvas.transferControlToOffscreen();
+		babylonWorker.init(transfer(offscreen, [offscreen]));
+		const onMouseEvents = (event: MouseEvent) => {
+			const type = event.type;
+			const x = event.clientX;
+			const y = event.clientY;
+			babylon.mouseEvent(type, x, y);
+		};
+		canvas.addEventListener('mousedown', onMouseEvents);
+		canvas.addEventListener('mousemove', onMouseEvents);
+		canvas.addEventListener('mouseup', onMouseEvents);
+	} else {
+		babylon = babylonGlobal;
+		babylonGlobal.init(canvas);
+	}
+	babylon.resize(canvas.clientWidth, canvas.clientHeight);
 	window.addEventListener('resize', () => {
-		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
+		babylon.resize(canvas.clientWidth, canvas.clientHeight);
 	});
 });
 
