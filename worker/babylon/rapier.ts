@@ -82,7 +82,7 @@ const initBody = async (meshId: number,
 			p.y ?? 0,
 			p.z ?? 0,
 		)
-		.setAngularDamping(0.001)
+		.setAngularDamping(0.1)
 		.setLinearDamping(1)
 		.setLinvel(
 			random.real(-1, 1),
@@ -115,15 +115,15 @@ const initBody = async (meshId: number,
 		r: { x: r.x, y: r.y, z: r.z, w: r.w }
 	};
 	const update = () => {
-		// const rotation = body.rotation();
-		// // meshUpdate.ruaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
-		// // Round the values off to x.xxx precision
-		// meshUpdate[meshId].r = {
-		// 	x: Math.round(rotation.x * 1000) / 1000,
-		// 	y: Math.round(rotation.y * 1000) / 1000,
-		// 	z: Math.round(rotation.z * 1000) / 1000,
-		// 	w: Math.round(rotation.w * 1000) / 1000
-		// }
+		const rotation = body.rotation();
+		// meshUpdate.ruaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
+		// Round the values off to x.xxx precision
+		meshUpdate[meshId].r = {
+			x: Math.round(rotation.x * 1000) / 1000,
+			y: Math.round(rotation.y * 1000) / 1000,
+			z: Math.round(rotation.z * 1000) / 1000,
+			w: Math.round(rotation.w * 1000) / 1000
+		}
 		const translation = body.translation();
 		// meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
 		// Round the values off to x.xxx precision

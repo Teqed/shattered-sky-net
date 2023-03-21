@@ -144,10 +144,11 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: any[] | 
 				z: matricesData[index * 16 + 14],
 			},
 			r: {
-				x: 0,
-				y: 0,
-				z: 0,
-				w: 1,
+				// random values
+				x: Math.random(),
+				y: Math.random(),
+				z: Math.random(),
+				w: Math.random(),
 			},
 			mass: 1,
 		};
@@ -163,7 +164,7 @@ const createObjects = async (scene: Scene) => {
 	await waitForWorld
 	const box = BABYLON.CreateBox('root', {size: 1});
 	box.doNotSyncBoundingInfo = true;
-	const numberPerSide = 30; const size = 10; const ofst = size / (numberPerSide - 1);
+	const numberPerSide = 20; const size = 10; const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
 	let col = 0; let index = 0;
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
@@ -210,11 +211,15 @@ const createObjects = async (scene: Scene) => {
 			// update thin instance matrix
 			const body = meshBodiesUpdate[meshId];
 			const matrix = BABYLON.Matrix.Identity();
-			matrix.m[12] = body.p.x;
-			matrix.m[13] = body.p.y;
-			matrix.m[14] = body.p.z;
+			// BABYLON.Quaternion.FromArray([body.r.x, body.r.y, body.r.z, body.r.w]).toRotationMatrix(rot)
+			BABYLON.Matrix.ComposeToRef(
+				new BABYLON.Vector3(1, 1, 1),
+				new BABYLON.Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
+				new BABYLON.Vector3(body.p.x, body.p.y, body.p.z),
+				matrix
+			)
+			// BABYLON.Matrix.RotationYawPitchRoll(body.r.y, body.r.x, body.r.z).multiplyToRef(matrix, matrix);
 			matrix.copyToArray(matricesData, Number(meshId) * 16);
-			// box.thinInstanceSetBuffer('matrix', matricesData, 16);
 		}
 		box.thinInstanceSetBuffer('matrix', matricesData, 16);
 	}
