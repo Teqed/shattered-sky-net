@@ -5,30 +5,31 @@
 <script setup lang="ts">
 // import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
 // import * as Comlink from 'comlink';
-import {
-	wrap,
-	transfer,
-} from 'comlink';
+// import {
+// 	wrap,
+// 	transfer,
+// } from 'comlink';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import manyCubes from '../../worker/babylon/manyCubes';
-const worker = new Worker(new URL('../../worker/babylon.ts', import.meta.url), {
-	type: 'module',
-});
-const babylonWorker: {
-	init: (canvas: OffscreenCanvas) => {
-		/* ... */
-	},
-	resize: (width: number, height: number) => {
-		/* ... */
-	},
-	mouseEvent: (
-		type: string,
-		x: number,
-		y: number
-	) => {
-		/* ... */
-	},
-} = wrap(worker);
+import manyCubes from '../../utils/babylon/manyCubes';
+// import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
+// const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
+// 	type: 'module',
+// });
+// const babylonWorker: {
+// 	init: (canvas: OffscreenCanvas) => {
+// 		/* ... */
+// 	},
+// 	resize: (width: number, height: number) => {
+// 		/* ... */
+// 	},
+// 	mouseEvent: (
+// 		type: string,
+// 		x: number,
+// 		y: number
+// 	) => {
+// 		/* ... */
+// 	},
+// } = wrap(worker);
 
 let engine: Engine;
 let canvas: HTMLCanvasElement;
@@ -39,6 +40,7 @@ const babylonGlobal = {
 		engine = new Engine(canvas, true);
 		// const scene = ballOnGround(engine, canvas);
 		const scene = await manyCubes(engine, canvas);
+		// const scene = await manyIcosahedrons(engine, canvas);
 		engine.runRenderLoop(() => {
 			scene.render();
 		}
@@ -53,27 +55,28 @@ const babylonGlobal = {
 	}
 }
 onMounted(() => {
-	let babylon: typeof babylonGlobal | typeof babylonWorker;
+	// let babylon: typeof babylonGlobal | typeof babylonWorker;
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!; // Get the canvas element
 	// if ('OffscreenCanvas' in window && 'transferControlToOffscreen' in canvas) {
-	// eslint-disable-next-line no-constant-condition
-	if (false) {
-		babylon = babylonWorker;
-		const offscreen = canvas.transferControlToOffscreen();
-		babylonWorker.init(transfer(offscreen, [offscreen]));
-		const onMouseEvents = (event: MouseEvent) => {
-			const type = event.type;
-			const x = event.clientX;
-			const y = event.clientY;
-			babylon.mouseEvent(type, x, y);
-		};
-		canvas.addEventListener('mousedown', onMouseEvents);
-		canvas.addEventListener('mousemove', onMouseEvents);
-		canvas.addEventListener('mouseup', onMouseEvents);
-	} else {
-		babylon = babylonGlobal;
-		babylonGlobal.init(canvas);
-	}
+
+	// if (false) {
+	// 	babylon = babylonWorker;
+	// 	const offscreen = canvas.transferControlToOffscreen();
+	// 	babylonWorker.init(transfer(offscreen, [offscreen]));
+	// 	const onMouseEvents = (event: MouseEvent) => {
+	// 		const type = event.type;
+	// 		const x = event.clientX;
+	// 		const y = event.clientY;
+	// 		babylon.mouseEvent(type, x, y);
+	// 	};
+	// 	canvas.addEventListener('mousedown', onMouseEvents);
+	// 	canvas.addEventListener('mousemove', onMouseEvents);
+	// 	canvas.addEventListener('mouseup', onMouseEvents);
+	// } else {
+	// babylon = babylonGlobal;
+	const babylon = babylonGlobal;
+	babylonGlobal.init(canvas);
+	// }
 	babylon.resize(canvas.clientWidth, canvas.clientHeight);
 	window.addEventListener('resize', () => {
 		babylon.resize(canvas.clientWidth, canvas.clientHeight);
@@ -82,6 +85,10 @@ onMounted(() => {
 
 </script>
 <style>
+header *:not(canvas) {
+	animation: fadeout 1s ease-in-out forwards;
+}
+
 html,
 body {
 overflow: hidden;
@@ -98,6 +105,8 @@ padding: 0;
 }
 
 	canvas {
+	outline: none;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -106,17 +115,29 @@ padding: 0;
 	animation: fadein 1s ease-in-out forwards;
 	}
 
-  @keyframes fadein {
-	from {
-	opacity: 0;
-	filter: blur(10px);
-	}
-
-	to {
-	opacity: 1;
-	filter: blur(0);
-	}
+@keyframes fadein {
+  from {
+  opacity: 0;
+  filter: blur(10px);
   }
+
+  to {
+  opacity: 1;
+  filter: blur(0);
+  }
+}
+
+@keyframes fadeout {
+  from {
+  opacity: 1;
+  filter: blur(0);
+  }
+
+  to {
+  opacity: 0;
+  filter: blur(10px);
+  }
+}
 
   .meshcount {
 	position: fixed;

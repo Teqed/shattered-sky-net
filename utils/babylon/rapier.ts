@@ -1,9 +1,10 @@
+/* eslint-disable no-plusplus */
 // @ts-ignore-next-line
 // import RAPIER from 'https://cdn.skypack.dev/@dimforge/rapier3d-compat';
 // import RAPIER from '@dimforge/rapier3d-compat';
 import * as RANDOMJS from 'random-js';
 import * as Comlink from 'comlink';
-import RAPIER from '../rapier';
+import RAPIER from '../worker/rapier';
 // importScripts('https://unpkg.com/comlink/dist/umd/comlink.js');
 // importScripts('../node_modules/comlink/dist/esm/comlink.js');
 
@@ -58,20 +59,21 @@ const indices = new Uint32Array([
 ]);
 
 const meshBodies: {
-	meshId: number,
-	body: RAPIER.RigidBody, update: Function }[] = []
+	[meshId: number]: {
+		body: RAPIER.RigidBody } } = {};
 
-const meshUpdate: {[meshId: number]: {
-	p: {x: number,
-		y: number,
-		z: number},
-	r: {x: number,
-		y: number,
-		z: number,
-		w: number} } } = {};
+// const meshUpdate: {
+// 	[x: string]: number;[meshId: number]: {
+// 		p: {x: number,
+// 			y: number,
+// 			z: number},
+// 		r: {x: number,
+// 			y: number,
+// 			z: number,
+// 			w: number} } } = {};
 
 // Function to create bodies
-const initBody = async (meshId: number,
+const initBody = (meshId: number,
 	p: { x: number, y: number, z: number },
 	r: { x: number, y: number, z: number, w: number },
 	mass: number, size: number) => {
@@ -109,58 +111,36 @@ const initBody = async (meshId: number,
 	const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
 	// @ts-ignore-next-line - colliderDesc is possibly null
 	world.createCollider(colliderDesc, body)
-	// Push the meshId and body into the meshUpdate object
-	meshUpdate[meshId] = {
-		p: { x: p.x, y: p.y, z: p.z },
-		r: { x: r.x, y: r.y, z: r.z, w: r.w }
-	};
-	const update = () => {
-		const rotation = body.rotation();
-		// meshUpdate.ruaternion = { x: rotation.x, y: rotation.y, z: rotation.z, w: rotation.w }
-		// Round the values off to x.xxx precision
-		meshUpdate[meshId].r = {
-			x: Math.round(rotation.x * 1000) / 1000,
-			y: Math.round(rotation.y * 1000) / 1000,
-			z: Math.round(rotation.z * 1000) / 1000,
-			w: Math.round(rotation.w * 1000) / 1000
-		}
-		const translation = body.translation();
-		// meshUpdate.position = { x: translation.x, y: translation.y, z: translation.z }
-		// Round the values off to x.xxx precision
-		meshUpdate[meshId].p = {
-			x: Math.round(translation.x * 1000) / 1000,
-			y: Math.round(translation.y * 1000) / 1000,
-			z: Math.round(translation.z * 1000) / 1000
-		}
-		return new Promise((resolve) => {
-			resolve(
-				{
-					meshId,
-					meshPos: {
-						p: { x: translation.x, y: translation.y, z: translation.z },
-						r: { x: r.x, y: r.y, z: r.z, w: r.w }
-					},
-					body,
-					update
-				}
-			);
-		})
-	}
-	await update();
 	return { meshId,
-		meshPos: {
-			p: { x: p.x, y: p.y, z: p.z },
-			r: { x: r.x, y: r.y, z: r.z, w: r.w }
-		},
 		body,
-		update };
+	};
+}
+
+let update: number[];
+const virtualUpdate = () => {
+	const numberUpdates = Object.keys(meshBodies).length;
+	update = new Array(numberUpdates * 8);
+	let index = 0;
+
+	for (const key of Object.keys(meshBodies)) {
+		const body = meshBodies[Number(key)].body;
+		const translation = body.translation();
+		const rotation = body.rotation();
+		update[index++] = Number(key);
+		update[index++] = translation.x;
+		update[index++] = translation.y;
+		update[index++] = translation.z;
+		update[index++] = rotation.x;
+		update[index++] = rotation.y;
+		update[index++] = rotation.z;
+		update[index++] = rotation.w;
+	}
+
+	return new Float32Array(update).buffer;
 }
 
 const physicsUpdate = () => {
 	world.step();
-	meshBodies.forEach((meshBody) => {
-		meshBody.update();
-	})
 };
 
 const startPhysics = async () => {
@@ -169,8 +149,14 @@ const startPhysics = async () => {
 	const gravity = { x: 0.0, y: 0.0, z: 0.0 };
 	world = new RAPIER.World(gravity);
 	physicsUpdate();
+	let lastPhysicsUpdate = 0;
 	setInterval(() => {
-		physicsUpdate();
+		const now = Date.now();
+		if (now - lastPhysicsUpdate >= 10) {
+			physicsUpdate();
+			virtualUpdate();
+			lastPhysicsUpdate = now;
+		}
 	}, 1000 / 30);
 	worldloaded = true;
 	console.log('physics started')
@@ -183,41 +169,30 @@ const rapierExport = {
 	},
 	getUpdate () {
 		if (worldloaded === true) {
-			const update = new Float32Array(Object.entries(meshUpdate).length * 8);
-			let index = 0;
-			Object.entries(meshUpdate).forEach(([key, value]) => {
-				update[index] = Number(key);
-				update[index + 1] = value.p.x;
-				update[index + 2] = value.p.y;
-				update[index + 3] = value.p.z;
-				update[index + 4] = value.r.x;
-				update[index + 5] = value.r.y;
-				update[index + 6] = value.r.z;
-				update[index + 7] = value.r.w;
-				index += 8;
-			});
-			return update.buffer;
+			return new Float32Array(update).buffer;
 		} else {
 			console.log('world not loaded yet');
 			return [];
 		}
 	},
-	async newBody (meshId: number,
-		_p: {
+	newBody (meshId: {
+		meshId: number,
+		p: {
 			x: number;
 			y: number;
 			z: number;
 		},
-		_r: {
+		r: {
 			x: number;
 			y: number;
 			z: number;
 			w: number;
-		}, _mass?: number, _size?: number) {
-		meshBodies.push(
-			// @ts-ignore-next-line - meshId is holding values
-			await initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1)
-		);
+		}, mass?: number, size?: number
+	}) {
+		// meshBodies.push(
+		// 	initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1)
+		// );
+		meshBodies[meshId.meshId] = initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1);
 		return true;
 	},
 }

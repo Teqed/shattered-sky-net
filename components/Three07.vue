@@ -58,7 +58,7 @@ const icosahedron = (mass: number, position: { x: number, y: number, z: number }
 }
 
 // Create a new web worker
-const worker = new Worker(new URL('../worker/rapier-worker.ts', import.meta.url), {
+const worker = new Worker(new URL('../utils/worker/rapier-worker.ts', import.meta.url), {
 	type: 'module',
 })
 

@@ -7,7 +7,7 @@ import * as THREE from 'three';
 import * as RANDOMJS from 'random-js';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
-const worker = new Worker(new URL('../worker/rapier-worker.ts', import.meta.url), {
+const worker = new Worker(new URL('../utils/worker/rapier-worker.ts', import.meta.url), {
 	type: 'module',
 })
 

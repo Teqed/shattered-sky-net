@@ -1,28 +1,29 @@
 import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
-import { Color4 } from '@babylonjs/core/Maths/math.color';
-// import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
-import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
-import '@babylonjs/core/Materials/standardMaterial';
+// import '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/core/Physics/physicsEngineComponent'
 import '@babylonjs/core/Helpers/sceneHelpers';
-import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
-import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
+// import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
+// import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
 // import * as CANNON from 'cannon-es';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
-import * as Comlink from 'comlink';
+import { wrap } from 'comlink';
+import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder';
+import { Matrix, Color4 } from '@babylonjs/core/Maths/math';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
+import '@babylonjs/core/Meshes/thinInstanceMesh';
 
 const worker = new Worker(new URL(
 	'./rapier.ts',
 	import.meta.url), {
 	type: 'module',
 });
-const rapierExport = Comlink.wrap(worker);
+const rapierExport = wrap(worker);
 
 let bodyObject: {
 	meshId: number,
@@ -120,8 +121,8 @@ const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas
 	// 	// new Vector3(0, 0, 0),
 	// 	new CannonJSPlugin()
 	// );
-	// // Set background color to transparent
-	// scene.clearColor = new Color4(0, 0, 0, 0);
+	// Set background color to transparent
+	scene.clearColor = new Color4(0, 0, 0, 0);
 	// Creates a light, aiming 0,1,0 - to the sky
 	const light = new HemisphericLight('light',
 		new Vector3(0, 1, 0), scene);
@@ -132,7 +133,7 @@ const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas
 	return scene;
 }
 
-const createPhysicsBodies = async (instanceCount: number, matricesData: any[] | Float32Array) => {
+const createPhysicsBodies = async (instanceCount: number, matricesData: Float32Array) => {
 	// Create a new rapier body for each instance
 	for (let index = 0; index < instanceCount; index++) {
 		bodyObject = {
@@ -153,7 +154,7 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: any[] | 
 			mass: 1,
 		};
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-await-in-loop
 		await (rapierExport as any).newBody(bodyObject)
 	}
 }
@@ -162,10 +163,11 @@ const createObjects = async (scene: Scene) => {
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	const waitForWorld = (rapierExport as any).startPhysics() as Promise<boolean>;
 	await waitForWorld
-	const box = BABYLON.CreateBox('root', {size: 1});
-	box.doNotSyncBoundingInfo = true;
-	const numberPerSide = 20; const size = 10; const ofst = size / (numberPerSide - 1);
-	const m = BABYLON.Matrix.Identity();
+	// const mesh = CreateBox('root', {size: 1});
+	const mesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1}, scene);
+	mesh.doNotSyncBoundingInfo = true;
+	const numberPerSide = 10; const size = 10; const ofst = size / (numberPerSide - 1);
+	const m = Matrix.Identity();
 	let col = 0; let index = 0;
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
 	const matricesData = new Float32Array(instanceCount * 16);
@@ -191,10 +193,10 @@ const createObjects = async (scene: Scene) => {
 		}
 	}
 	// Set the instance buffers
-	box.thinInstanceSetBuffer('matrix', matricesData, 16);
-	box.thinInstanceSetBuffer('color', colorData, 4);
+	mesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	mesh.thinInstanceSetBuffer('color', colorData, 4);
 	// box.material = new BABYLON.StandardMaterial('material');
-	box.material = new BABYLON.StandardMaterial('material', scene);
+	mesh.material = new StandardMaterial('material', scene);
 	// box.material.disableLighting = true;
 	// box.material.emissiveColor = BABYLON.Color3.White();
 	scene.freezeActiveMeshes();
@@ -210,23 +212,23 @@ const createObjects = async (scene: Scene) => {
 		for (const meshId in meshBodiesUpdate) {
 			// update thin instance matrix
 			const body = meshBodiesUpdate[meshId];
-			const matrix = BABYLON.Matrix.Identity();
+			const matrix = Matrix.Identity();
 			// BABYLON.Quaternion.FromArray([body.r.x, body.r.y, body.r.z, body.r.w]).toRotationMatrix(rot)
-			BABYLON.Matrix.ComposeToRef(
-				new BABYLON.Vector3(1, 1, 1),
-				new BABYLON.Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
-				new BABYLON.Vector3(body.p.x, body.p.y, body.p.z),
+			Matrix.ComposeToRef(
+				new Vector3(1, 1, 1),
+				new Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
+				new Vector3(body.p.x, body.p.y, body.p.z),
 				matrix
 			)
 			// BABYLON.Matrix.RotationYawPitchRoll(body.r.y, body.r.x, body.r.z).multiplyToRef(matrix, matrix);
 			matrix.copyToArray(matricesData, Number(meshId) * 16);
 		}
-		box.thinInstanceSetBuffer('matrix', matricesData, 16);
+		mesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	}
 
 	// every 30fps, update the positions
 	setInterval(async () => {
-		document.querySelector('#meshcount').textContent = `Mesh count: ${instanceCount}`;
+		document.querySelector('#meshcount')!.textContent = `Mesh count: ${instanceCount}`;
 		updatePositions(await decode(await (rapierExport as any).getUpdate()));
 		// Randomize position every few frames
 		// if (scene.getFrameId() % 10 === 0) {
@@ -246,7 +248,7 @@ const createObjects = async (scene: Scene) => {
 			colorData[index_ * 4 + 2] = Math.random();
 		}
 		// Update the instance buffer
-		box.thinInstanceSetBuffer('color', colorData, 4);
+		mesh.thinInstanceSetBuffer('color', colorData, 4);
 	}, 1000 / 15);
 	// // add ground
 	// const ground = BABYLON.CreateGround('ground', {width: 500, height: 500});

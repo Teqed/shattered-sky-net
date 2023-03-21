@@ -10,7 +10,7 @@ import * as RANDOMJS from 'random-js';
 import * as Comlink from 'comlink';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
-const worker = new Worker(new URL('../worker/rapier-worker-comlink.ts', import.meta.url), {
+const worker = new Worker(new URL('../utils/worker/rapier-worker-comlink.ts', import.meta.url), {
 	type: 'module',
 });
 

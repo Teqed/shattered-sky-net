@@ -3,7 +3,7 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 // import * as Comlink from 'comlink';
 import { expose } from 'comlink';
 // import ballOnGround from './babylon/ballOnGround';
-import manyCubes, { relayMouseEvent } from './babylon/manyCubes';
+import manyCubes, { relayMouseEvent } from '../babylon/manyCubes';
 
 let engine: Engine;
 let canvas: OffscreenCanvas;
