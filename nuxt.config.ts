@@ -212,6 +212,11 @@ export default defineNuxtConfig({
 				// 'vue-router': 'https://cdn.jsdelivr.net/npm/vue-router@4/+esm',
 			},
 		},
+		optimizeDeps: {
+			// exclude: [
+			// 	'babylon',
+			// ],
+		},
 		build: {
 			emptyOutDir: true,
 			rollupOptions: {

@@ -16,8 +16,6 @@ import '@babylonjs/core/Helpers/sceneHelpers';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
 import * as Comlink from 'comlink';
-// import MyWorker from './rapier.ts?worker';
-// const worker = new MyWorker();
 
 let rapierExport: {
 	startPhysics: () => Promise<boolean>,
@@ -40,13 +38,7 @@ let rapierExport: {
 	}) => Promise<boolean>,
 }
 export const createSubWorker = (url: string) => {
-	const worker = new Worker(
-		// 	new URL('../babylon/rapier.ts', self.location.href),
-		// 	// new URL('./rapier.ts', 'http://localhost:3000/_nuxt/utils/babylon/manyIcosahedrons.ts'),
-		// 	// new URL('./rapier.ts', self.location.href),
-		new URL('../../utils/babylon/rapier.ts', url),
-		{ type: 'module' },
-	);
+	const worker = new Worker(url, { type: 'module' });
 	rapierExport = Comlink.wrap(worker);
 }
 let bodyObject: {

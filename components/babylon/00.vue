@@ -9,10 +9,13 @@ import {
 	wrap,
 	transfer,
 } from 'comlink';
-import { Engine } from '@babylonjs/core/Engines/engine';
+// import { Engine } from '@babylonjs/core/Engines/engine';
+// @ts-expect-error
+// eslint-disable-next-line import/default
+import rapierWorkerUrl from '../../utils/babylon/rapier-babylon?worker&url';
 // import manyCubes from '../../utils/babylon/manyCubes';
 // import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
-const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
+const worker = new Worker(new URL('../../utils/babylon/babylon.ts', import.meta.url), {
 	type: 'module',
 });
 const babylonWorker: {
@@ -40,7 +43,7 @@ const babylonWorker: {
 		/* ... */
 	},
 } = wrap(worker);
-babylonWorker.subSpawn(import.meta.url);
+babylonWorker.subSpawn(rapierWorkerUrl);
 
 // let engine: Engine;
 // let canvas: HTMLCanvasElement;
