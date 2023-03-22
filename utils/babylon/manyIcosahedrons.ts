@@ -124,31 +124,20 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 	// add event listener for mousedown,
 	// if mousedown, move camera forward
 	canvas.addEventListener('pointerdown', () => {
-		console.log('pointerdown reached');
-		// allow alpha and beta movement
 		isMouseDown = 1;
 	});
 	canvas.addEventListener('pointerup', () => {
-		console.log('pointerup reached');
-		// stop alpha and beta movement
 		isMouseDown = 0;
 	});
 	canvas.addEventListener('pointermove', (event: any) => {
-		console.log('pointerMove reached');
-		// adjust height and rotation offset
 		camera.beta += isMouseDown * -0.01 * (event.y - lastY);
 		camera.alpha += isMouseDown * -0.01 * (event.x - lastX);
 		lastX = event.x;
 		lastY = event.y;
 	});
 	canvas.addEventListener('wheel', (event: any) => {
-		console.log('wheel reached');
 		camera.radius += event.deltaY * 0.1;
 	});
-	// when mouse moves right, rotate camera right
-	// canvas.addEventListener('mousemove', (event) => {
-	// 	camera.alpha += 0.01;
-	// });
 }
 
 const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas) => {

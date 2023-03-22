@@ -93,7 +93,6 @@ onMounted(() => {
 				deltaZ,
 				deltaMode,
 			};
-			console.log(event)
 			babylonWorker.mouseEvent(wheelEvent);
 		} else {
 			const relayedMouseEvent = {
