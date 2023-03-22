@@ -172,6 +172,11 @@ export default defineNuxtConfig({
 		analyze: true,
 	},
 	nitro: {
+		// esbuild: {
+		// 	options: {
+		// 		target: 'esnext'
+		// 	},
+		// },
 		experimental: {
 			wasm: true,
 		}

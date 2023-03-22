@@ -36,7 +36,11 @@ const babylonWorker: {
 	) => {
 		/* ... */
 	},
+	subSpawn: (url: string) => {
+		/* ... */
+	},
 } = wrap(worker);
+babylonWorker.subSpawn(import.meta.url);
 
 // let engine: Engine;
 // let canvas: HTMLCanvasElement;

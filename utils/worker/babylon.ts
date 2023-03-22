@@ -4,7 +4,7 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { expose } from 'comlink';
 // import ballOnGround from './babylon/ballOnGround';
 // import manyCubes, { relayMouseEvent } from '../babylon/manyCubes';
-import manyIcosahedrons from '../babylon/manyIcosahedrons';
+import manyIcosahedrons, { createSubWorker } from '../babylon/manyIcosahedrons';
 
 let engine: Engine;
 let canvas: OffscreenCanvas;
@@ -393,6 +393,9 @@ const babylonWorker = {
 		// console.log(customEvent)
 		canvas.dispatchEvent(customEvent
 		);
+	},
+	subSpawn: (url: string) => {
+		createSubWorker(url);
 	}
 }
 

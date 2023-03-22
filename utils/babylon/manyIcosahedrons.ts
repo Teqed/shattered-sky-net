@@ -16,15 +16,10 @@ import '@babylonjs/core/Helpers/sceneHelpers';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
 import * as Comlink from 'comlink';
+// import MyWorker from './rapier.ts?worker';
+// const worker = new MyWorker();
 
-const worker = new Worker(
-	new URL('../babylon/rapier.ts', self.location.href),
-	// new URL('./rapier.ts', 'http://localhost:3000/_nuxt/utils/babylon/manyIcosahedrons.ts'),
-	// new URL('./rapier.ts', self.location.href),
-	// new URL('./rapier.ts', import.meta.url),
-	{ type: 'module' },
-);
-const rapierExport: {
+let rapierExport: {
 	startPhysics: () => Promise<boolean>,
 	getUpdate: () => Promise<ArrayBuffer>,
 	newBody: (bodyObject: {
@@ -43,8 +38,17 @@ const rapierExport: {
 		mass: number,
 		size: number,
 	}) => Promise<boolean>,
-} = Comlink.wrap(worker);
-
+}
+export const createSubWorker = (url: string) => {
+	const worker = new Worker(
+		// 	new URL('../babylon/rapier.ts', self.location.href),
+		// 	// new URL('./rapier.ts', 'http://localhost:3000/_nuxt/utils/babylon/manyIcosahedrons.ts'),
+		// 	// new URL('./rapier.ts', self.location.href),
+		new URL('../../utils/babylon/rapier.ts', url),
+		{ type: 'module' },
+	);
+	rapierExport = Comlink.wrap(worker);
+}
 let bodyObject: {
 	meshId: number,
 	p: {
