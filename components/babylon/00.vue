@@ -11,7 +11,7 @@ import {
 } from 'comlink';
 import { Engine } from '@babylonjs/core/Engines/engine';
 // import manyCubes from '../../utils/babylon/manyCubes';
-import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
+// import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
 const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
 	type: 'module',
 });

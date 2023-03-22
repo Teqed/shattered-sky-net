@@ -6,22 +6,24 @@ import { Color4 } from '@babylonjs/core/Maths/math.color';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
-import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
+// import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/core/Physics/physicsEngineComponent'
 import '@babylonjs/core/Helpers/sceneHelpers';
-import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
-import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
+// import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
+// import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
 // import * as CANNON from 'cannon-es';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
 import * as Comlink from 'comlink';
 
-const worker = new Worker(new URL(
-	'./rapier.ts',
-	import.meta.url), {
-	type: 'module',
-});
+const worker = new Worker(
+	new URL('../babylon/rapier.ts', self.location.href),
+	// new URL('./rapier.ts', 'http://localhost:3000/_nuxt/utils/babylon/manyIcosahedrons.ts'),
+	// new URL('./rapier.ts', self.location.href),
+	// new URL('./rapier.ts', import.meta.url),
+	{ type: 'module' },
+);
 const rapierExport: {
 	startPhysics: () => Promise<boolean>,
 	getUpdate: () => Promise<ArrayBuffer>,

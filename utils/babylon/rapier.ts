@@ -7,6 +7,7 @@ import * as Comlink from 'comlink';
 import RAPIER from '../worker/rapier';
 // importScripts('https://unpkg.com/comlink/dist/umd/comlink.js');
 // importScripts('../node_modules/comlink/dist/esm/comlink.js');
+console.log('rapier.ts: RAPIER', RAPIER);
 
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 
