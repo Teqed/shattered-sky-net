@@ -175,7 +175,7 @@ const rapierExport = {
 			return [];
 		}
 	},
-	newBody (meshId: {
+	async newBody (meshId: {
 		meshId: number,
 		p: {
 			x: number;
@@ -193,7 +193,10 @@ const rapierExport = {
 		// 	initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1)
 		// );
 		meshBodies[meshId.meshId] = initBody(meshId.meshId, meshId.p, meshId.r, meshId.mass ?? 1, meshId.size ?? 1);
-		return true;
+		return await new Promise<boolean>((resolve) => {
+			resolve(true);
+		}
+		);
 	},
 }
 

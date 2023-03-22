@@ -5,82 +5,124 @@
 <script setup lang="ts">
 // import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
 // import * as Comlink from 'comlink';
-// import {
-// 	wrap,
-// 	transfer,
-// } from 'comlink';
+import {
+	wrap,
+	transfer,
+} from 'comlink';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import manyCubes from '../../utils/babylon/manyCubes';
-// import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
-// const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
-// 	type: 'module',
-// });
-// const babylonWorker: {
-// 	init: (canvas: OffscreenCanvas) => {
-// 		/* ... */
-// 	},
-// 	resize: (width: number, height: number) => {
-// 		/* ... */
-// 	},
-// 	mouseEvent: (
-// 		type: string,
-// 		x: number,
-// 		y: number
-// 	) => {
-// 		/* ... */
-// 	},
-// } = wrap(worker);
-
-let engine: Engine;
-let canvas: HTMLCanvasElement;
-
-const babylonGlobal = {
-	init: async (initCanvas: HTMLCanvasElement) => {
-		canvas = initCanvas;
-		engine = new Engine(canvas, true);
-		// const scene = ballOnGround(engine, canvas);
-		const scene = await manyCubes(engine, canvas);
-		// const scene = await manyIcosahedrons(engine, canvas);
-		engine.runRenderLoop(() => {
-			scene.render();
-		}
-		);
-		return scene;
+// import manyCubes from '../../utils/babylon/manyCubes';
+import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
+const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
+	type: 'module',
+});
+const babylonWorker: {
+	init: (canvas: OffscreenCanvas) => {
+		/* ... */
 	},
 	resize: (width: number, height: number) => {
-		canvas.width = width;
-		canvas.height = height;
+		/* ... */
 	},
-	mouseEvent: () => {
+	mouseEvent: (event: {
+		type: string,
+		button: number,
+		buttons: number,
+		x: number,
+		y: number,
+		deltaY?: number,
+		deltaX?: number,
+		deltaZ?: number,
+		deltaMode?: number,
 	}
-}
+	) => {
+		/* ... */
+	},
+} = wrap(worker);
+
+// let engine: Engine;
+// let canvas: HTMLCanvasElement;
+
+// const babylonGlobal = {
+// 	init: async (initCanvas: HTMLCanvasElement) => {
+// 		canvas = initCanvas;
+// 		engine = new Engine(canvas, true);
+// 		// const scene = ballOnGround(engine, canvas);
+// 		// const scene = await manyCubes(engine, canvas);
+// 		const scene = await manyIcosahedrons(engine, canvas);
+// 		engine.runRenderLoop(() => {
+// 			scene.render();
+// 		}
+// 		);
+// 		return scene;
+// 	},
+// 	resize: (width: number, height: number) => {
+// 		canvas.width = width;
+// 		canvas.height = height;
+// 	},
+// 	mouseEvent: () => {
+// 	}
+// }
 onMounted(() => {
 	// let babylon: typeof babylonGlobal | typeof babylonWorker;
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!; // Get the canvas element
 	// if ('OffscreenCanvas' in window && 'transferControlToOffscreen' in canvas) {
 
-	// if (false) {
-	// 	babylon = babylonWorker;
-	// 	const offscreen = canvas.transferControlToOffscreen();
-	// 	babylonWorker.init(transfer(offscreen, [offscreen]));
-	// 	const onMouseEvents = (event: MouseEvent) => {
-	// 		const type = event.type;
-	// 		const x = event.clientX;
-	// 		const y = event.clientY;
-	// 		babylon.mouseEvent(type, x, y);
-	// 	};
-	// 	canvas.addEventListener('mousedown', onMouseEvents);
-	// 	canvas.addEventListener('mousemove', onMouseEvents);
-	// 	canvas.addEventListener('mouseup', onMouseEvents);
+	// if (true) {
+	// babylon = babylonWorker;
+	const offscreen = canvas.transferControlToOffscreen();
+	babylonWorker.init(transfer(offscreen, [offscreen]));
+	const onMouseEvents = (event: MouseEvent) => {
+		const type = event.type;
+		const button = event.button;
+		const buttons = event.buttons;
+		const x = event.clientX;
+		const y = event.clientY;
+		// if scroll event...
+		if (event instanceof WheelEvent) {
+			const deltaY = event.deltaY;
+			const deltaX = event.deltaX;
+			const deltaZ = event.deltaZ;
+			const deltaMode = event.deltaMode;
+			const wheelEvent = {
+				type,
+				button,
+				buttons,
+				x,
+				y,
+				deltaY,
+				deltaX,
+				deltaZ,
+				deltaMode,
+			};
+			console.log(event)
+			babylonWorker.mouseEvent(wheelEvent);
+		} else {
+			const relayedMouseEvent = {
+				type,
+				button,
+				buttons,
+				x,
+				y,
+			}
+			babylonWorker.mouseEvent(relayedMouseEvent);
+		}
+	};
+	canvas.addEventListener('pointerdown', onMouseEvents);
+	canvas.addEventListener('pointermove', onMouseEvents);
+	canvas.addEventListener('pointerup', onMouseEvents);
+	canvas.addEventListener('wheel', onMouseEvents);
+	babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
+	window.addEventListener('resize', () => {
+		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
+	});
 	// } else {
 	// babylon = babylonGlobal;
-	const babylon = babylonGlobal;
-	babylonGlobal.init(canvas);
+	// const babylon = babylonGlobal;
+	// babylonGlobal.init(canvas);
 	// }
-	babylon.resize(canvas.clientWidth, canvas.clientHeight);
-	window.addEventListener('resize', () => {
-		babylon.resize(canvas.clientWidth, canvas.clientHeight);
-	});
+	// babylon.resize(canvas.clientWidth, canvas.clientHeight);
+	// window.addEventListener('resize', () => {
+	// 	babylon.resize(canvas.clientWidth, canvas.clientHeight);
+	// });
 });
 
 </script>

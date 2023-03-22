@@ -1,29 +1,47 @@
 import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
+import { Color4 } from '@babylonjs/core/Maths/math.color';
+// import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Vector3, Quaternion } from '@babylonjs/core/Maths/math.vector';
+import { Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
-// import '@babylonjs/core/Materials/standardMaterial';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
+import '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/core/Physics/physicsEngineComponent'
 import '@babylonjs/core/Helpers/sceneHelpers';
-// import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
-// import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
+import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
+import { CannonJSPlugin } from '@babylonjs/core/Physics/Plugins/cannonJSPlugin'
 // import * as CANNON from 'cannon-es';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
-import { wrap } from 'comlink';
-import { CreateBox } from '@babylonjs/core/Meshes/Builders/boxBuilder';
-import { Matrix, Color4 } from '@babylonjs/core/Maths/math';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
-import '@babylonjs/core/Meshes/thinInstanceMesh';
+import * as Comlink from 'comlink';
 
 const worker = new Worker(new URL(
 	'./rapier.ts',
 	import.meta.url), {
 	type: 'module',
 });
-const rapierExport = wrap(worker);
+const rapierExport: {
+	startPhysics: () => Promise<boolean>,
+	getUpdate: () => Promise<ArrayBuffer>,
+	newBody: (bodyObject: {
+		meshId: number,
+		p: {
+			x: number,
+			y: number,
+			z: number,
+		},
+		r: {
+			x: number,
+			y: number,
+			z: number,
+			w: number,
+		},
+		mass: number,
+		size: number,
+	}) => Promise<boolean>,
+} = Comlink.wrap(worker);
 
 let bodyObject: {
 	meshId: number,
@@ -91,17 +109,6 @@ const decode = (arrayBuffer: ArrayBuffer): Promise<{
 	return Promise.resolve(meshUpdate);
 };
 
-// self.CANNON = CANNON;
-
-export const relayMouseEvent = (canvas: HTMLCanvasElement | OffscreenCanvas, type: string, x: number, y: number) => {
-	canvas.dispatchEvent(
-		new MouseEvent(type, {
-			clientX: x,
-			clientY: y
-		})
-	);
-}
-
 export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	// // Creates and positions a free camera
 	// const camera = new FreeCamera('camera1',
@@ -110,7 +117,38 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 	// camera.setTarget(Vector3.Zero());
 	const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
 	// This attaches the camera to the canvas
-	camera.attachControl(canvas, true);
+	camera.attachControl(canvas);
+	let isMouseDown = 0;
+	let lastX = 0;
+	let lastY = 0;
+	// add event listener for mousedown,
+	// if mousedown, move camera forward
+	canvas.addEventListener('pointerdown', () => {
+		console.log('pointerdown reached');
+		// allow alpha and beta movement
+		isMouseDown = 1;
+	});
+	canvas.addEventListener('pointerup', () => {
+		console.log('pointerup reached');
+		// stop alpha and beta movement
+		isMouseDown = 0;
+	});
+	canvas.addEventListener('pointermove', (event: any) => {
+		console.log('pointerMove reached');
+		// adjust height and rotation offset
+		camera.beta += isMouseDown * -0.01 * (event.y - lastY);
+		camera.alpha += isMouseDown * -0.01 * (event.x - lastX);
+		lastX = event.x;
+		lastY = event.y;
+	});
+	canvas.addEventListener('wheel', (event: any) => {
+		console.log('wheel reached');
+		camera.radius += event.deltaY * 0.1;
+	});
+	// when mouse moves right, rotate camera right
+	// canvas.addEventListener('mousemove', (event) => {
+	// 	camera.alpha += 0.01;
+	// });
 }
 
 const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas) => {
@@ -154,90 +192,105 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: Float32A
 			mass: 1,
 		};
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, no-await-in-loop
-		await (rapierExport as any).newBody(bodyObject)
+		// eslint-disable-next-line no-await-in-loop
+		await rapierExport.newBody(bodyObject)
 	}
 }
 
 const createObjects = async (scene: Scene) => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const waitForWorld = (rapierExport as any).startPhysics() as Promise<boolean>;
+	const waitForWorld = rapierExport.startPhysics();
 	await waitForWorld
-	// const mesh = CreateBox('root', {size: 1});
-	const mesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1}, scene);
-	mesh.doNotSyncBoundingInfo = true;
-	const numberPerSide = 10; const size = 10; const ofst = size / (numberPerSide - 1);
-	const m = Matrix.Identity();
-	let col = 0; let index = 0;
+	const box = BABYLON.CreateBox('root', {size: 1});
+	box.doNotSyncBoundingInfo = true;
+
+	const numberPerSide = 20;
+	const size = 10;
+	const ofst = size / (numberPerSide - 1);
+	const m = BABYLON.Matrix.Identity();
+	let col = 0;
+	let index = 0;
+
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
 	const matricesData = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
+
 	// Create the instance buffer
 	for (let x = 0; x < numberPerSide; x++) {
-		m.m[12] = -size / 2 + ofst * x;
 		for (let y = 0; y < numberPerSide; y++) {
-			m.m[13] = -size / 2 + ofst * y;
 			for (let z = 0; z < numberPerSide; z++) {
-				m.m[14] = -size / 2 + ofst * z;
-				m.copyToArray(matricesData, index * 16);
-
-				const coli = Math.floor(col);
-
+				m.setTranslation(new BABYLON.Vector3(
+					-size / 2 + ofst * x,
+					-size / 2 + ofst * y,
+					-size / 2 + ofst * z
+				))
+				m.copyToArray(matricesData, index * 16)
+				const coli = Math.floor(col)
 				colorData[index * 4] = ((coli & 0xFF0000) >> 16) / 255;
 				colorData[index * 4 + 1] = ((coli & 0x00FF00) >> 8) / 255;
-				colorData[index * 4 + 2] = (coli & 0x0000FF) / 255;
-
+				colorData[index * 4 + 2] = (coli & 0x0000FF) / 255
 				index += 1;
 				col += 0xFFFFFF / instanceCount;
 			}
 		}
 	}
 	// Set the instance buffers
-	mesh.thinInstanceSetBuffer('matrix', matricesData, 16);
-	mesh.thinInstanceSetBuffer('color', colorData, 4);
+	box.thinInstanceSetBuffer('matrix', matricesData, 16);
+	box.thinInstanceSetBuffer('color', colorData, 4);
 	// box.material = new BABYLON.StandardMaterial('material');
-	mesh.material = new StandardMaterial('material', scene);
+	box.material = new BABYLON.StandardMaterial('material', scene);
 	// box.material.disableLighting = true;
 	// box.material.emissiveColor = BABYLON.Color3.White();
 	scene.freezeActiveMeshes();
 
-	const updatePositions = (meshBodiesUpdate: {[meshId: number]: {
+	const updatePositions = async (meshBodiesUpdate: {[meshId: number]: {
 		p: {x: number,
 			y: number,
 			z: number},
 		r: {x: number,
 			y: number,
 			z: number,
-			w: number} } }) => {
-		for (const meshId in meshBodiesUpdate) {
+			w: number}
+	}}) => {
+		const matrix = new BABYLON.Matrix();
+		let count = 0;
+		let index_ = 0;
+		for (const [, body] of Object.entries(meshBodiesUpdate)) {
+			// count
+			count += 1;
 			// update thin instance matrix
-			const body = meshBodiesUpdate[meshId];
-			const matrix = Matrix.Identity();
-			// BABYLON.Quaternion.FromArray([body.r.x, body.r.y, body.r.z, body.r.w]).toRotationMatrix(rot)
-			Matrix.ComposeToRef(
-				new Vector3(1, 1, 1),
-				new Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
-				new Vector3(body.p.x, body.p.y, body.p.z),
-				matrix
-			)
-			// BABYLON.Matrix.RotationYawPitchRoll(body.r.y, body.r.x, body.r.z).multiplyToRef(matrix, matrix);
-			matrix.copyToArray(matricesData, Number(meshId) * 16);
+			matrix.copyFrom(
+				BABYLON.Matrix.Compose(
+					new BABYLON.Vector3(1, 1, 1),
+					new BABYLON.Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
+					new BABYLON.Vector3(body.p.x, body.p.y, body.p.z)
+				)
+			).copyToArray(matricesData, index_);
+			index_ += 16;
 		}
-		mesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+
+		box.thinInstanceSetBuffer('matrix', matricesData, 16);
+		return await Promise.resolve(count);
 	}
 
 	// every 30fps, update the positions
+	let lastPhysicsUpdate = 0;
 	setInterval(async () => {
-		document.querySelector('#meshcount')!.textContent = `Mesh count: ${instanceCount}`;
-		updatePositions(await decode(await (rapierExport as any).getUpdate()));
-		// Randomize position every few frames
-		// if (scene.getFrameId() % 10 === 0) {
-		// 	for (let index_ = 0; index_ < instanceCount; index_++) {
-		// 		matricesData[index_ * 16 + 12] = Math.random() * 10 - 5;
-		// 		matricesData[index_ * 16 + 13] = Math.random() * 10 - 5;
-		// 		matricesData[index_ * 16 + 14] = Math.random() * 10 - 5;
-		// 	}
-		// }
+		const now = Date.now();
+		if (now - lastPhysicsUpdate >= 10) {
+			// document.querySelector('#meshcount').textContent = `Mesh count: ${instanceCount}`;
+			// display the number of objects being updated instead
+			const numberMeshes = await updatePositions(await decode(await rapierExport.getUpdate()));
+			// document.querySelector('#meshcount')!.textContent = `Count: ${numberMeshes}`;
+			// Randomize position every few frames
+			// if (scene.getFrameId() % 10 === 0) {
+			// 	for (let index_ = 0; index_ < instanceCount; index_++) {
+			// 		matricesData[index_ * 16 + 12] = Math.random() * 10 - 5;
+			// 		matricesData[index_ * 16 + 13] = Math.random() * 10 - 5;
+			// 		matricesData[index_ * 16 + 14] = Math.random() * 10 - 5;
+			// 	}
+			// }
+			lastPhysicsUpdate = now;
+		}
 	}, 1000 / 30);
 
 	// every 15fps, change color
@@ -248,7 +301,7 @@ const createObjects = async (scene: Scene) => {
 			colorData[index_ * 4 + 2] = Math.random();
 		}
 		// Update the instance buffer
-		mesh.thinInstanceSetBuffer('color', colorData, 4);
+		box.thinInstanceSetBuffer('color', colorData, 4);
 	}, 1000 / 15);
 	// // add ground
 	// const ground = BABYLON.CreateGround('ground', {width: 500, height: 500});

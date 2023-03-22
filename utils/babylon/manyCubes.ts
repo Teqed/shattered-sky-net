@@ -22,7 +22,26 @@ const worker = new Worker(new URL(
 	import.meta.url), {
 	type: 'module',
 });
-const rapierExport = Comlink.wrap(worker);
+const rapierExport: {
+	startPhysics: () => Promise<boolean>,
+	getUpdate: () => Promise<ArrayBuffer>,
+	newBody: (bodyObject: {
+		meshId: number,
+		p: {
+			x: number,
+			y: number,
+			z: number,
+		},
+		r: {
+			x: number,
+			y: number,
+			z: number,
+			w: number,
+		},
+		mass: number,
+		size: number,
+	}) => Promise<boolean>,
+} = Comlink.wrap(worker);
 
 let bodyObject: {
 	meshId: number,
@@ -132,7 +151,7 @@ const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas
 	return scene;
 }
 
-const createPhysicsBodies = async (instanceCount: number, matricesData: any[] | Float32Array) => {
+const createPhysicsBodies = async (instanceCount: number, matricesData: Float32Array) => {
 	// Create a new rapier body for each instance
 	for (let index = 0; index < instanceCount; index++) {
 		bodyObject = {
@@ -153,38 +172,42 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: any[] | 
 			mass: 1,
 		};
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		await (rapierExport as any).newBody(bodyObject)
+		// eslint-disable-next-line no-await-in-loop
+		await rapierExport.newBody(bodyObject)
 	}
 }
 
 const createObjects = async (scene: Scene) => {
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const waitForWorld = (rapierExport as any).startPhysics() as Promise<boolean>;
+	const waitForWorld = rapierExport.startPhysics();
 	await waitForWorld
 	const box = BABYLON.CreateBox('root', {size: 1});
 	box.doNotSyncBoundingInfo = true;
-	const numberPerSide = 20; const size = 10; const ofst = size / (numberPerSide - 1);
+
+	const numberPerSide = 10;
+	const size = 10;
+	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
-	let col = 0; let index = 0;
+	let col = 0;
+	let index = 0;
+
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
 	const matricesData = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
+
 	// Create the instance buffer
 	for (let x = 0; x < numberPerSide; x++) {
-		m.m[12] = -size / 2 + ofst * x;
 		for (let y = 0; y < numberPerSide; y++) {
-			m.m[13] = -size / 2 + ofst * y;
 			for (let z = 0; z < numberPerSide; z++) {
-				m.m[14] = -size / 2 + ofst * z;
-				m.copyToArray(matricesData, index * 16);
-
-				const coli = Math.floor(col);
-
+				m.setTranslation(new BABYLON.Vector3(
+					-size / 2 + ofst * x,
+					-size / 2 + ofst * y,
+					-size / 2 + ofst * z
+				))
+				m.copyToArray(matricesData, index * 16)
+				const coli = Math.floor(col)
 				colorData[index * 4] = ((coli & 0xFF0000) >> 16) / 255;
 				colorData[index * 4 + 1] = ((coli & 0x00FF00) >> 8) / 255;
-				colorData[index * 4 + 2] = (coli & 0x0000FF) / 255;
-
+				colorData[index * 4 + 2] = (coli & 0x0000FF) / 255
 				index += 1;
 				col += 0xFFFFFF / instanceCount;
 			}
@@ -213,7 +236,7 @@ const createObjects = async (scene: Scene) => {
 		let index_ = 0;
 		for (const [, body] of Object.entries(meshBodiesUpdate)) {
 			// count
-			count++;
+			count += 1;
 			// update thin instance matrix
 			matrix.copyFrom(
 				BABYLON.Matrix.Compose(
@@ -236,8 +259,8 @@ const createObjects = async (scene: Scene) => {
 		if (now - lastPhysicsUpdate >= 10) {
 			// document.querySelector('#meshcount').textContent = `Mesh count: ${instanceCount}`;
 			// display the number of objects being updated instead
-			const numMeshes = await updatePositions(await decode(await (rapierExport as any).getUpdate()));
-			document.querySelector('#meshcount').textContent = `Count: ${numMeshes}`;
+			const numberMeshes = await updatePositions(await decode(await rapierExport.getUpdate()));
+			document.querySelector('#meshcount')!.textContent = `Count: ${numberMeshes}`;
 			// Randomize position every few frames
 			// if (scene.getFrameId() % 10 === 0) {
 			// 	for (let index_ = 0; index_ < instanceCount; index_++) {
