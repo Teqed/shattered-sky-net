@@ -200,10 +200,11 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: Float32A
 const createObjects = async (scene: Scene) => {
 	const waitForWorld = rapierExport.startPhysics();
 	await waitForWorld
-	const box = BABYLON.CreateBox('root', {size: 1});
-	box.doNotSyncBoundingInfo = true;
+	// const babylonMesh = BABYLON.CreateBox('root', {size: 1});
+	const babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
+	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 20;
+	const numberPerSide = 15;
 	const size = 10;
 	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
@@ -234,12 +235,12 @@ const createObjects = async (scene: Scene) => {
 		}
 	}
 	// Set the instance buffers
-	box.thinInstanceSetBuffer('matrix', matricesData, 16);
-	box.thinInstanceSetBuffer('color', colorData, 4);
-	// box.material = new BABYLON.StandardMaterial('material');
-	box.material = new BABYLON.StandardMaterial('material', scene);
-	// box.material.disableLighting = true;
-	// box.material.emissiveColor = BABYLON.Color3.White();
+	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
+	// babylonMesh.material = new BABYLON.StandardMaterial('material');
+	babylonMesh.material = new BABYLON.StandardMaterial('material', scene);
+	// babylonMesh.material.disableLighting = true;
+	// babylonMesh.material.emissiveColor = BABYLON.Color3.White();
 	scene.freezeActiveMeshes();
 
 	const updatePositions = async (meshBodiesUpdate: {[meshId: number]: {
@@ -268,7 +269,7 @@ const createObjects = async (scene: Scene) => {
 			index_ += 16;
 		}
 
-		box.thinInstanceSetBuffer('matrix', matricesData, 16);
+		babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 		return await Promise.resolve(count);
 	}
 
@@ -291,18 +292,18 @@ const createObjects = async (scene: Scene) => {
 			// }
 			lastPhysicsUpdate = now;
 		}
-	}, 1000 / 30);
+	}, 1000 / 60);
 
 	// every 15fps, change color
-	setInterval(() => {
-		for (let index_ = 0; index_ < instanceCount; index_++) {
-			colorData[index_ * 4] = Math.random();
-			colorData[index_ * 4 + 1] = Math.random();
-			colorData[index_ * 4 + 2] = Math.random();
-		}
-		// Update the instance buffer
-		box.thinInstanceSetBuffer('color', colorData, 4);
-	}, 1000 / 15);
+	// setInterval(() => {
+	// 	for (let index_ = 0; index_ < instanceCount; index_++) {
+	// 		colorData[index_ * 4] = Math.random();
+	// 		colorData[index_ * 4 + 1] = Math.random();
+	// 		colorData[index_ * 4 + 2] = Math.random();
+	// 	}
+	// 	// Update the instance buffer
+	// 	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
+	// }, 5000 / 1);
 	// // add ground
 	// const ground = BABYLON.CreateGround('ground', {width: 500, height: 500});
 	// // lower ground
@@ -311,7 +312,7 @@ const createObjects = async (scene: Scene) => {
 	// ground.material = new BABYLON.StandardMaterial('material')
 	// ground.material.diffuseColor = BABYLON.Color3.Blue();
 	// // fix ground
-	// ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+	// ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.babylonMeshImpostor, { mass: 0, restitution: 0.9 }, scene);
 
 	return {instanceCount, matricesData};
 }

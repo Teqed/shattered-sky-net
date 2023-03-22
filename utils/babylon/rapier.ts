@@ -157,7 +157,7 @@ const startPhysics = async () => {
 			virtualUpdate();
 			lastPhysicsUpdate = now;
 		}
-	}, 1000 / 30);
+	}, 1000 / 60);
 	worldloaded = true;
 	console.log('physics started')
 	return true;
