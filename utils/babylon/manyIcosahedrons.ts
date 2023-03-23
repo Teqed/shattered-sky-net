@@ -185,12 +185,12 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: Float32A
 			},
 			mass: 1,
 		};
-		if (index % 20 === 0) {
+		// if (index % 20 === 0) {
 		// eslint-disable-next-line no-await-in-loop
-			await rapierExport.newBody(bodyObject)
-		} else {
-			rapierExport.newBody(bodyObject)
-		}
+		await rapierExport.newBody(bodyObject)
+		// } else {
+		// 	rapierExport.newBody(bodyObject)
+		// }
 	}
 }
 
@@ -280,7 +280,7 @@ const createObjects = async (scene: Scene) => {
 	let lastPhysicsUpdate = 0;
 	scene.registerAfterRender(async () => {
 		const now = Date.now();
-		if (now - lastPhysicsUpdate > 1000 / 144) {
+		if (now - lastPhysicsUpdate > 1000 / 60) {
 			if (doNotQueueAdditionalUpdatesSmall) {
 				return;
 			} else {

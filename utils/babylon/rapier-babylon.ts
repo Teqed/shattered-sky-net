@@ -155,7 +155,7 @@ const startPhysics = async () => {
 	let doNotQueueAdditionalPhysicsUpdates = false;
 	setInterval(() => {
 		const now = Date.now();
-		if (now - lastPhysicsUpdate >= 1000 / 144) {
+		if (now - lastPhysicsUpdate >= 1000 / 60) {
 			if (doNotQueueAdditionalPhysicsUpdates) {
 				return;
 			} else {
@@ -166,7 +166,7 @@ const startPhysics = async () => {
 			}
 			lastPhysicsUpdate = now;
 		}
-	}, 1000 / 144);
+	}, 1000 / 60);
 	worldloaded = true;
 	console.log('physics started')
 	return true;
