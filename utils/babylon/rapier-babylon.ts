@@ -73,20 +73,24 @@ const meshBodies: {
 // 			z: number,
 // 			w: number} } } = {};
 
+const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
+	.setCanSleep(false)
+	.setAngularDamping(0.1)
+	.setLinearDamping(1)
+const points = new Float32Array(
+	vertices.map(v => v * 1)
+)
+const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
 // Function to create bodies
 const initBody = (meshId: number,
 	p: { x: number, y: number, z: number },
 	r: { x: number, y: number, z: number, w: number },
 	mass: number, size: number) => {
-	const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-		.setCanSleep(false)
-		.setTranslation(
-			p.x ?? 0,
-			p.y ?? 0,
-			p.z ?? 0,
-		)
-		.setAngularDamping(0.1)
-		.setLinearDamping(1)
+	rigidBodyDesc.setTranslation(
+		p.x ?? 0,
+		p.y ?? 0,
+		p.z ?? 0,
+	)
 		.setLinvel(
 			random.real(-1, 1),
 			random.real(-1, 1),
@@ -106,10 +110,6 @@ const initBody = (meshId: number,
 		))
 	rigidBodyDesc.mass = mass
 	const body = world.createRigidBody(rigidBodyDesc)
-	const points = new Float32Array(
-		vertices.map(v => v * size)
-	)
-	const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
 	// @ts-ignore-next-line - colliderDesc is possibly null
 	world.createCollider(colliderDesc, body)
 	return { meshId,
@@ -142,6 +142,7 @@ const virtualUpdate = () => {
 
 const physicsUpdate = () => {
 	world.step();
+	updateFlag = true;
 };
 
 const startPhysics = async () => {
@@ -151,25 +152,37 @@ const startPhysics = async () => {
 	world = new RAPIER.World(gravity);
 	physicsUpdate();
 	let lastPhysicsUpdate = 0;
+	let doNotQueueAdditionalPhysicsUpdates = false;
 	setInterval(() => {
 		const now = Date.now();
-		if (now - lastPhysicsUpdate >= 10) {
-			physicsUpdate();
-			virtualUpdate();
+		if (now - lastPhysicsUpdate >= 1000 / 144) {
+			if (doNotQueueAdditionalPhysicsUpdates) {
+				return;
+			} else {
+				doNotQueueAdditionalPhysicsUpdates = true;
+				physicsUpdate();
+				virtualUpdate();
+				doNotQueueAdditionalPhysicsUpdates = false;
+			}
 			lastPhysicsUpdate = now;
 		}
-	}, 1000 / 60);
+	}, 1000 / 144);
 	worldloaded = true;
 	console.log('physics started')
 	return true;
 };
 
+let updateFlag = false;
 const rapierExport = {
+	updateFlag () {
+		return updateFlag;
+	},
 	startPhysics () {
 		return startPhysics();
 	},
 	getUpdate () {
 		if (worldloaded === true) {
+			updateFlag = false;
 			return new Float32Array(update).buffer;
 		} else {
 			console.log('world not loaded yet');

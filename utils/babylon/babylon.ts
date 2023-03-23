@@ -4,7 +4,7 @@ import { Engine } from '@babylonjs/core/Engines/engine';
 import { expose } from 'comlink';
 // import ballOnGround from './babylon/ballOnGround';
 // import manyCubes, { relayMouseEvent } from '../babylon/manyCubes';
-import manyIcosahedrons, { createSubWorker } from './manyIcosahedrons';
+import manyIcosahedrons, { createSubWorker, numberMeshes } from './manyIcosahedrons';
 
 let engine: Engine;
 let canvas: OffscreenCanvas;
@@ -396,6 +396,9 @@ const babylonWorker = {
 	},
 	subSpawn: (url: string) => {
 		createSubWorker(url);
+	},
+	meshCounter: () => {
+		return numberMeshes.number;
 	}
 }
 

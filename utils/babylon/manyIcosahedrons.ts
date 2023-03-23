@@ -17,7 +17,11 @@ import '@babylonjs/core/Helpers/sceneHelpers';
 // import '@babylonjs/inspector';
 import * as Comlink from 'comlink';
 
+export const numberMeshes: {number: number} = {
+	number: 0,
+};
 let rapierExport: {
+	updateFlag: () => Promise<boolean>,
 	startPhysics: () => Promise<boolean>,
 	getUpdate: () => Promise<ArrayBuffer>,
 	newBody: (bodyObject: {
@@ -72,39 +76,42 @@ const meshUpdate: {
 		};
 	};
 } = {};
-
-const decode = (arrayBuffer: ArrayBuffer): Promise<{
-	[meshId: number]: {
-		p: {
-			x: number;
-			y: number;
-			z: number;
-		};
-		r: {
-			x: number;
-			y: number;
-			z: number;
-			w: number;
-		};
-	};
-}> => {
+const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
+const standardRotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+const standardTranslationVector3 = new BABYLON.Vector3(0, 0, 0);
+let matricesData = new Float32Array();
+let babylonMesh: BABYLON.Mesh;
+const matrix = BABYLON.Matrix.Compose(
+	standardSizeVector3,
+	standardRotationQuaternion.copyFromFloats(0, 0, 0, 1),
+	standardTranslationVector3.copyFromFloats(0, 0, 0)
+)
+const decode = (arrayBuffer: ArrayBuffer): Promise<number> => {
+	let count = 0;
+	let index_ = 0;
 	const update = new Float32Array(arrayBuffer);
 	for (let index = 0; index < update.length; index += 8) {
-		const key = update[index];
-		const p = {
-			x: update[index + 1],
-			y: update[index + 2],
-			z: update[index + 3],
-		};
-		const r = {
-			x: update[index + 4],
-			y: update[index + 5],
-			z: update[index + 6],
-			w: update[index + 7],
-		};
-		meshUpdate[key] = { p, r };
+		count++;
+		matrix.copyFrom(
+			BABYLON.Matrix.Compose(
+				standardSizeVector3,
+				standardRotationQuaternion.copyFromFloats(
+					update[index + 4],
+					update[index + 5],
+					update[index + 6],
+					update[index + 7]
+				),
+				standardTranslationVector3.copyFromFloats(
+					update[index + 1],
+					update[index + 2],
+					update[index + 3]
+				)
+			))
+		matrix.copyToArray(matricesData, index_)
+		index_ += 16;
 	}
-	return Promise.resolve(meshUpdate);
+	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	return Promise.resolve(count);
 };
 
 export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
@@ -178,9 +185,12 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: Float32A
 			},
 			mass: 1,
 		};
-
+		if (index % 20 === 0) {
 		// eslint-disable-next-line no-await-in-loop
-		await rapierExport.newBody(bodyObject)
+			await rapierExport.newBody(bodyObject)
+		} else {
+			rapierExport.newBody(bodyObject)
+		}
 	}
 }
 
@@ -188,7 +198,7 @@ const createObjects = async (scene: Scene) => {
 	const waitForWorld = rapierExport.startPhysics();
 	await waitForWorld
 	// const babylonMesh = BABYLON.CreateBox('root', {size: 1});
-	const babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
+	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
 	const numberPerSide = 15;
@@ -199,7 +209,7 @@ const createObjects = async (scene: Scene) => {
 	let index = 0;
 
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
-	const matricesData = new Float32Array(instanceCount * 16);
+	matricesData = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
 
 	// Create the instance buffer
@@ -230,56 +240,65 @@ const createObjects = async (scene: Scene) => {
 	// babylonMesh.material.emissiveColor = BABYLON.Color3.White();
 	scene.freezeActiveMeshes();
 
-	const updatePositions = async (meshBodiesUpdate: {[meshId: number]: {
-		p: {x: number,
-			y: number,
-			z: number},
-		r: {x: number,
-			y: number,
-			z: number,
-			w: number}
-	}}) => {
-		const matrix = new BABYLON.Matrix();
-		let count = 0;
-		let index_ = 0;
-		for (const [, body] of Object.entries(meshBodiesUpdate)) {
-			// count
-			count += 1;
-			// update thin instance matrix
-			matrix.copyFrom(
-				BABYLON.Matrix.Compose(
-					new BABYLON.Vector3(1, 1, 1),
-					new BABYLON.Quaternion(body.r.x, body.r.y, body.r.z, body.r.w),
-					new BABYLON.Vector3(body.p.x, body.p.y, body.p.z)
-				)
-			).copyToArray(matricesData, index_);
-			index_ += 16;
-		}
+	// const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
+	// const standardRotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
+	// const standardTranslationVector3 = new BABYLON.Vector3(0, 0, 0);
 
-		babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
-		return await Promise.resolve(count);
-	}
+	// const updatePositions = async (meshBodiesUpdate: {[meshId: number]: {
+	// 	p: {x: number,
+	// 		y: number,
+	// 		z: number},
+	// 	r: {x: number,
+	// 		y: number,
+	// 		z: number,
+	// 		w: number}
+	// }}) => {
+	// let index_ = 0;
+	// const matrix = BABYLON.Matrix.Compose(
+	// 	standardSizeVector3,
+	// 	standardRotationQuaternion.copyFromFloats(0, 0, 0, 1),
+	// 	standardTranslationVector3.copyFromFloats(0, 0, 0)
+	// )
+	// for (const [, body] of Object.entries(meshBodiesUpdate)) {
+	// 	// update thin instance matrix
+	// 	matrix.copyFrom(
+	// 		BABYLON.Matrix.Compose(
+	// 			standardSizeVector3,
+	// 			standardRotationQuaternion.copyFromFloats(body.r.x, body.r.y, body.r.z, body.r.w),
+	// 			standardTranslationVector3.copyFromFloats(body.p.x, body.p.y, body.p.z)
+	// 		))
+	// 	matrix.copyToArray(matricesData, index_)
+	// 	index_ += 16;
+	// }
 
-	// every 30fps, update the positions
+	// babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	// 	return await Promise.resolve(count);
+	// }
+
+	let doNotQueueAdditionalUpdatesSmall = false;
+	let doNotQueueAdditionalUpdates = false;
 	let lastPhysicsUpdate = 0;
-	setInterval(async () => {
+	scene.registerAfterRender(async () => {
 		const now = Date.now();
-		if (now - lastPhysicsUpdate >= 10) {
-			// document.querySelector('#meshcount').textContent = `Mesh count: ${instanceCount}`;
-			// display the number of objects being updated instead
-			const numberMeshes = await updatePositions(await decode(await rapierExport.getUpdate()));
-			// document.querySelector('#meshcount')!.textContent = `Count: ${numberMeshes}`;
-			// Randomize position every few frames
-			// if (scene.getFrameId() % 10 === 0) {
-			// 	for (let index_ = 0; index_ < instanceCount; index_++) {
-			// 		matricesData[index_ * 16 + 12] = Math.random() * 10 - 5;
-			// 		matricesData[index_ * 16 + 13] = Math.random() * 10 - 5;
-			// 		matricesData[index_ * 16 + 14] = Math.random() * 10 - 5;
-			// 	}
-			// }
+		if (now - lastPhysicsUpdate > 1000 / 144) {
+			if (doNotQueueAdditionalUpdatesSmall) {
+				return;
+			} else {
+				doNotQueueAdditionalUpdatesSmall = true;
+				if (await rapierExport.updateFlag()) {
+					if (doNotQueueAdditionalUpdates) {
+						return;
+					} else {
+						doNotQueueAdditionalUpdates = true;
+						numberMeshes.number = await decode(await rapierExport.getUpdate());
+						doNotQueueAdditionalUpdates = false;
+					}
+				}
+				doNotQueueAdditionalUpdatesSmall = false;
+			}
 			lastPhysicsUpdate = now;
 		}
-	}, 1000 / 60);
+	})
 
 	// every 15fps, change color
 	// setInterval(() => {

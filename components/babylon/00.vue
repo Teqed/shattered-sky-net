@@ -42,6 +42,7 @@ const babylonWorker: {
 	subSpawn: (url: string) => {
 		/* ... */
 	},
+	meshCounter: () => Promise<number>,
 } = wrap(worker);
 babylonWorker.subSpawn(rapierWorkerUrl);
 
@@ -120,6 +121,10 @@ onMounted(() => {
 	window.addEventListener('resize', () => {
 		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
 	});
+	setInterval(async () => {
+		const meshCount = await babylonWorker.meshCounter();
+		document.querySelector('#meshcount')!.textContent = `Count: ${meshCount.toString()}`;
+	}, 500);
 	// } else {
 	// babylon = babylonGlobal;
 	// const babylon = babylonGlobal;
