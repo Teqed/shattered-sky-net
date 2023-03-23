@@ -74,9 +74,9 @@ const meshBodies: {
 // 			w: number} } } = {};
 
 const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
-	.setCanSleep(false)
-	.setAngularDamping(0.1)
-	.setLinearDamping(1)
+	// .setCanSleep(false)
+	.setAngularDamping(0.001)
+	.setLinearDamping(0.001)
 const points = new Float32Array(
 	vertices.map(v => v * 1)
 )
@@ -112,6 +112,7 @@ const initBody = (meshId: number,
 	const body = world.createRigidBody(rigidBodyDesc)
 	// @ts-ignore-next-line - colliderDesc is possibly null
 	world.createCollider(colliderDesc, body)
+		.setRestitution(0.9999)
 	return { meshId,
 		body,
 	};
@@ -139,8 +140,42 @@ const virtualUpdate = () => {
 
 	return new Float32Array(update).buffer;
 }
+const gravitationAttraction = () => {
+	const meshBodiesLength = Object.keys(meshBodies).length;
+	// const gravitationalConstant = 0.0667;
+
+	for (let index = 0; index < meshBodiesLength; index++) {
+		const body1 = meshBodies[index].body;
+		const body1Translation = body1.translation();
+		const force = { x: 0, y: 0, z: 0 };
+		// 	for (let index2 = 0; index2 < meshBodiesLength; index2++) {
+		// 		if (index !== index2) {
+		// 			const body2 = meshBodies[index2].body;
+		// 			const body2Translation = body2.translation();
+		// 			// Calculate the distance between the two bodies
+		// 			const distanceVector = {
+		// 				x: body2Translation.x - body1Translation.x,
+		// 				y: body2Translation.y - body1Translation.y,
+		// 				z: body2Translation.z - body1Translation.z,
+		// 			};
+		// 				// Calculate the gravitational force between the two bodies;
+		// 				// The closer they are, the stronger the force
+		// 			force.x += (distanceVector.x / 100) * gravitationalConstant;
+		// 			force.y += (distanceVector.y / 100) * gravitationalConstant;
+		// 			force.z += (distanceVector.z / 100) * gravitationalConstant;
+		// 		}
+		// 	}
+		// Apply a generic force drawing bodies to 0,0,0
+		force.x += -body1Translation.x / 100;
+		force.y += -body1Translation.y / 100;
+		force.z += -body1Translation.z / 100;
+		// Apply the net force to the body
+		body1.applyImpulse(force, true);
+	}
+};
 
 const physicsUpdate = () => {
+	gravitationAttraction();
 	world.step();
 	updateFlag = true;
 };
