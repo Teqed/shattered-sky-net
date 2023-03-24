@@ -235,7 +235,7 @@ class BarnesHutNode {
 			if (this.centerOfMass !== point) {
 				const distance = this.getDistance(point, this.centerOfMass);
 				const direction = this.getDirection(point, this.centerOfMass);
-				const magnitude = ((this.totalMass * distance) ** -0.0001) * 50;
+				const magnitude = ((this.totalMass * distance) ** -0.01);
 
 				force.x += direction.x * magnitude;
 				force.y += direction.y * magnitude;
@@ -248,7 +248,7 @@ class BarnesHutNode {
 
 		if (this.boundary.size / distance < Math.sqrt(thetaSquared)) {
 			const direction = this.getDirection(point, this.centerOfMass);
-			const magnitude = ((this.totalMass * distance) ** -0.0001) * 50;
+			const magnitude = ((this.totalMass * distance) ** -0.01);
 
 			force.x += direction.x * magnitude;
 			force.y += direction.y * magnitude;
@@ -307,9 +307,9 @@ class BarnesHutTree {
 	}
 }
 const barnesHutAttraction = () => {
-	const thetaSquared = 0.5 * 0.5;
+	const thetaSquared = 0.7 * 0.7;
 	const boundary = new Boundary(-100, -100, -100, 100, 100, 100);
-	const barnesHutTree = new BarnesHutTree(0.5, boundary);
+	const barnesHutTree = new BarnesHutTree(0.7, boundary);
 	const meshBodiesLength = Object.keys(meshBodies).length;
 
 	for (let index = 0; index < meshBodiesLength; index++) {
@@ -319,9 +319,9 @@ const barnesHutAttraction = () => {
 		barnesHutTree.insert(body.translation() as Point, body.mass());
 		barnesHutTree.updateForces(body.translation(), force, thetaSquared);
 		body.applyImpulse({
-			x: force.x,
-			y: force.y,
-			z: force.z,
+			x: force.x * 100,
+			y: force.y * 100,
+			z: force.z * 100,
 		},
 		true);
 		meshBody.force = {x: 0, y: 0, z: 0}

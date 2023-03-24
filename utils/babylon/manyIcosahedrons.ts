@@ -185,9 +185,9 @@ const createPhysicsBodies = async (instanceCount: number, matricesData: Float32A
 			},
 			mass: 1,
 		};
-		if (index % 500 === 0) {
+		if (index % 100 === 0) {
 		// eslint-disable-next-line no-await-in-loop
-		await rapierExport.newBody(bodyObject)
+			await rapierExport.newBody(bodyObject)
 		} else {
 			rapierExport.newBody(bodyObject)
 		}
@@ -201,8 +201,8 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 13;
-	const size = 200;
+	const numberPerSide = 12;
+	const size = 250;
 	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
 	let col = 0;
