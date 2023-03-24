@@ -237,7 +237,7 @@ class BarnesHutNode {
 			if (this.centerOfMass !== point) {
 				const distance = this.getDistance(point, this.centerOfMass);
 				const direction = this.getDirection(point, this.centerOfMass);
-				const magnitude = ((this.totalMass * distance) ** -0.01);
+				const magnitude = ((this.totalMass * distance) ** -0.00001);
 
 				force.x += direction.x * magnitude;
 				force.y += direction.y * magnitude;
@@ -250,7 +250,7 @@ class BarnesHutNode {
 
 		if (this.boundary.size / distance < Math.sqrt(thetaSquared)) {
 			const direction = this.getDirection(point, this.centerOfMass);
-			const magnitude = ((this.totalMass * distance) ** -0.01);
+			const magnitude = ((this.totalMass * distance) ** -0.00001);
 
 			force.x += direction.x * magnitude;
 			force.y += direction.y * magnitude;
