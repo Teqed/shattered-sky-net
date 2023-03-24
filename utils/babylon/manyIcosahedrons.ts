@@ -201,8 +201,8 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 12;
-	const size = 250;
+	const numberPerSide = 10;
+	const size = 200;
 	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
 	let col = 0;

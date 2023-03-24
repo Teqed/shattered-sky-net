@@ -82,7 +82,8 @@ const rigidBodyDesc = RAPIER.RigidBodyDesc.dynamic()
 const points = new Float32Array(
 	vertices.map(v => v * 1)
 )
-const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
+// const colliderDesc = RAPIER.ColliderDesc.convexMesh(points, indices)
+const colliderDesc = RAPIER.ColliderDesc.ball(1)
 // Function to create bodies
 const initBody = (meshId: number,
 	p: { x: number, y: number, z: number },
@@ -94,9 +95,9 @@ const initBody = (meshId: number,
 		p.z ?? 0,
 	)
 		.setLinvel(
-			random.real(-1, 1),
-			random.real(-1, 1),
-			random.real(-1, 1)
+			random.real(-20, 20),
+			random.real(-20, 20),
+			random.real(-20, 20)
 		)
 		.setRotation({
 			x: r.x ?? 0,
@@ -113,8 +114,9 @@ const initBody = (meshId: number,
 	rigidBodyDesc.mass = mass
 	const body = world.createRigidBody(rigidBodyDesc)
 	// @ts-ignore-next-line - colliderDesc is possibly null
-	world.createCollider(colliderDesc, body)
-		.setRestitution(0.9999)
+	const thing = world.createCollider(colliderDesc, body)
+	thing.setRestitution(0.9999)
+	// thing.setFriction(1)
 	return { meshId,
 		body,
 	};
@@ -306,29 +308,65 @@ class BarnesHutTree {
 		this.rootNode.updateForces(point, force, thetaSquared);
 	}
 }
+const thetaSquared = 0.7 * 0.7;
+const boundary = new Boundary(-100, -100, -100, 100, 100, 100);
+const barnesHutTree = new BarnesHutTree(0.7, boundary);
+let meshBody;
+let body;
+let translation;
+let meshBodiesLength;
 const barnesHutAttraction = () => {
-	const thetaSquared = 0.7 * 0.7;
-	const boundary = new Boundary(-100, -100, -100, 100, 100, 100);
-	const barnesHutTree = new BarnesHutTree(0.7, boundary);
+	meshBodiesLength = Object.keys(meshBodies).length;
+	for (let index = 0; index < meshBodiesLength; index++) {
+		meshBody = meshBodies[index];
+		body = meshBody.body;
+		translation = body.translation();
+		meshBody.force = {x: 0, y: 0, z: 0};
+		barnesHutTree.insert(translation, body.mass());
+		barnesHutTree.updateForces(translation, meshBody.force, thetaSquared);
+		body.applyImpulse({
+			x: meshBody.force.x * 100,
+			y: meshBody.force.y * 100,
+			z: meshBody.force.z * 100,
+		},
+		true);
+	}
+};
+const keepWithinBounds = () => {
+	// if any of the bodies are outside the bounds, move them back in
 	const meshBodiesLength = Object.keys(meshBodies).length;
-
+	const outerBoundary = 500;
+	const innerBoundary = 200;
 	for (let index = 0; index < meshBodiesLength; index++) {
 		const meshBody = meshBodies[index];
 		const body = meshBody.body;
-		const force = meshBody.force || {x: 0, y: 0, z: 0};
-		barnesHutTree.insert(body.translation() as Point, body.mass());
-		barnesHutTree.updateForces(body.translation(), force, thetaSquared);
-		body.applyImpulse({
-			x: force.x * 100,
-			y: force.y * 100,
-			z: force.z * 100,
-		},
-		true);
-		meshBody.force = {x: 0, y: 0, z: 0}
+		const position = body.translation();
+		if (position.x > outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: innerBoundary, y: position.y, z: position.z}, true);
+		} else if (position.x < -outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: -innerBoundary, y: position.y, z: position.z}, true);
+		}
+		if (position.y > outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: position.x, y: innerBoundary, z: position.z}, true);
+		} else if (position.y < -outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: position.x, y: -innerBoundary, z: position.z}, true);
+		}
+		if (position.z > outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: position.x, y: position.y, z: innerBoundary}, true);
+		} else if (position.z < -outerBoundary) {
+			body.setLinvel({x: 0, y: 0, z: 0}, true);
+			body.setTranslation({x: position.x, y: position.y, z: -innerBoundary}, true);
+		}
 	}
 };
 
 const physicsUpdate = () => {
+	keepWithinBounds();
 	// gravitationAttraction();
 	barnesHutAttraction();
 	world.step();
