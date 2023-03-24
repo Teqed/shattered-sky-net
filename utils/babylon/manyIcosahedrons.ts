@@ -159,7 +159,7 @@ const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas
 	const light = new HemisphericLight('light',
 		new Vector3(0, 1, 0), scene);
 		// Dim the light a small amount - 0 to 1
-	light.intensity = 0.7;
+	light.intensity = 0.5;
 	createCamera(canvas, scene);
 	// scene.debugLayer.show();
 	return scene;
@@ -201,8 +201,8 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 10;
-	const size = 10;
+	const numberPerSide = 13;
+	const size = 15;
 	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
 	let col = 0;

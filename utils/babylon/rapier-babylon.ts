@@ -61,7 +61,9 @@ const indices = new Uint32Array([
 
 const meshBodies: {
 	[meshId: number]: {
-		body: RAPIER.RigidBody } } = {};
+		body: RAPIER.RigidBody,
+		force?: RAPIER.Vector3
+	} } = {};
 
 // const meshUpdate: {
 // 	[x: string]: number;[meshId: number]: {
@@ -173,9 +175,165 @@ const gravitationAttraction = () => {
 		body1.applyImpulse(force, true);
 	}
 };
+interface Point {
+	x: number;
+	y: number;
+	z: number;
+}
+class Boundary {
+	// * The constructor makes it more convenient to create a boundary
+	// eslint-disable-next-line no-useless-constructor
+	constructor (
+		private minX: number,
+		private minY: number,
+		private minZ: number,
+		private maxX: number,
+		private maxY: number,
+		private maxZ: number) {}
+
+	public contains (point: Point): boolean {
+		return point.x >= this.minX && point.x <= this.maxX &&
+               point.y >= this.minY && point.y <= this.maxY &&
+               point.z >= this.minZ && point.z <= this.maxZ;
+	}
+
+	public get size (): number {
+		return Math.max(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
+	}
+}
+class BarnesHutNode {
+	// eslint-disable-next-line no-use-before-define
+	private readonly children: BarnesHutNode[] = [];
+	private readonly centerOfMass: Point = { x: 0, y: 0, z: 0 };
+	private totalMass = 0;
+
+	// * The constructor makes it more convenient to create a boundary
+	// eslint-disable-next-line no-useless-constructor
+	constructor (private readonly boundary: Boundary) {}
+
+	public insert (point: Point, mass: number): void {
+		if (!this.boundary.contains(point)) {
+			return;
+		}
+
+		if (this.children.length === 0) {
+			this.totalMass += mass;
+			this.updateCenterOfMass(point, mass);
+			return;
+		}
+
+		this.totalMass += mass;
+		this.updateCenterOfMass(point, mass);
+
+		for (const child of this.children) {
+			child.insert(point, mass);
+		}
+	}
+
+	public updateForces (point: Point, force: Point, thetaSquared: number): void {
+		if (this.children.length === 0) {
+			if (this.centerOfMass !== point) {
+				const distance = this.getDistance(point, this.centerOfMass);
+				const direction = this.getDirection(point, this.centerOfMass);
+				const magnitude = (this.totalMass * distance) ** -0.1;
+
+				force.x += direction.x * magnitude;
+				force.y += direction.y * magnitude;
+				force.z += direction.z * magnitude;
+			}
+			return;
+		}
+
+		const distance = this.getDistance(point, this.centerOfMass);
+
+		if (this.boundary.size / distance < Math.sqrt(thetaSquared)) {
+			const direction = this.getDirection(point, this.centerOfMass);
+			const magnitude = (this.totalMass * distance) ** -0.1;
+
+			force.x += direction.x * magnitude;
+			force.y += direction.y * magnitude;
+			force.z += direction.z * magnitude;
+			return;
+		}
+
+		for (const child of this.children) {
+			child.updateForces(point, force, thetaSquared);
+		}
+	}
+
+	private updateCenterOfMass (point: Point, mass: number): void {
+		const totalMass = this.totalMass + mass;
+		const weight1 = this.totalMass / totalMass;
+		const weight2 = mass / totalMass;
+
+		this.centerOfMass.x = this.centerOfMass.x * weight1 + point.x * weight2;
+		this.centerOfMass.y = this.centerOfMass.y * weight1 + point.y * weight2;
+		this.centerOfMass.z = this.centerOfMass.z * weight1 + point.z * weight2;
+
+		this.totalMass = totalMass;
+	}
+
+	private getDistance (point1: Point, point2: Point): number {
+		const dx = point1.x - point2.x;
+		const dy = point1.y - point2.y;
+		const dz = point1.z - point2.z;
+
+		return Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
+	}
+
+	private getDirection (point1: Point, point2: Point): Point {
+		const distance = this.getDistance(point1, point2);
+
+		return {
+			x: (point2.x - point1.x) / distance,
+			y: (point2.y - point1.y) / distance,
+			z: (point2.z - point1.z) / distance,
+		};
+	}
+}
+class BarnesHutTree {
+	private readonly rootNode: BarnesHutNode;
+
+	constructor (private readonly theta: number, private readonly boundary: Boundary) {
+		this.rootNode = new BarnesHutNode(boundary);
+	}
+
+	public insert (point: Point, mass: number): void {
+		this.rootNode.insert(point, mass);
+	}
+
+	public updateForces (point: Point, force: Point, thetaSquared: number): void {
+		this.rootNode.updateForces(point, force, thetaSquared);
+	}
+}
+const barnesHutAttraction = () => {
+	const theta = 0.7;
+	const boundary = new Boundary(-100, -100, -100, 100, 100, 100);
+	const barnesHutTree = new BarnesHutTree(0.5, boundary);
+	const meshBodiesLength = Object.keys(meshBodies).length;
+	// insert points from meshBodies to the tree
+	for (let index = 0; index < meshBodiesLength; index++) {
+		meshBodies[index].force = new RAPIER.Vector3(0, 0, 0);
+		const body = meshBodies[index].body;
+		barnesHutTree.insert(body.translation() as Point, body.mass());
+	}
+	// update forces for each meshBody
+	for (let index = 0; index < meshBodiesLength; index++) {
+		barnesHutTree.updateForces(
+			meshBodies[index].body.translation(),
+			meshBodies[index].force!, theta ** 2);
+		if (index === 0) {
+			console.log(meshBodies[index].force!)
+		}
+		// consume force and apply to body
+		meshBodies[index].body.applyImpulse(meshBodies[index].force!, true);
+		meshBodies[index].force = new RAPIER.Vector3(0, 0, 0);
+	}
+};
 
 const physicsUpdate = () => {
-	gravitationAttraction();
+	// gravitationAttraction();
+	barnesHutAttraction();
 	world.step();
 	updateFlag = true;
 };
