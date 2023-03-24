@@ -172,7 +172,7 @@ const gravitationAttraction = () => {
 		force.y += -body1Translation.y / 100;
 		force.z += -body1Translation.z / 100;
 		// Apply the net force to the body
-		body1.applyImpulse(force, true);
+		body1.addForce(force, true);
 	}
 };
 interface Point {
@@ -193,8 +193,8 @@ class Boundary {
 
 	public contains (point: Point): boolean {
 		return point.x >= this.minX && point.x <= this.maxX &&
-               point.y >= this.minY && point.y <= this.maxY &&
-               point.z >= this.minZ && point.z <= this.maxZ;
+ point.y >= this.minY && point.y <= this.maxY &&
+ point.z >= this.minZ && point.z <= this.maxZ;
 	}
 
 	public get size (): number {
@@ -235,7 +235,7 @@ class BarnesHutNode {
 			if (this.centerOfMass !== point) {
 				const distance = this.getDistance(point, this.centerOfMass);
 				const direction = this.getDirection(point, this.centerOfMass);
-				const magnitude = (this.totalMass * distance) ** -0.1;
+				const magnitude = ((this.totalMass * distance) ** -0.0001) * 50;
 
 				force.x += direction.x * magnitude;
 				force.y += direction.y * magnitude;
@@ -248,7 +248,7 @@ class BarnesHutNode {
 
 		if (this.boundary.size / distance < Math.sqrt(thetaSquared)) {
 			const direction = this.getDirection(point, this.centerOfMass);
-			const magnitude = (this.totalMass * distance) ** -0.1;
+			const magnitude = ((this.totalMass * distance) ** -0.0001) * 50;
 
 			force.x += direction.x * magnitude;
 			force.y += direction.y * magnitude;
@@ -278,7 +278,7 @@ class BarnesHutNode {
 		const dy = point1.y - point2.y;
 		const dz = point1.z - point2.z;
 
-		return Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
+		return dx ** 2 + dy ** 2 + dz ** 2;
 	}
 
 	private getDirection (point1: Point, point2: Point): Point {
@@ -307,27 +307,24 @@ class BarnesHutTree {
 	}
 }
 const barnesHutAttraction = () => {
-	const theta = 0.7;
+	const thetaSquared = 0.5 * 0.5;
 	const boundary = new Boundary(-100, -100, -100, 100, 100, 100);
 	const barnesHutTree = new BarnesHutTree(0.5, boundary);
 	const meshBodiesLength = Object.keys(meshBodies).length;
-	// insert points from meshBodies to the tree
+
 	for (let index = 0; index < meshBodiesLength; index++) {
-		meshBodies[index].force = new RAPIER.Vector3(0, 0, 0);
-		const body = meshBodies[index].body;
+		const meshBody = meshBodies[index];
+		const body = meshBody.body;
+		const force = meshBody.force || {x: 0, y: 0, z: 0};
 		barnesHutTree.insert(body.translation() as Point, body.mass());
-	}
-	// update forces for each meshBody
-	for (let index = 0; index < meshBodiesLength; index++) {
-		barnesHutTree.updateForces(
-			meshBodies[index].body.translation(),
-			meshBodies[index].force!, theta ** 2);
-		if (index === 0) {
-			console.log(meshBodies[index].force!)
-		}
-		// consume force and apply to body
-		meshBodies[index].body.applyImpulse(meshBodies[index].force!, true);
-		meshBodies[index].force = new RAPIER.Vector3(0, 0, 0);
+		barnesHutTree.updateForces(body.translation(), force, thetaSquared);
+		body.applyImpulse({
+			x: force.x,
+			y: force.y,
+			z: force.z,
+		},
+		true);
+		meshBody.force = {x: 0, y: 0, z: 0}
 	}
 };
 
