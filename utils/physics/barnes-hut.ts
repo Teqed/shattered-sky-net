@@ -1,4 +1,4 @@
-import { type RigidBody, Vector3 } from '../../worker/rapier';
+import { type RigidBody, Vector3 } from '../worker/rapier-treeshake';
 interface Point {
 	x: number;
 	y: number;
@@ -57,7 +57,17 @@ class BarnesHutNode {
 		try {
 			const distance = this.getDistance(point, this.centerOfMass);
 			const direction = this.getDirection(point, this.centerOfMass, distance);
-			const magnitude = ((this.totalMass * distance) ** -10);
+			// const magnitude = ((this.totalMass * distance) ** -2);
+			// The magnitude is the force of gravity between two bodies
+			// The force of gravity is the product of the masses of the two bodies
+			// divided by the square of the distance between them
+			// The force of gravity is the acceleration of the bodies
+			// The acceleration of the bodies is the change in velocity
+			// the gravitational constant is the ratio of the force of gravity
+			const gravitationalConstant = 0.0000667;
+			// const magnitude = this.totalMass * gravitationalConstant / (distance ** 2);
+			// Let's make it more effective at greater distances
+			const magnitude = this.totalMass * gravitationalConstant / (distance ** 0.00001);
 			if ((this.children.length === 0) || (this.boundary.size / distance < theta)) {
 				if (this.centerOfMass !== point) {
 					force.x += direction.x * magnitude;
@@ -116,7 +126,8 @@ class BarnesHutTree {
 	}
 }
 const theta = 0.7;
-const boundary = new Boundary(-1000, -1000, -1000, 1000, 1000, 1000);
+const bd = 200;
+const boundary = new Boundary(-bd, -bd, -bd, bd, bd, bd);
 const barnesHutTree = new BarnesHutTree(theta, boundary);
 let meshBody;
 let body;

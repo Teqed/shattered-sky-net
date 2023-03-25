@@ -1,14 +1,17 @@
 /* eslint-disable no-plusplus */
-import * as BABYLON from '@babylonjs/core'
+// import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { Color4 } from '@babylonjs/core/Maths/math.color';
+import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
 // import { FreeCamera } from '@babylonjs/core/Cameras/freeCamera';
 import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { Vector3, Quaternion, Matrix } from '@babylonjs/core/Maths/math.vector';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { Mesh } from '@babylonjs/core/Meshes/mesh';
+import '@babylonjs/core/Meshes/thinInstanceMesh';
 // import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
-import '@babylonjs/core/Materials/standardMaterial';
+import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/core/Physics/physicsEngineComponent'
 import '@babylonjs/core/Helpers/sceneHelpers';
 // import { PhysicsImpostor } from '@babylonjs/core/Physics/physicsImpostor'
@@ -22,9 +25,8 @@ export const numberMeshes: {number: number} = {
 	number: 0,
 };
 let rapierExport: {
-	updateFlag: () => Promise<boolean>,
 	startPhysics: () => Promise<boolean>,
-	getUpdate: () => Promise<ArrayBuffer>,
+	getUpdate: () => Promise<ArrayBuffer | false>,
 	newBody: (bodyObject: {
 		meshId: number,
 		p: {
@@ -62,24 +64,27 @@ let bodyObject: {
 	mass: number,
 	size: number,
 };
-const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
-const standardRotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
-const standardTranslationVector3 = new BABYLON.Vector3(0, 0, 0);
+const standardSizeVector3 = new Vector3(1, 1, 1);
+const standardRotationQuaternion = new Quaternion(0, 0, 0, 1);
+const standardTranslationVector3 = new Vector3(0, 0, 0);
 let matricesData = new Float32Array();
-let babylonMesh: BABYLON.Mesh;
-const matrix = BABYLON.Matrix.Compose(
+let babylonMesh: Mesh;
+const matrix = Matrix.Compose(
 	standardSizeVector3,
 	standardRotationQuaternion.copyFromFloats(0, 0, 0, 1),
 	standardTranslationVector3.copyFromFloats(0, 0, 0)
 )
-const decode = (arrayBuffer: ArrayBuffer): Promise<number> => {
+const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
+	if (arrayBuffer === false) {
+		return Promise.resolve(numberMeshes.number);
+	}
 	let count = 0;
 	let index_ = 0;
 	const update = new Float32Array(arrayBuffer);
 	for (let index = 0; index < update.length; index += 8) {
 		count++;
 		matrix.copyFrom(
-			BABYLON.Matrix.Compose(
+			Matrix.Compose(
 				standardSizeVector3,
 				standardRotationQuaternion.copyFromFloats(
 					update[index + 4],
@@ -172,13 +177,13 @@ const createObjects = async (scene: Scene) => {
 	const waitForWorld = rapierExport.startPhysics();
 	await waitForWorld
 	// const babylonMesh = BABYLON.CreateBox('root', {size: 1});
-	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
+	babylonMesh = CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 13;
+	const numberPerSide = 15;
 	const size = 200;
 	const ofst = size / (numberPerSide - 1);
-	const m = BABYLON.Matrix.Identity();
+	const m = Matrix.Identity();
 	let col = 0;
 	let index = 0;
 
@@ -189,7 +194,7 @@ const createObjects = async (scene: Scene) => {
 	for (let x = 0; x < numberPerSide; x++) {
 		for (let y = 0; y < numberPerSide; y++) {
 			for (let z = 0; z < numberPerSide; z++) {
-				m.setTranslation(new BABYLON.Vector3(
+				m.setTranslation(new Vector3(
 					-size / 2 + ofst * x,
 					-size / 2 + ofst * y,
 					-size / 2 + ofst * z
@@ -206,7 +211,7 @@ const createObjects = async (scene: Scene) => {
 	}
 	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
-	babylonMesh.material = new BABYLON.StandardMaterial('material', scene);
+	babylonMesh.material = new StandardMaterial('material', scene);
 	scene.freezeActiveMeshes();
 
 	// const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
@@ -244,26 +249,17 @@ const createObjects = async (scene: Scene) => {
 	// 	return await Promise.resolve(count);
 	// }
 
-	let doNotQueueAdditionalUpdatesSmall = false;
 	let doNotQueueAdditionalUpdates = false;
 	let lastPhysicsUpdate = 0;
 	scene.registerAfterRender(async () => {
 		const now = Date.now();
 		if (now - lastPhysicsUpdate > 1000 / 60) {
-			if (doNotQueueAdditionalUpdatesSmall) {
+			if (doNotQueueAdditionalUpdates) {
 				return;
 			} else {
-				doNotQueueAdditionalUpdatesSmall = true;
-				if (await rapierExport.updateFlag()) {
-					if (doNotQueueAdditionalUpdates) {
-						return;
-					} else {
-						doNotQueueAdditionalUpdates = true;
-						numberMeshes.number = await decode(await rapierExport.getUpdate());
-						doNotQueueAdditionalUpdates = false;
-					}
-				}
-				doNotQueueAdditionalUpdatesSmall = false;
+				doNotQueueAdditionalUpdates = true;
+				numberMeshes.number = await decode(await rapierExport.getUpdate());
+				doNotQueueAdditionalUpdates = false;
 			}
 			lastPhysicsUpdate = now;
 		}
