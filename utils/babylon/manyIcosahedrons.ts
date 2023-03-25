@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
@@ -61,21 +62,6 @@ let bodyObject: {
 	mass: number,
 	size: number,
 };
-const meshUpdate: {
-	[meshId: number]: {
-		p: {
-			x: number;
-			y: number;
-			z: number;
-		};
-		r: {
-			x: number;
-			y: number;
-			z: number;
-			w: number;
-		};
-	};
-} = {};
 const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
 const standardRotationQuaternion = new BABYLON.Quaternion(0, 0, 0, 1);
 const standardTranslationVector3 = new BABYLON.Vector3(0, 0, 0);
@@ -113,16 +99,15 @@ const decode = (arrayBuffer: ArrayBuffer): Promise<number> => {
 	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	return Promise.resolve(count);
 };
-
 export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	// // Creates and positions a free camera
 	// const camera = new FreeCamera('camera1',
+	const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
 	// 	new Vector3(0, 5, -10), scene);
 	// 	// Targets the camera to scene origin
-	// camera.setTarget(Vector3.Zero());
-	const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
+	camera.setTarget(Vector3.Zero());
 	// This attaches the camera to the canvas
-	camera.attachControl(canvas);
+	// camera.attachControl(canvas);
 	let isMouseDown = 0;
 	let lastX = 0;
 	let lastY = 0;
@@ -146,27 +131,16 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 }
 
 const createScene = (engine: Engine, canvas: HTMLCanvasElement | OffscreenCanvas) => {
-	// Creates a basic Babylon Scene object
 	const scene = new Scene(engine);
-	// scene.enablePhysics(
-	// 	new Vector3(0, -9.81, 0),
-	// 	// new Vector3(0, 0, 0),
-	// 	new CannonJSPlugin()
-	// );
-	// Set background color to transparent
 	scene.clearColor = new Color4(0, 0, 0, 0);
-	// Creates a light, aiming 0,1,0 - to the sky
 	const light = new HemisphericLight('light',
 		new Vector3(0, 1, 0), scene);
-		// Dim the light a small amount - 0 to 1
 	light.intensity = 0.5;
 	createCamera(canvas, scene);
-	// scene.debugLayer.show();
 	return scene;
 }
 
 const createPhysicsBodies = async (instanceCount: number, matricesData: Float32Array) => {
-	// Create a new rapier body for each instance
 	for (let index = 0; index < instanceCount; index++) {
 		bodyObject = {
 			meshId: index,
@@ -201,7 +175,7 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = BABYLON.CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 10;
+	const numberPerSide = 13;
 	const size = 200;
 	const ofst = size / (numberPerSide - 1);
 	const m = BABYLON.Matrix.Identity();
@@ -212,7 +186,6 @@ const createObjects = async (scene: Scene) => {
 	matricesData = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
 
-	// Create the instance buffer
 	for (let x = 0; x < numberPerSide; x++) {
 		for (let y = 0; y < numberPerSide; y++) {
 			for (let z = 0; z < numberPerSide; z++) {
@@ -231,13 +204,9 @@ const createObjects = async (scene: Scene) => {
 			}
 		}
 	}
-	// Set the instance buffers
 	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
-	// babylonMesh.material = new BABYLON.StandardMaterial('material');
 	babylonMesh.material = new BABYLON.StandardMaterial('material', scene);
-	// babylonMesh.material.disableLighting = true;
-	// babylonMesh.material.emissiveColor = BABYLON.Color3.White();
 	scene.freezeActiveMeshes();
 
 	// const standardSizeVector3 = new BABYLON.Vector3(1, 1, 1);
