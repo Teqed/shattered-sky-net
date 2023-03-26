@@ -113,6 +113,10 @@ onMounted(() => {
 			babylonWorker.mouseEvent(relayedMouseEvent);
 		}
 	};
+	// suppress right-click so we can use it for camera panning
+	canvas.addEventListener('contextmenu', (event) => {
+		event.preventDefault();
+	});
 	canvas.addEventListener('pointerdown', onMouseEvents);
 	canvas.addEventListener('pointermove', onMouseEvents);
 	canvas.addEventListener('pointerup', onMouseEvents);

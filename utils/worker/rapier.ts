@@ -5,7 +5,9 @@ import initWorld from '../physics/initWorld';
 import { Vector3, RigidBody, World } from '../worker/rapier-treeshake';
 let world: World;
 export type MeshBodyVirtual = { [meshId: number]: {body: RigidBody
-	force?: Vector3} };
+	force?: Vector3, virtualPos: { x: number, y: number, z: number},
+	virtualRot: { x: number, y: number, z: number, w: number },
+} };
 let meshBodies: MeshBodyVirtual;
 const rapierExport = {
 	async startPhysics () {

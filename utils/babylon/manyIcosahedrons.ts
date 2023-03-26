@@ -110,23 +110,47 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 	const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
 	// 	new Vector3(0, 5, -10), scene);
 	// 	// Targets the camera to scene origin
-	camera.setTarget(Vector3.Zero());
+	camera.setTarget(new Vector3(-150, 0, 0));
+	// camera.position = new Vector3(0, 0, -200);
+	camera.radius = 750;
+	camera.alpha = Math.PI / 1;
+	camera.beta = Math.PI / 2;
+	// prevent zooming through the floor
+	camera.lowerRadiusLimit = 10;
 	// This attaches the camera to the canvas
 	// camera.attachControl(canvas);
-	let isMouseDown = 0;
+	let isLeftMouseDown = false;
+	let isRightMouseDown = false;
 	let lastX = 0;
 	let lastY = 0;
 	// add event listener for mousedown,
 	// if mousedown, move camera forward
-	canvas.addEventListener('pointerdown', () => {
-		isMouseDown = 1;
+	canvas.addEventListener('pointerdown', (event: any) => {
+		if (event.button === 0) {
+			isLeftMouseDown = true;
+		}
+		if (event.button === 2) {
+			isRightMouseDown = true;
+		}
 	});
-	canvas.addEventListener('pointerup', () => {
-		isMouseDown = 0;
+	canvas.addEventListener('pointerup', (event: any) => {
+		if (event.button === 0) {
+			isLeftMouseDown = false;
+		}
+		if (event.button === 2) {
+			isRightMouseDown = false;
+		}
 	});
 	canvas.addEventListener('pointermove', (event: any) => {
-		camera.beta += isMouseDown * -0.01 * (event.y - lastY);
-		camera.alpha += isMouseDown * -0.01 * (event.x - lastX);
+		if (isLeftMouseDown) {
+			camera.beta += -0.01 * (event.y - lastY);
+			camera.alpha += -0.01 * (event.x - lastX);
+		}
+		if (isRightMouseDown) {
+			// pan
+			camera.target.x += -0.5 * (event.x - lastX);
+			camera.target.y += 0.5 * (event.y - lastY);
+		}
 		lastX = event.x;
 		lastY = event.y;
 	});
@@ -180,7 +204,7 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 15;
+	const numberPerSide = 20;
 	const size = 200;
 	const ofst = size / (numberPerSide - 1);
 	const m = Matrix.Identity();
@@ -194,10 +218,11 @@ const createObjects = async (scene: Scene) => {
 	for (let x = 0; x < numberPerSide; x++) {
 		for (let y = 0; y < numberPerSide; y++) {
 			for (let z = 0; z < numberPerSide; z++) {
+				const randomNoise = Math.random() * 20;
 				m.setTranslation(new Vector3(
-					-size / 2 + ofst * x,
-					-size / 2 + ofst * y,
-					-size / 2 + ofst * z
+					(-size / 2 + ofst * x * 0.3) + randomNoise,
+					(-size / 2 + ofst * y) + randomNoise,
+					(-size / 2 + ofst * z) + randomNoise,
 				))
 				m.copyToArray(matricesData, index * 16)
 				const coli = Math.floor(col)
@@ -265,16 +290,19 @@ const createObjects = async (scene: Scene) => {
 		}
 	})
 
-	// every 15fps, change color
-	// setInterval(() => {
-	// 	for (let index_ = 0; index_ < instanceCount; index_++) {
-	// 		colorData[index_ * 4] = Math.random();
-	// 		colorData[index_ * 4 + 1] = Math.random();
-	// 		colorData[index_ * 4 + 2] = Math.random();
-	// 	}
-	// 	// Update the instance buffer
-	// 	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
-	// }, 5000 / 1);
+	setInterval(() => {
+		for (let index_ = 0; index_ < instanceCount; index_++) {
+			// colorData[index_ * 4] = Math.random();
+			// colorData[index_ * 4 + 1] = Math.random();
+			// colorData[index_ * 4 + 2] = Math.random();
+			// set color based on position
+			colorData[index_ * 4] = -matricesData[index_ * 16 + 12] / 50;
+			colorData[index_ * 4 + 1] = -matricesData[index_ * 16 + 13] / 50;
+			colorData[index_ * 4 + 2] = -matricesData[index_ * 16 + 14] / 50;
+		}
+		// Update the instance buffer
+		babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
+	}, 1000 / 30);
 	// // add ground
 	// const ground = BABYLON.CreateGround('ground', {width: 500, height: 500});
 	// // lower ground

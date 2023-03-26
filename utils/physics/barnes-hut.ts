@@ -1,4 +1,5 @@
 import { type RigidBody, Vector3 } from '../worker/rapier-treeshake';
+import { type MeshBodyVirtual } from '../worker/rapier';
 interface Point {
 	x: number;
 	y: number;
@@ -25,6 +26,7 @@ class Boundary {
 		return Math.max(this.maxX - this.minX, this.maxY - this.minY, this.maxZ - this.minZ);
 	}
 }
+const gravitationalConstant = 0.01
 class BarnesHutNode {
 	// eslint-disable-next-line no-use-before-define
 	private readonly children: BarnesHutNode[] = [];
@@ -58,18 +60,12 @@ class BarnesHutNode {
 			const distance = this.getDistance(point, this.centerOfMass);
 			const direction = this.getDirection(point, this.centerOfMass, distance);
 			// const magnitude = ((this.totalMass * distance) ** -2);
-			// The magnitude is the force of gravity between two bodies
-			// The force of gravity is the product of the masses of the two bodies
-			// divided by the square of the distance between them
-			// The force of gravity is the acceleration of the bodies
-			// The acceleration of the bodies is the change in velocity
-			// the gravitational constant is the ratio of the force of gravity
-			const gravitationalConstant = 0.0000667;
-			// const magnitude = this.totalMass * gravitationalConstant / (distance ** 2);
-			// Let's make it more effective at greater distances
-			const magnitude = this.totalMass * gravitationalConstant / (distance ** 0.00001);
+			const magnitude = this.totalMass * gravitationalConstant / (distance ** 0.000001);
+			// const quadraticConstant = 100;
+			// const magnitude = this.totalMass * gravitationalConstant / ((distance ** 2) + quadraticConstant);
 			if ((this.children.length === 0) || (this.boundary.size / distance < theta)) {
 				if (this.centerOfMass !== point) {
+				// if (distance > 10) {
 					force.x += direction.x * magnitude;
 					force.y += direction.y * magnitude;
 					force.z += direction.z * magnitude;
@@ -109,6 +105,20 @@ class BarnesHutNode {
 			z: (point2.z - point1.z) / distance,
 		};
 	}
+
+	public enforceBoundary (point: Point): Point {
+		// * Enforce boundary
+		if (Math.abs(point.x) > this.boundary.size ||
+			Math.abs(point.y) > this.boundary.size ||
+			Math.abs(point.z) > this.boundary.size) {
+			point = {
+				x: point.x > this.boundary.size ? -this.boundary.size : (point.x < -this.boundary.size ? this.boundary.size : point.x),
+				y: point.y > this.boundary.size ? -this.boundary.size : (point.y < -this.boundary.size ? this.boundary.size : point.y),
+				z: point.z > this.boundary.size ? -this.boundary.size : (point.z < -this.boundary.size ? this.boundary.size : point.z),
+			};
+		}
+		return point;
+	}
 }
 class BarnesHutTree {
 	private readonly rootNode: BarnesHutNode;
@@ -124,48 +134,83 @@ class BarnesHutTree {
 	public updateForces (point: Point, force: Point): void {
 		this.rootNode.updateForces(point, force);
 	}
+
+	public enforceBoundary (point: Point): Point {
+		return this.rootNode.enforceBoundary(point);
+	}
 }
-const theta = 0.7;
-const bd = 200;
+const theta = 0.5;
+const bd = 400;
 const boundary = new Boundary(-bd, -bd, -bd, bd, bd, bd);
 const barnesHutTree = new BarnesHutTree(theta, boundary);
 let meshBody;
 let body;
-let translation;
-let meshBodiesLength;
+let meshBodiesLength: number;
+let rotationCounter = 0;
+const insertNodes = (meshBodies: MeshBodyVirtual) => {
+	for (let index = 0; index < meshBodiesLength; index++) {
+		try {
+			meshBody = meshBodies[index];
+			body = meshBody.body
+			meshBody.virtualPos = body.translation();
+			if (rotationCounter % 30 === 0) {
+				meshBody.virtualRot = body.rotation();
+			}
+			// barnesHutTree.insert(translation, body.mass());
+			barnesHutTree.insert(meshBody.virtualPos, 1);
+			barnesHutTree.updateForces(meshBody.virtualPos, meshBody.force!);
+		} catch (error) {
+			console.error('Error in barnesHutAttraction.insert', error);
+		}
+	}
+	rotationCounter++;
+	if (rotationCounter > 1000) {
+		rotationCounter = 0;
+	}
+};
+const enforceBoundary = (meshBodies: MeshBodyVirtual) => {
+	for (let index = 0; index < meshBodiesLength; index++) {
+		try {
+			meshBody = meshBodies[index];
+			body = meshBody.body;
+			const enforcedTranslation = barnesHutTree.enforceBoundary(meshBody.virtualPos);
+			if (enforcedTranslation !== meshBody.virtualPos) {
+				body.setTranslation(enforcedTranslation, true);
+			}
+		} catch (error) {
+			console.error('Error in barnesHutAttraction.enforceBoundary', error);
+		}
+	}
+}
+const calculateForces = (meshBodies: MeshBodyVirtual) => {
+	for (let index = 0; index < meshBodiesLength; index++) {
+		try {
+			meshBody = meshBodies[index];
+			body = meshBody.body;
+			body.resetForces(true);
+			body.addForce({
+				x: meshBody.force!.x,
+				y: meshBody.force!.y,
+				z: meshBody.force!.z,
+				// x: Math.min(Math.max(meshBody.force!.x * 1, -10), 10),
+				// y: Math.min(Math.max(meshBody.force!.y * 1, -10), 10),
+				// z: Math.min(Math.max(meshBody.force!.z * 1, -10), 10),
+			},
+			true);
+			meshBody.force = {x: 0, y: 0, z: 0};
+		} catch (error) {
+			console.error('Error in barnesHutAttraction.addForce', error);
+		}
+	}
+};
 // eslint-disable-next-line import/prefer-default-export
-export const barnesHutAttraction = (meshBodies: {
-	[meshId: number]: {
-		body: RigidBody;
-		force?: Vector3 | undefined;
-	};
-}) => {
+export const barnesHutAttraction = (meshBodies: MeshBodyVirtual) => {
 	meshBodiesLength = Object.keys(meshBodies).length;
 	for (let index = 0; index < meshBodiesLength; index++) {
 		meshBody = meshBodies[index];
 		meshBody.force = {x: 0, y: 0, z: 0};
 	}
-	for (let index = 0; index < meshBodiesLength; index++) {
-		meshBody = meshBodies[index];
-		body = meshBody.body;
-		translation = body.translation();
-		barnesHutTree.insert(translation, body.mass());
-		// barnesHutTree.insert(translation, 1);
-		barnesHutTree.updateForces(translation, meshBody.force!);
-	}
-	for (let index = 0; index < meshBodiesLength; index++) {
-		try {
-			meshBody = meshBodies[index];
-			body = meshBody.body;
-			body.addForce({
-				x: meshBody.force!.x * 1,
-				y: meshBody.force!.y * 1,
-				z: meshBody.force!.z * 1,
-			},
-			true);
-			meshBody.force = {x: 0, y: 0, z: 0};
-		} catch (error) {
-			console.error('Error in barnesHutAttraction', error);
-		}
-	}
+	insertNodes(meshBodies);
+	enforceBoundary(meshBodies);
+	calculateForces(meshBodies);
 };

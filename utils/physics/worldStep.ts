@@ -30,9 +30,9 @@ const virtualUpdate = (meshBodies: MeshBodyVirtual) => {
 	update = new Array(numberUpdates * 8);
 	let index = 0;
 	for (const key of Object.keys(meshBodies)) {
-		const body = meshBodies[Number(key)].body;
-		const translation = body.translation();
-		const rotation = body.rotation();
+		const meshBody = meshBodies[Number(key)];
+		const translation = meshBody.virtualPos;
+		const rotation = meshBody.virtualRot;
 		update[index++] = Number(key);
 		update[index++] = translation.x;
 		update[index++] = translation.y;
@@ -45,7 +45,7 @@ const virtualUpdate = (meshBodies: MeshBodyVirtual) => {
 	return new Float32Array(update).buffer;
 }
 const physicsUpdate = (world: World, meshBodies: MeshBodyVirtual) => {
-	keepWithinBounds(meshBodies);
+	// keepWithinBounds(meshBodies);
 	// gravitationalAttraction(meshBodies);
 	barnesHutAttraction(meshBodies);
 	world.step();
