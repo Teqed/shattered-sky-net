@@ -312,6 +312,7 @@ class CustomMouseEvent extends Event {
 			clientX: number,
 			clientY: number,
 			button: number,
+			buttons: number,
 			currentTarget: EventTarget | null,
 			deltaX?: number,
 			deltaY?: number,
@@ -384,6 +385,7 @@ const babylonWorker = {
 			clientX: event.x,
 			clientY: event.y,
 			button: event.button,
+			buttons: event.buttons,
 			currentTarget: canvas,
 			deltaX: event.deltaX,
 			deltaY: event.deltaY,
@@ -391,8 +393,7 @@ const babylonWorker = {
 			deltaMode: event.deltaMode
 		});
 		// console.log(customEvent)
-		canvas.dispatchEvent(customEvent
-		);
+		canvas.dispatchEvent(customEvent);
 	},
 	subSpawn: (url: string) => {
 		createSubWorker(url);

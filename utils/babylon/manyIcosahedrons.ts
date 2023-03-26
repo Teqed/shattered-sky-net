@@ -1,3 +1,4 @@
+
 /* eslint-disable no-plusplus */
 // import * as BABYLON from '@babylonjs/core'
 import { Engine } from '@babylonjs/core/Engines/engine';
@@ -67,43 +68,73 @@ let bodyObject: {
 const standardSizeVector3 = new Vector3(1, 1, 1);
 const standardRotationQuaternion = new Quaternion(0, 0, 0, 1);
 const standardTranslationVector3 = new Vector3(0, 0, 0);
+let matricesUpdate = new Float32Array();
 let matricesData = new Float32Array();
 let babylonMesh: Mesh;
-const matrix = Matrix.Compose(
+let matrix = Matrix.Compose(
 	standardSizeVector3,
 	standardRotationQuaternion.copyFromFloats(0, 0, 0, 1),
 	standardTranslationVector3.copyFromFloats(0, 0, 0)
 )
+let estimatedMatricesData = new Float32Array();
+let lastMatricesData = new Float32Array();
 const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
 	if (arrayBuffer === false) {
 		return Promise.resolve(numberMeshes.number);
 	}
 	let count = 0;
 	let index_ = 0;
-	const update = new Float32Array(arrayBuffer);
-	for (let index = 0; index < update.length; index += 8) {
+	matricesUpdate = new Float32Array(arrayBuffer);
+	lastMatricesData.set(matricesData)
+	// for (let index = 0; index < matricesData.length; index++) {
+	// 	lastMatricesData[index] = matricesData[index];
+	// }
+	lastPhysicsUpdateTime = physicsUpdateTime.valueOf();
+	physicsUpdateTime = Date.now();
+	for (let index = 0; index < matricesUpdate.length; index += 8) {
 		count++;
-		matrix.copyFrom(
-			Matrix.Compose(
-				standardSizeVector3,
-				standardRotationQuaternion.copyFromFloats(
-					update[index + 4],
-					update[index + 5],
-					update[index + 6],
-					update[index + 7]
-				),
-				standardTranslationVector3.copyFromFloats(
-					update[index + 1],
-					update[index + 2],
-					update[index + 3]
-				)
-			))
+		matrix = Matrix.Compose(
+			standardSizeVector3,
+			standardRotationQuaternion.copyFromFloats(
+				matricesUpdate[index + 4],
+				matricesUpdate[index + 5],
+				matricesUpdate[index + 6],
+				matricesUpdate[index + 7]
+			),
+			standardTranslationVector3.copyFromFloats(
+				matricesUpdate[index + 1],
+				matricesUpdate[index + 2],
+				matricesUpdate[index + 3]
+			)
+		)
 		matrix.copyToArray(matricesData, index_)
 		index_ += 16;
 	}
+	estimatedMatricesData.set(matricesData)
 	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	return Promise.resolve(count);
 };
+let lastPhysicsUpdateTime = Date.now();
+let physicsUpdateTime = Date.now();
+const estimateFrame = () => {
+	const now = Date.now();
+	if (now - physicsUpdateTime > 1000 / 144) {
+	// if (false) {
+		// Using lastPhysicsUpdateTime and physicsUpdateTime, we can find the time between the last physics update and the current time
+		// Then, we can use that time to estimate the position of the objects at the current time
+		const dt = now - lastPhysicsUpdateTime;
+		const dtPhysics = physicsUpdateTime - lastPhysicsUpdateTime;
+		const alpha = dt / dtPhysics;
+		// const alpha = (now - lastPhysicsUpdateTime) / (physicsUpdateTime - lastPhysicsUpdateTime);
+		for (let index = 0; index < matricesData.length; index += 16) {
+			estimatedMatricesData[index + 12] = lastMatricesData[index + 12] + (matricesData[index + 12] - lastMatricesData[index + 12]) * alpha;
+			estimatedMatricesData[index + 13] = lastMatricesData[index + 13] + (matricesData[index + 13] - lastMatricesData[index + 13]) * alpha;
+			estimatedMatricesData[index + 14] = lastMatricesData[index + 14] + (matricesData[index + 14] - lastMatricesData[index + 14]) * alpha;
+		}
+		babylonMesh.thinInstanceSetBuffer('matrix', estimatedMatricesData, 16);
+		// babylonMesh.thinInstanceSetBuffer('color', new Float32Array(estimatedMatricesData.length / 4), 4);
+	}
+}
 export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	// // Creates and positions a free camera
 	// const camera = new FreeCamera('camera1',
@@ -117,8 +148,15 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 	camera.beta = Math.PI / 2;
 	// prevent zooming through the floor
 	camera.lowerRadiusLimit = 10;
+	camera.zoomToMouseLocation = true;
+	camera.wheelDeltaPercentage = 0.01;
 	// This attaches the camera to the canvas
-	// camera.attachControl(canvas);
+	camera.attachControl();
+	scene.onPointerObservable.add((event) => {
+		console.log('observable detected', event);
+	});
+	scene.pointerX = 0;
+	scene.pointerY = 0;
 	let isLeftMouseDown = false;
 	let isRightMouseDown = false;
 	let lastX = 0;
@@ -147,12 +185,16 @@ export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene:
 			camera.alpha += -0.01 * (event.x - lastX);
 		}
 		if (isRightMouseDown) {
-			// pan
-			camera.target.x += -0.5 * (event.x - lastX);
 			camera.target.y += 0.5 * (event.y - lastY);
+			const cameraWorldMatrix = camera.getWorldMatrix();
+			const cameraWorldMatrixInverse = Matrix.Invert(cameraWorldMatrix);
+			const cameraLocalX = Vector3.TransformNormal(new Vector3(1, 0, 0), cameraWorldMatrixInverse);
+			camera.target.addInPlace(cameraLocalX.scale(1 * (event.x - lastX)));
 		}
 		lastX = event.x;
 		lastY = event.y;
+		scene.pointerX = event.x;
+		scene.pointerY = event.y;
 	});
 	canvas.addEventListener('wheel', (event: any) => {
 		camera.radius += event.deltaY * 0.1;
@@ -204,7 +246,7 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 20;
+	const numberPerSide = 25;
 	const size = 200;
 	const ofst = size / (numberPerSide - 1);
 	const m = Matrix.Identity();
@@ -213,6 +255,8 @@ const createObjects = async (scene: Scene) => {
 
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
 	matricesData = new Float32Array(instanceCount * 16);
+	lastMatricesData = new Float32Array(instanceCount * 16);
+	estimatedMatricesData = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
 
 	for (let x = 0; x < numberPerSide; x++) {
@@ -275,19 +319,23 @@ const createObjects = async (scene: Scene) => {
 	// }
 
 	let doNotQueueAdditionalUpdates = false;
-	let lastPhysicsUpdate = 0;
 	scene.registerAfterRender(async () => {
 		const now = Date.now();
-		if (now - lastPhysicsUpdate > 1000 / 60) {
+		if (now - lastPhysicsUpdateTime > 1000 / 60) {
 			if (doNotQueueAdditionalUpdates) {
+				estimateFrame();
 				return;
+				// console.log('skipping update');
 			} else {
 				doNotQueueAdditionalUpdates = true;
 				numberMeshes.number = await decode(await rapierExport.getUpdate());
 				doNotQueueAdditionalUpdates = false;
+				return;
 			}
-			lastPhysicsUpdate = now;
 		}
+		estimateFrame();
+	})
+	scene.registerBeforeRender(() => {
 	})
 
 	setInterval(() => {

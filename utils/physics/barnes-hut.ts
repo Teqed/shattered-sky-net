@@ -153,7 +153,7 @@ const insertNodes = (meshBodies: MeshBodyVirtual) => {
 			meshBody = meshBodies[index];
 			body = meshBody.body
 			meshBody.virtualPos = body.translation();
-			if (rotationCounter % 30 === 0) {
+			if (rotationCounter % 4 === 0) {
 				meshBody.virtualRot = body.rotation();
 			}
 			// barnesHutTree.insert(translation, body.mass());

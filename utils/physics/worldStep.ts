@@ -42,6 +42,7 @@ const virtualUpdate = (meshBodies: MeshBodyVirtual) => {
 		update[index++] = rotation.z;
 		update[index++] = rotation.w;
 	}
+	updateFlag(true)
 	return new Float32Array(update).buffer;
 }
 const physicsUpdate = (world: World, meshBodies: MeshBodyVirtual) => {
@@ -49,7 +50,6 @@ const physicsUpdate = (world: World, meshBodies: MeshBodyVirtual) => {
 	// gravitationalAttraction(meshBodies);
 	barnesHutAttraction(meshBodies);
 	world.step();
-	updateFlag(true)
 };
 const scheduleUpdates = (world: World, meshBodies: MeshBodyVirtual) => {
 	physicsUpdate(world, meshBodies);
