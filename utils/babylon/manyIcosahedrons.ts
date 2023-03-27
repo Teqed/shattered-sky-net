@@ -69,15 +69,17 @@ const standardSizeVector3 = new Vector3(1, 1, 1);
 const standardRotationQuaternion = new Quaternion(0, 0, 0, 1);
 const standardTranslationVector3 = new Vector3(0, 0, 0);
 let matricesUpdate = new Float32Array();
-let matricesData = new Float32Array();
 let babylonMesh: Mesh;
 let matrix = Matrix.Compose(
 	standardSizeVector3,
 	standardRotationQuaternion.copyFromFloats(0, 0, 0, 1),
 	standardTranslationVector3.copyFromFloats(0, 0, 0)
 )
-let estimatedMatricesData = new Float32Array();
-let lastMatricesData = new Float32Array();
+let matricesData0 = new Float32Array(); // current frame
+let matricesData1 = new Float32Array(); // last frame
+let matricesData2 = new Float32Array(); // last last frame
+let matricesData3 = new Float32Array(); // last last last frame
+let matricesDataEstimated = new Float32Array(); // estimated frame
 const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
 	if (arrayBuffer === false) {
 		return Promise.resolve(numberMeshes.number);
@@ -85,12 +87,13 @@ const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
 	let count = 0;
 	let index_ = 0;
 	matricesUpdate = new Float32Array(arrayBuffer);
-	lastMatricesData.set(matricesData)
-	// for (let index = 0; index < matricesData.length; index++) {
-	// 	lastMatricesData[index] = matricesData[index];
-	// }
-	lastPhysicsUpdateTime = physicsUpdateTime.valueOf();
-	physicsUpdateTime = Date.now();
+	matricesData3.set(matricesData2)
+	matricesData2.set(matricesData1)
+	matricesData1.set(matricesData0)
+	physicsUpdateTime3 = physicsUpdateTime2.valueOf();
+	physicsUpdateTime2 = physicsUpdateTime1.valueOf();
+	physicsUpdateTime1 = physicsUpdateTime0.valueOf();
+	physicsUpdateTime0 = Date.now();
 	for (let index = 0; index < matricesUpdate.length; index += 8) {
 		count++;
 		matrix = Matrix.Compose(
@@ -107,33 +110,53 @@ const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
 				matricesUpdate[index + 3]
 			)
 		)
-		matrix.copyToArray(matricesData, index_)
+		matrix.copyToArray(matricesData0, index_)
 		index_ += 16;
 	}
-	estimatedMatricesData.set(matricesData)
-	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	matricesDataEstimated.set(matricesData0)
+	babylonMesh.thinInstanceSetBuffer('matrix', matricesData0, 16);
 	return Promise.resolve(count);
 };
-let lastPhysicsUpdateTime = Date.now();
-let physicsUpdateTime = Date.now();
+let loadTime = Date.now();
+let physicsUpdateTime0 = Date.now();
+let physicsUpdateTime1 = Date.now();
+let physicsUpdateTime2 = Date.now();
+let physicsUpdateTime3 = Date.now();
+const enableSmoothing: Boolean = true;
 const estimateFrame = () => {
 	const now = Date.now();
-	if (now - physicsUpdateTime > 1000 / 144) {
-	// if (false) {
-		// Using lastPhysicsUpdateTime and physicsUpdateTime, we can find the time between the last physics update and the current time
-		// Then, we can use that time to estimate the position of the objects at the current time
-		const dt = now - lastPhysicsUpdateTime;
-		const dtPhysics = physicsUpdateTime - lastPhysicsUpdateTime;
-		const alpha = dt / dtPhysics;
-		// const alpha = (now - lastPhysicsUpdateTime) / (physicsUpdateTime - lastPhysicsUpdateTime);
-		for (let index = 0; index < matricesData.length; index += 16) {
-			estimatedMatricesData[index + 12] = lastMatricesData[index + 12] + (matricesData[index + 12] - lastMatricesData[index + 12]) * alpha;
-			estimatedMatricesData[index + 13] = lastMatricesData[index + 13] + (matricesData[index + 13] - lastMatricesData[index + 13]) * alpha;
-			estimatedMatricesData[index + 14] = lastMatricesData[index + 14] + (matricesData[index + 14] - lastMatricesData[index + 14]) * alpha;
-		}
-		babylonMesh.thinInstanceSetBuffer('matrix', estimatedMatricesData, 16);
-		// babylonMesh.thinInstanceSetBuffer('color', new Float32Array(estimatedMatricesData.length / 4), 4);
+	if (!enableSmoothing || now - loadTime < 5000) {
+		return;
 	}
+	const alpha = (now - physicsUpdateTime0) / (physicsUpdateTime0 - physicsUpdateTime1);
+	const alpha2 = alpha * alpha;
+	const alphaPos0 = physicsUpdateTime0 / physicsUpdateTime1;
+	const alphaPos1 = physicsUpdateTime1 / physicsUpdateTime2;
+	const alphaPos2 = physicsUpdateTime2 / physicsUpdateTime3;
+
+	for (let index = 0; index < matricesData0.length; index += 16) {
+		const vx1 = matricesData0[index + 12] - matricesData1[index + 12] * alphaPos0;
+		const vy1 = matricesData0[index + 13] - matricesData1[index + 13] * alphaPos0;
+		const vz1 = matricesData0[index + 14] - matricesData1[index + 14] * alphaPos0;
+		const vx2 = matricesData1[index + 12] - matricesData2[index + 12] * alphaPos1;
+		const vy2 = matricesData1[index + 13] - matricesData2[index + 13] * alphaPos1;
+		const vz2 = matricesData1[index + 14] - matricesData2[index + 14] * alphaPos1;
+		const vx3 = matricesData2[index + 12] - matricesData3[index + 12] * alphaPos2;
+		const vy3 = matricesData2[index + 13] - matricesData3[index + 13] * alphaPos2;
+		const vz3 = matricesData2[index + 14] - matricesData3[index + 14] * alphaPos2;
+		const ax1 = vx1 - vx2;
+		const ay1 = vy1 - vy2;
+		const az1 = vz1 - vz2;
+		const x = matricesData0[index + 12] + vx1 * alpha + ax1 * alpha2 + (ax1 - (vx2 - vx3)) * alpha2 * alpha;
+		const y = matricesData0[index + 13] + vy1 * alpha + ay1 * alpha2 + (ay1 - (vy2 - vy3)) * alpha2 * alpha;
+		const z = matricesData0[index + 14] + vz1 * alpha + az1 * alpha2 + (az1 - (vz2 - vz3)) * alpha2 * alpha;
+		if (!isNaN(x) && !isNaN(y) && !isNaN(z) && isFinite(x) && isFinite(y) && isFinite(z)) {
+			matricesDataEstimated[index + 12] = x;
+			matricesDataEstimated[index + 13] = y;
+			matricesDataEstimated[index + 14] = z;
+		}
+	}
+	babylonMesh.thinInstanceSetBuffer('matrix', matricesDataEstimated, 16);
 }
 export const createCamera = (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	// // Creates and positions a free camera
@@ -246,29 +269,31 @@ const createObjects = async (scene: Scene) => {
 	babylonMesh = CreateIcoSphere('root', {radius: 1, flat: true, subdivisions: 1});
 	babylonMesh.doNotSyncBoundingInfo = true;
 
-	const numberPerSide = 25;
+	const numberPerSide = 20;
 	const size = 200;
 	const ofst = size / (numberPerSide - 1);
-	const m = Matrix.Identity();
+	const initialMatrix = Matrix.Identity();
 	let col = 0;
 	let index = 0;
 
 	const instanceCount = numberPerSide * numberPerSide * numberPerSide;
-	matricesData = new Float32Array(instanceCount * 16);
-	lastMatricesData = new Float32Array(instanceCount * 16);
-	estimatedMatricesData = new Float32Array(instanceCount * 16);
+	matricesData0 = new Float32Array(instanceCount * 16);
+	matricesData1 = new Float32Array(instanceCount * 16);
+	matricesData2 = new Float32Array(instanceCount * 16);
+	matricesData3 = new Float32Array(instanceCount * 16);
+	matricesDataEstimated = new Float32Array(instanceCount * 16);
 	const colorData = new Float32Array(instanceCount * 4);
 
 	for (let x = 0; x < numberPerSide; x++) {
 		for (let y = 0; y < numberPerSide; y++) {
 			for (let z = 0; z < numberPerSide; z++) {
 				const randomNoise = Math.random() * 20;
-				m.setTranslation(new Vector3(
+				initialMatrix.setTranslation(new Vector3(
 					(-size / 2 + ofst * x * 0.3) + randomNoise,
 					(-size / 2 + ofst * y) + randomNoise,
 					(-size / 2 + ofst * z) + randomNoise,
 				))
-				m.copyToArray(matricesData, index * 16)
+				initialMatrix.copyToArray(matricesData0, index * 16)
 				const coli = Math.floor(col)
 				colorData[index * 4] = ((coli & 0xFF0000) >> 16) / 255;
 				colorData[index * 4 + 1] = ((coli & 0x00FF00) >> 8) / 255;
@@ -278,7 +303,7 @@ const createObjects = async (scene: Scene) => {
 			}
 		}
 	}
-	babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
+	babylonMesh.thinInstanceSetBuffer('matrix', matricesData0, 16);
 	babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
 	babylonMesh.material = new StandardMaterial('material', scene);
 	scene.freezeActiveMeshes();
@@ -317,51 +342,34 @@ const createObjects = async (scene: Scene) => {
 	// babylonMesh.thinInstanceSetBuffer('matrix', matricesData, 16);
 	// 	return await Promise.resolve(count);
 	// }
-
+	let now = Date.now();
 	let doNotQueueAdditionalUpdates = false;
 	scene.registerAfterRender(async () => {
-		const now = Date.now();
-		if (now - lastPhysicsUpdateTime > 1000 / 60) {
-			if (doNotQueueAdditionalUpdates) {
-				estimateFrame();
-				return;
-				// console.log('skipping update');
-			} else {
+		now = Date.now();
+		if (now - physicsUpdateTime0 > 1000 / 60) {
+			if (!doNotQueueAdditionalUpdates) {
 				doNotQueueAdditionalUpdates = true;
 				numberMeshes.number = await decode(await rapierExport.getUpdate());
 				doNotQueueAdditionalUpdates = false;
-				return;
 			}
 		}
-		estimateFrame();
+		if (now - physicsUpdateTime0 > 1000 / 144) {
+			estimateFrame();
+		}
 	})
 	scene.registerBeforeRender(() => {
 	})
 
 	setInterval(() => {
 		for (let index_ = 0; index_ < instanceCount; index_++) {
-			// colorData[index_ * 4] = Math.random();
-			// colorData[index_ * 4 + 1] = Math.random();
-			// colorData[index_ * 4 + 2] = Math.random();
-			// set color based on position
-			colorData[index_ * 4] = -matricesData[index_ * 16 + 12] / 50;
-			colorData[index_ * 4 + 1] = -matricesData[index_ * 16 + 13] / 50;
-			colorData[index_ * 4 + 2] = -matricesData[index_ * 16 + 14] / 50;
+			colorData[index_ * 4] = -matricesData0[index_ * 16 + 12] / 50;
+			colorData[index_ * 4 + 1] = -matricesData0[index_ * 16 + 13] / 50;
+			colorData[index_ * 4 + 2] = -matricesData0[index_ * 16 + 14] / 50;
 		}
 		// Update the instance buffer
 		babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
 	}, 1000 / 30);
-	// // add ground
-	// const ground = BABYLON.CreateGround('ground', {width: 500, height: 500});
-	// // lower ground
-	// ground.position.y = -10;
-	// // set color to blue
-	// ground.material = new BABYLON.StandardMaterial('material')
-	// ground.material.diffuseColor = BABYLON.Color3.Blue();
-	// // fix ground
-	// ground.physicsImpostor = new BABYLON.PhysicsImpostor(ground, BABYLON.PhysicsImpostor.babylonMeshImpostor, { mass: 0, restitution: 0.9 }, scene);
-
-	return {instanceCount, matricesData};
+	return {instanceCount, matricesData: matricesData0};
 }
 
 export default async (
