@@ -129,7 +129,7 @@ const estimateFrame = () => {
 		return;
 	}
 	let timePassed = now - physicsUpdateTime0;
-	if (timePassed > 40) {
+	if (timePassed > 33) {
 		timePassed = Math.log(timePassed + 1) * 100 * 0.05;
 	}
 	const alpha = timePassed / (physicsUpdateTime0 - physicsUpdateTime1);
