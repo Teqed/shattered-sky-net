@@ -1,8 +1,5 @@
 /* eslint-disable no-plusplus */
-
-import gravitationalAttraction from '../physics/gravitationalAttraction';
 import { barnesHutAttraction } from '../physics/barnes-hut';
-import keepWithinBounds from '../physics/keepWithinBounds';
 import { type World } from '../worker/rapier-treeshake';
 import { type MeshBodyVirtual } from '../worker/rapier'
 
@@ -46,8 +43,6 @@ const virtualUpdate = (meshBodies: MeshBodyVirtual) => {
 	return new Float32Array(update).buffer;
 }
 const physicsUpdate = (world: World, meshBodies: MeshBodyVirtual) => {
-	// keepWithinBounds(meshBodies);
-	// gravitationalAttraction(meshBodies);
 	barnesHutAttraction(meshBodies);
 	world.step();
 };

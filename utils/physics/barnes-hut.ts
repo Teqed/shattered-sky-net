@@ -1,4 +1,4 @@
-import { type RigidBody, Vector3 } from '../worker/rapier-treeshake';
+/* eslint-disable no-plusplus */
 import { type MeshBodyVirtual } from '../worker/rapier';
 interface Point {
 	x: number;
@@ -61,11 +61,8 @@ class BarnesHutNode {
 			const direction = this.getDirection(point, this.centerOfMass, distance);
 			// const magnitude = ((this.totalMass * distance) ** -2);
 			const magnitude = this.totalMass * gravitationalConstant / (distance ** 0.000001);
-			// const quadraticConstant = 100;
-			// const magnitude = this.totalMass * gravitationalConstant / ((distance ** 2) + quadraticConstant);
 			if ((this.children.length === 0) || (this.boundary.size / distance < theta)) {
 				if (this.centerOfMass !== point) {
-				// if (distance > 10) {
 					force.x += direction.x * magnitude;
 					force.y += direction.y * magnitude;
 					force.z += direction.z * magnitude;
@@ -107,14 +104,15 @@ class BarnesHutNode {
 	}
 
 	public enforceBoundary (point: Point): Point {
+		const enforcedBoundary = this.boundary.size;
 		// * Enforce boundary
-		if (Math.abs(point.x) > this.boundary.size ||
-			Math.abs(point.y) > this.boundary.size ||
-			Math.abs(point.z) > this.boundary.size) {
+		if (Math.abs(point.x) > enforcedBoundary ||
+			Math.abs(point.y) > enforcedBoundary ||
+			Math.abs(point.z) > enforcedBoundary) {
 			point = {
-				x: point.x > this.boundary.size ? -this.boundary.size : (point.x < -this.boundary.size ? this.boundary.size : point.x),
-				y: point.y > this.boundary.size ? -this.boundary.size : (point.y < -this.boundary.size ? this.boundary.size : point.y),
-				z: point.z > this.boundary.size ? -this.boundary.size : (point.z < -this.boundary.size ? this.boundary.size : point.z),
+				x: point.x > enforcedBoundary ? -enforcedBoundary : (point.x < -enforcedBoundary ? enforcedBoundary : point.x),
+				y: point.y > enforcedBoundary ? -enforcedBoundary : (point.y < -enforcedBoundary ? enforcedBoundary : point.y),
+				z: point.z > enforcedBoundary ? -enforcedBoundary : (point.z < -enforcedBoundary ? enforcedBoundary : point.z),
 			};
 		}
 		return point;
@@ -153,12 +151,11 @@ const insertNodes = (meshBodies: MeshBodyVirtual) => {
 			meshBody = meshBodies[index];
 			body = meshBody.body
 			meshBody.virtualPos = body.translation();
-			if (rotationCounter % 4 === 0) {
+			if (rotationCounter % 8 === 0) {
 				meshBody.virtualRot = body.rotation();
 			}
 			// barnesHutTree.insert(translation, body.mass());
 			barnesHutTree.insert(meshBody.virtualPos, 1);
-			barnesHutTree.updateForces(meshBody.virtualPos, meshBody.force!);
 		} catch (error) {
 			console.error('Error in barnesHutAttraction.insert', error);
 		}
@@ -186,6 +183,7 @@ const calculateForces = (meshBodies: MeshBodyVirtual) => {
 	for (let index = 0; index < meshBodiesLength; index++) {
 		try {
 			meshBody = meshBodies[index];
+			barnesHutTree.updateForces(meshBody.virtualPos, meshBody.force!);
 			body = meshBody.body;
 			body.resetForces(true);
 			body.addForce({
