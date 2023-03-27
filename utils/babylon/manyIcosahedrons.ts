@@ -117,7 +117,7 @@ const decode = (arrayBuffer: ArrayBuffer | false): Promise<number> => {
 	babylonMesh.thinInstanceSetBuffer('matrix', matricesData0, 16);
 	return Promise.resolve(count);
 };
-let loadTime = Date.now();
+const loadTime = Date.now();
 let physicsUpdateTime0 = Date.now();
 let physicsUpdateTime1 = Date.now();
 let physicsUpdateTime2 = Date.now();
@@ -125,7 +125,7 @@ let physicsUpdateTime3 = Date.now();
 const enableSmoothing: Boolean = true;
 const estimateFrame = () => {
 	const now = Date.now();
-	if (!enableSmoothing || now - loadTime < 5000) {
+	if (!enableSmoothing || now - loadTime < 2000) {
 		return;
 	}
 	const alpha = (now - physicsUpdateTime0) / (physicsUpdateTime0 - physicsUpdateTime1);
@@ -133,6 +133,10 @@ const estimateFrame = () => {
 	const alphaPos0 = physicsUpdateTime0 / physicsUpdateTime1;
 	const alphaPos1 = physicsUpdateTime1 / physicsUpdateTime2;
 	const alphaPos2 = physicsUpdateTime2 / physicsUpdateTime3;
+
+	if (alpha > 1.25) {
+		return
+	}
 
 	for (let index = 0; index < matricesData0.length; index += 16) {
 		const vx1 = matricesData0[index + 12] - matricesData1[index + 12] * alphaPos0;
@@ -344,21 +348,21 @@ const createObjects = async (scene: Scene) => {
 	// }
 	let now = Date.now();
 	let doNotQueueAdditionalUpdates = false;
-	scene.registerAfterRender(async () => {
-		now = Date.now();
-		if (now - physicsUpdateTime0 > 1000 / 60) {
-			if (!doNotQueueAdditionalUpdates) {
-				doNotQueueAdditionalUpdates = true;
-				numberMeshes.number = await decode(await rapierExport.getUpdate());
-				doNotQueueAdditionalUpdates = false;
-			}
-		}
-		if (now - physicsUpdateTime0 > 1000 / 144) {
-			estimateFrame();
-		}
+	scene.registerAfterRender(() => {
 	})
 	scene.registerBeforeRender(() => {
 	})
+
+	setInterval(async () => {
+		now = Date.now();
+		if (now - physicsUpdateTime0 > 1000 / 60 && !doNotQueueAdditionalUpdates) {
+			doNotQueueAdditionalUpdates = true;
+			numberMeshes.number = await decode(await rapierExport.getUpdate());
+			doNotQueueAdditionalUpdates = false;
+		} else {
+			estimateFrame();
+		}
+	}, 1000 / 144);
 
 	setInterval(() => {
 		for (let index_ = 0; index_ < instanceCount; index_++) {
@@ -368,7 +372,7 @@ const createObjects = async (scene: Scene) => {
 		}
 		// Update the instance buffer
 		babylonMesh.thinInstanceSetBuffer('color', colorData, 4);
-	}, 1000 / 30);
+	}, 1000 / 60);
 	return {instanceCount, matricesData: matricesData0};
 }
 
