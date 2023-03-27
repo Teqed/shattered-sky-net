@@ -128,15 +128,15 @@ const estimateFrame = () => {
 	if (!enableSmoothing || now - loadTime < 2000) {
 		return;
 	}
-	const alpha = (now - physicsUpdateTime0) / (physicsUpdateTime0 - physicsUpdateTime1);
+	let timePassed = now - physicsUpdateTime0;
+	if (timePassed > 40) {
+		timePassed = Math.log(timePassed + 1) * 100 * 0.05;
+	}
+	const alpha = timePassed / (physicsUpdateTime0 - physicsUpdateTime1);
 	const alpha2 = alpha * alpha;
 	const alphaPos0 = physicsUpdateTime0 / physicsUpdateTime1;
 	const alphaPos1 = physicsUpdateTime1 / physicsUpdateTime2;
 	const alphaPos2 = physicsUpdateTime2 / physicsUpdateTime3;
-
-	if (alpha > 1.25) {
-		return
-	}
 
 	for (let index = 0; index < matricesData0.length; index += 16) {
 		const vx1 = matricesData0[index + 12] - matricesData1[index + 12] * alphaPos0;
