@@ -18,6 +18,7 @@ export default defineNuxtConfig({
 	// 	}
 	// ],
 	modules: [
+		'@nuxt/devtools',
 		// 'nuxt-purgecss',
 		['@unocss/nuxt', {
 			// presets
@@ -94,6 +95,9 @@ export default defineNuxtConfig({
 			}
 		}],
 	],
+	devtools: {
+		enabled: false,
+	},
 	// io: {
 	// 	sockets: [{
 	// 		name: 'chatcompletion',

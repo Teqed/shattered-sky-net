@@ -3,141 +3,27 @@
   <div id="meshcount" class="meshcount" />
 </template>
 <script setup lang="ts">
-// import * as Comlink from "https://unpkg.com/comlink/dist/esm/comlink.mjs";
-// import * as Comlink from 'comlink';
-import {
-	wrap,
-	transfer,
-} from 'comlink';
-// import { Engine } from '@babylonjs/core/Engines/engine';
-// @ts-expect-error
-// eslint-disable-next-line import/default
-import rapierWorkerUrl from '../../utils/worker/rapier?worker&url';
-// import manyCubes from '../../utils/babylon/manyCubes';
-// import manyIcosahedrons from '../../utils/babylon/manyIcosahedrons';
-const worker = new Worker(new URL('../../utils/worker/babylon.ts', import.meta.url), {
-	type: 'module',
-});
-const babylonWorker: {
-	init: (canvas: OffscreenCanvas) => {
-		/* ... */
-	},
-	resize: (width: number, height: number) => {
-		/* ... */
-	},
-	mouseEvent: (event: {
-		type: string,
-		button: number,
-		buttons: number,
-		x: number,
-		y: number,
-		deltaY?: number,
-		deltaX?: number,
-		deltaZ?: number,
-		deltaMode?: number,
-	}
-	) => {
-		/* ... */
-	},
-	subSpawn: (url: string) => {
-		/* ... */
-	},
-	meshCounter: () => Promise<number>,
-} = wrap(worker);
-babylonWorker.subSpawn(rapierWorkerUrl);
-
-// let engine: Engine;
-// let canvas: HTMLCanvasElement;
-
-// const babylonGlobal = {
-// 	init: async (initCanvas: HTMLCanvasElement) => {
-// 		canvas = initCanvas;
-// 		engine = new Engine(canvas, true);
-// 		// const scene = ballOnGround(engine, canvas);
-// 		// const scene = await manyCubes(engine, canvas);
-// 		const scene = await manyIcosahedrons(engine, canvas);
-// 		engine.runRenderLoop(() => {
-// 			scene.render();
-// 		}
-// 		);
-// 		return scene;
-// 	},
-// 	resize: (width: number, height: number) => {
-// 		canvas.width = width;
-// 		canvas.height = height;
-// 	},
-// 	mouseEvent: () => {
-// 	}
-// }
-onMounted(() => {
-	// let babylon: typeof babylonGlobal | typeof babylonWorker;
-	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!; // Get the canvas element
-	// if ('OffscreenCanvas' in window && 'transferControlToOffscreen' in canvas) {
-
-	// if (true) {
-	// babylon = babylonWorker;
-	const offscreen = canvas.transferControlToOffscreen();
-	babylonWorker.init(transfer(offscreen, [offscreen]));
-	const onMouseEvents = (event: MouseEvent) => {
-		const type = event.type;
-		const button = event.button;
-		const buttons = event.buttons;
-		const x = event.clientX;
-		const y = event.clientY;
-		// if scroll event...
-		if (event instanceof WheelEvent) {
-			const deltaY = event.deltaY;
-			const deltaX = event.deltaX;
-			const deltaZ = event.deltaZ;
-			const deltaMode = event.deltaMode;
-			const wheelEvent = {
-				type,
-				button,
-				buttons,
-				x,
-				y,
-				deltaY,
-				deltaX,
-				deltaZ,
-				deltaMode,
-			};
-			babylonWorker.mouseEvent(wheelEvent);
-		} else {
-			const relayedMouseEvent = {
-				type,
-				button,
-				buttons,
-				x,
-				y,
-			}
-			babylonWorker.mouseEvent(relayedMouseEvent);
-		}
-	};
-	// suppress right-click so we can use it for camera panning
-	canvas.addEventListener('contextmenu', (event) => {
-		event.preventDefault();
-	});
-	canvas.addEventListener('pointerdown', onMouseEvents);
-	canvas.addEventListener('pointermove', onMouseEvents);
-	canvas.addEventListener('pointerup', onMouseEvents);
-	canvas.addEventListener('wheel', onMouseEvents);
-	babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
-	window.addEventListener('resize', () => {
-		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
-	});
+import { loadGame, type babylonWorkerType } from '../../utils/worker/babylon-wrap';
+import { attachMouseEvents } from '../../utils/worker/mouseEventsMain';
+import { type rapierWorkerType } from '~~/utils/worker/rapier-wrap';
+let babylonWorker: babylonWorkerType;
+let rapierWorker: rapierWorkerType;
+onMounted(async () => {
+	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!;
+	const workers = await loadGame(canvas, 'manyIcosahedrons');
+	babylonWorker = workers.babylonWorker;
+	rapierWorker = workers.rapierWorker;
+	attachMouseEvents(canvas);
 	setInterval(async () => {
 		const meshCount = await babylonWorker.meshCounter();
-		document.querySelector('#meshcount')!.textContent = `Count: ${meshCount.toString()}`;
-	}, 500);
-	// } else {
-	// babylon = babylonGlobal;
-	// const babylon = babylonGlobal;
-	// babylonGlobal.init(canvas);
-	// }
-	// babylon.resize(canvas.clientWidth, canvas.clientHeight);
-	// window.addEventListener('resize', () => {
-	// 	babylon.resize(canvas.clientWidth, canvas.clientHeight);
-	// });
+		const meshCountDiv = document.querySelector('#meshcount')!;
+		meshCountDiv.innerHTML = meshCount.toString();
+	}, 1000);
+});
+
+onUnmounted(() => {
+	babylonWorker.dispose();
+	rapierWorker.dispose();
 });
 
 </script>

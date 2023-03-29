@@ -1,4 +1,4 @@
-import { MeshBodyVirtual } from '../worker/rapier';
+import { MeshBodyVirtual } from '../../worker/rapier-expose';
 export default function keepWithinBounds (meshBodies: MeshBodyVirtual) {
 	// if any of the bodies are outside the bounds, move them back in
 	const meshBodiesLength = Object.keys(meshBodies).length;

@@ -1,5 +1,5 @@
 import * as RANDOMJS from 'random-js';
-import { Vector3, RigidBodyDesc, ColliderDesc, World } from '../worker/rapier-treeshake';
+import { Vector3, RigidBodyDesc, ColliderDesc, World } from '../../worker/rapier-treeshake';
 const random = new RANDOMJS.Random(RANDOMJS.browserCrypto);
 const rigidBodyDesc = RigidBodyDesc.dynamic()
 // const rigidBodyDesc = RigidBodyDesc.kinematicVelocityBased()

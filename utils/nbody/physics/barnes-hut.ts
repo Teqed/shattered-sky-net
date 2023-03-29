@@ -1,5 +1,5 @@
 /* eslint-disable no-plusplus */
-import { type MeshBodyVirtual } from '../worker/rapier';
+import { type MeshBodyVirtual } from '../../worker/rapier-expose';
 interface Point {
 	x: number;
 	y: number;

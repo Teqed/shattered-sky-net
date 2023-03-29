@@ -27,6 +27,7 @@
     "@iconify-json/mdi": "^1.1.50",
     "@iconify-json/svg-spinners": "^1.1.1",
     "@mdi/font": "^7.1.96",
+    "@nuxt/devtools": "^0.3.1",
     "@nuxt/test-utils": "^3.2.2",
     "@nuxtjs/eslint-config-typescript": "^12.0.0",
     "@nuxtjs/eslint-module": "^3.1.0",
@@ -75,6 +76,7 @@
   },
   "dependencies": {
     "@types/ws": "^8.5.4",
+    "bitecs": "^0.3.38",
     "nuxt-socket-io": "^3.0.12",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",

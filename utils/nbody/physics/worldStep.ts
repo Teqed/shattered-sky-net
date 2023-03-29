@@ -1,7 +1,7 @@
 /* eslint-disable no-plusplus */
 import { barnesHutAttraction } from '../physics/barnes-hut';
-import { type World } from '../worker/rapier-treeshake';
-import { type MeshBodyVirtual } from '../worker/rapier'
+import { type World } from '../../worker/rapier-treeshake';
+import { type MeshBodyVirtual } from '../../worker/rapier-expose'
 
 let update: number[];
 // eslint-disable-next-line import/no-mutable-exports

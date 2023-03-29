@@ -1,27 +1,15 @@
-// import * as BABYLON from '@babylonjs/core'
-import { Engine } from '@babylonjs/core/Engines/engine';
-// import * as Comlink from 'comlink';
 import { expose } from 'comlink';
-// import ballOnGround from './babylon/ballOnGround';
-// import manyCubes, { relayMouseEvent } from '../babylon/manyCubes';
-import manyIcosahedrons, { createSubWorker, numberMeshes } from '../babylon/manyIcosahedrons';
+import chooseRoute from '../babylon/utils/chooseRoute';
+import { numberMeshes } from '../nbody/everyFrame';
 import { CustomMouseEvent } from './mouseEvents';
+import spawnRapier from './rapier-wrap';
 
-let engine: Engine;
 let canvas: OffscreenCanvas;
 
 const babylonWorker = {
-	init: async (initCanvas: OffscreenCanvas) => {
-		canvas = initCanvas as unknown as OffscreenCanvas;
-		engine = new Engine(canvas, true);
-		// const scene = ballOnGround(engine, canvas);
-		// const scene = await manyCubes(engine, canvas);
-		const scene = await manyIcosahedrons(engine, canvas);
-		engine.runRenderLoop(() => {
-			scene.render();
-		}
-		);
-		// return scene;
+	dispose: () => {
+		// await createScene.dispose();
+		return self.close();
 	},
 	resize: (width: number, height: number) => {
 		canvas.width = width;
@@ -53,12 +41,15 @@ const babylonWorker = {
 		// console.log(customEvent)
 		canvas.dispatchEvent(customEvent);
 	},
-	subSpawn: (url: string) => {
-		createSubWorker(url);
-	},
 	meshCounter: () => {
 		return numberMeshes.number;
-	}
+	},
+	initGame: async (initCanvas: OffscreenCanvas, navigationToLoad: string, rapierWorkerUrl: string) => {
+		const rapierWorker = spawnRapier(rapierWorkerUrl)
+		canvas = initCanvas as unknown as OffscreenCanvas;
+		await chooseRoute(canvas, navigationToLoad, rapierWorker);
+		return rapierWorker;
+	},
 }
 
 expose(babylonWorker);

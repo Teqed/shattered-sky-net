@@ -1,4 +1,4 @@
-import { MeshBodyVirtual } from '../worker/rapier';
+import { MeshBodyVirtual } from '../../worker/rapier-expose';
 export default function gravitationalAttraction (meshBodies: MeshBodyVirtual) {
 	const meshBodiesLength = Object.keys(meshBodies).length;
 	// const gravitationalConstant = 0.0667;
