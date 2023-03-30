@@ -13,7 +13,7 @@ onMounted(async () => {
 	const workers = await loadGame(canvas, 'manyIcosahedrons');
 	babylonWorker = workers.babylonWorker;
 	rapierWorker = workers.rapierWorker;
-	attachMouseEvents(canvas);
+	attachMouseEvents(babylonWorker, canvas);
 	setInterval(async () => {
 		const meshCount = await babylonWorker.meshCounter();
 		const meshCountDiv = document.querySelector('#meshcount')!;

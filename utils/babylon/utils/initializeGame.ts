@@ -1,38 +1,115 @@
 import { Scene } from '@babylonjs/core/scene';
-import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
-import { Vector3, Matrix } from '@babylonjs/core/Maths/math.vector';
+// import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
+// import { Vector3, Matrix } from '@babylonjs/core/Maths/math.vector';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
-import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
+// import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import '@babylonjs/core/Physics/physicsEngineComponent'
 import '@babylonjs/core/Helpers/sceneHelpers';
-import { Mesh } from '@babylonjs/core/Meshes/mesh';
-import {
-	createWorld,
-	addEntity,
-	removeEntity,
-	Types,
-	defineComponent,
-	addComponent,
-	removeComponent,
-	hasComponent,
-	defineQuery,
-	Changed,
-	Not,
-	enterQuery,
-	exitQuery,
-	defineSerializer,
-	defineDeserializer,
-	pipe,
-} from 'bitecs'
+// import { Mesh } from '@babylonjs/core/Meshes/mesh';
+// import {
+// 	createWorld,
+// 	addEntity,
+// 	removeEntity,
+// 	Types,
+// 	defineComponent,
+// 	addComponent,
+// 	removeComponent,
+// 	hasComponent,
+// 	defineQuery,
+// 	Changed,
+// 	Not,
+// 	enterQuery,
+// 	exitQuery,
+// 	defineSerializer,
+// 	defineDeserializer,
+// 	pipe,
+// } from 'bitecs'
 import { AdvancedDynamicTexture, StackPanel, Button, TextBlock, Rectangle } from '@babylonjs/gui';
+import { Engine } from '@babylonjs/core/Engines/engine';
+import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
-import { setMatricesSize } from '../../nbody/everyFrame';
+// import { setMatricesSize } from '../../nbody/everyFrame';
 import createPixelCamera from './createPixelCamera';
-import '@babylonjs/core/Debug/debugLayer';
+// import '@babylonjs/core/Debug/debugLayer';
 import '@babylonjs/inspector';
 import '@babylonjs/loaders/glTF';
 
+let canvas: OffscreenCanvas;
+let context: OffscreenCanvasRenderingContext2D | null;
+
+interface FontOffset {
+	ascent: number
+	height: number
+	descent: number
+}
+
+const getFontOffset = (font: string): FontOffset => {
+	if (!canvas || !context) {
+		canvas = new OffscreenCanvas(64, 64);
+		context = canvas.getContext('2d');
+		if (!context) {
+			throw new Error('2D context in offscreen not available!')
+		}
+	}
+
+	context.font = font;
+	context.textBaseline = 'alphabetic';
+	const descent = context.measureText('Hg').actualBoundingBoxDescent;
+	context.textBaseline = 'bottom';
+	const ascent = context.measureText('Hg').actualBoundingBoxAscent;
+	return { ascent, height: ascent + descent, descent };
+}
+
+const patchEngine = (engine: Engine) => {
+	engine.getFontOffset = getFontOffset;
+}
+
+const createGoblin = (scene: Scene, rapierWorker: rapierWorkerType) => {
+	// Create a ground, and place a box on it
+	// Create a rapier physics body too
+	const ground = MeshBuilder.CreateBox('ground', { width: 10, height: 0.1, depth: 10 }, scene);
+	ground.position.y = -1;
+	// ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
+	// ground.physicsImpostor.physicsBody.setFriction(0.5);
+	// ground.physicsImpostor.physicsBody.setAngularDamping(0.5);
+	// ground.physicsImpostor.physicsBody.setLinearDamping(0.5);
+	// ground.physicsImpostor.physicsBody.setRigidBodyType(RigidBodyType.Static);
+	// ground.physicsImpostor.physicsBody.setGravityEnabled(false);
+	// ground.physicsImpostor.physicsBody.setActive(false);
+	// ground.physicsImpostor.physicsBody.setCanSleep(false);
+
+	const box = MeshBuilder.CreateBox('box', { width: 1, height: 1, depth: 1 }, scene);
+	box.position.y = 5;
+	// box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, scene);
+	// box.physicsImpostor.physicsBody.setFriction(0.5);
+	// box.physicsImpostor.physicsBody.setAngularDamping(0.5);
+	// box.physicsImpostor.physicsBody.setLinearDamping(0.5);
+	// box.physicsImpostor.physicsBody.setRigidBodyType(RigidBodyType.Dynamic);
+	// box.physicsImpostor.physicsBody.setGravityEnabled(true);
+	// box.physicsImpostor.physicsBody.setActive(true);
+	// box.physicsImpostor.physicsBody.setCanSleep(true);
+
+	const newBody = {
+		meshId: 1,
+		p: {
+			x: box.position.x,
+			y: box.position.y,
+			z: box.position.z,
+		},
+		r: {
+			x: 0,
+			y: 0,
+			z: 0,
+			w: 0,
+		},
+		mass: 1,
+		size: 1,
+	}
+	// rapierWorker.newBody(newBody)
+}
+
 enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
+// eslint-disable-next-line import/prefer-default-export
 export class Game {
 	// General Entire Application
 	private _scene: Scene;
@@ -64,25 +141,30 @@ export class Game {
 	constructor (canvas: HTMLCanvasElement | OffscreenCanvas, navigationToLoad: string, rapierWorker: rapierWorkerType) {
 		this._navigationToLoad = navigationToLoad;
 		this._rapierWorker = rapierWorker;
-
-		this._createCanvas(canvas);
+		this._canvas = canvas as HTMLCanvasElement;
+		this._engine = new Engine(this._canvas, true);
+		if (canvas instanceof OffscreenCanvas) {
+			patchEngine(this._engine);
+		}
+		this._scene = new Scene(this._engine);
+		// this._gamescene = new Scene(this._engine);
 		this._init();
 	}
 
 	private async _init (): Promise<void> {
-		this._engine = new Engine(this._canvas, true);
-		this._scene = new Scene(this._engine);
 		//* *for development: make inspector visible/invisible
-		window.addEventListener('keydown', (event_) => {
-			// Shift+Ctrl+Alt+I
-			if (event_.shiftKey && event_.ctrlKey && event_.altKey && event_.keyCode === 73) {
-				if (this._scene.debugLayer.isVisible()) {
-					this._scene.debugLayer.hide();
-				} else {
-					this._scene.debugLayer.show();
+		if (canvas instanceof HTMLCanvasElement) {
+			window.addEventListener('keydown', (event_) => {
+			// Shift+I
+				if (event_.shiftKey && event_.key === 'I') {
+					if (this._scene.debugLayer.isVisible()) {
+						this._scene.debugLayer.hide();
+					} else {
+						this._scene.debugLayer.show();
+					}
 				}
-			}
-		});
+			});
+		}
 
 		await this._main();
 	}
@@ -108,7 +190,7 @@ export class Game {
 					// 	this._goToStart();
 					// 	this._ui.quit = false;
 					// }
-					// this._scene.render();
+					this._scene.render();
 					break;
 				case State.LOSE:
 					this._scene.render();
@@ -118,15 +200,30 @@ export class Game {
 		});
 	}
 
-	private _createCanvas (canvas: HTMLCanvasElement | OffscreenCanvas): HTMLCanvasElement {
-		this._canvas = canvas as HTMLCanvasElement;
-		return this._canvas;
-	}
-
 	private async _goToStart () {
+		const scene = this._gamescene;
+		await this._initializeGameAsync(scene);
+		const winUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
+		winUI.idealHeight = 720;
+		const mainMenu = Button.CreateSimpleButton('mainmenu', 'NEW GAME');
+		// mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+		mainMenu.fontFamily = 'Viga';
+		mainMenu.width = 0.2
+		mainMenu.height = '40px';
+		mainMenu.color = 'white';
+		mainMenu.cornerRadius = 20;
+		mainMenu.onPointerEnterObservable.add(() => {
+			mainMenu.color = 'black';
+			mainMenu.background = 'white';
+		});
+		winUI.addControl(mainMenu);
+		// this._showWin();
+		// Start menu here
 	}
 
+	// eslint-disable-next-line require-await
 	private async _setUpGame () {
+		// Start game here
 		// CREATE SCENE
 		const scene = new Scene(this._engine);
 		this._gamescene = scene;
@@ -142,7 +239,8 @@ export class Game {
 		// await this._loadCharacterAssets(scene);
 	}
 
-	private _loadSounds (scene: Scene) {
+	private _loadSounds (_scene: Scene) {
+		// There are no sounds yet, so this is a placeholder
 		// this.sfx = new Sound('sfx', './sounds/sfx.mp3', scene, null, { loop: false, autoplay: false });
 		// this.music = new Sound('music', './sounds/music.mp3', scene, null, { loop: true, autoplay: false });
 	}
@@ -153,25 +251,25 @@ export class Game {
 		const scene = this._gamescene;
 
 		// GUI
-		const ui = new Hud(scene);
-		this._ui = ui;
+		// const ui = new Hud(scene);
+		// this._ui = ui;
 		scene.detachControl();
 
 		// IBL
-		const environmentHdri = CubeTexture.CreateFromPrefilteredData(
-			'./assets/environment/environment.env',
-			scene,
-		);
-		environmentHdri.name = 'env';
-		environmentHdri.gammaSpace = false;
-		scene.environmentTexture = environmentHdri;
-		scene.environmentIntensity = 0.04;
+		// const environmentHdri = CubeTexture.CreateFromPrefilteredData(
+		// 	'./assets/environment/environment.env',
+		// 	scene,
+		// );
+		// environmentHdri.name = 'env';
+		// environmentHdri.gammaSpace = false;
+		// scene.environmentTexture = environmentHdri;
+		// scene.environmentIntensity = 0.04;
 
 		// INPUT
-		this._input = new PlayerInput(scene, this._ui);
+		// this._input = new PlayerInput(scene, this._ui);
 
 		// Initialize game loop
-		await this._initializeGameAsync(scene);
+		// await this._initializeGameAsync(scene);
 
 		// When finished loading
 		await scene.whenReadyAsync();
@@ -187,7 +285,7 @@ export class Game {
 	}
 
 	private _showWin (): void {
-		this.game.dispose();
+		// this.game.dispose();
 		// this.end.play();
 		// this._player.onRun.clear();
 
@@ -289,92 +387,33 @@ export class Game {
 		stackPanel.addControl(selectionSfxCred);
 
 		const mainMenu = Button.CreateSimpleButton('mainmenu', 'RETURN');
-		mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+		// mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
 		mainMenu.fontFamily = 'Viga';
 		mainMenu.width = 0.2
 		mainMenu.height = '40px';
 		mainMenu.color = 'white';
 		winUI.addControl(mainMenu);
 
-		mainMenu.onPointerDownObservable.add(() => {
-			this._ui.transition = true;
-			this._ui.quitSfx.play();
-		})
+		// mainMenu.onPointerDownObservable.add(() => {
+		// 	this._ui.transition = true;
+		// 	this._ui.quitSfx.play();
+		// })
 	}
 
 	private async _initializeGameAsync (scene: Scene): Promise<void> {
 		createPixelCamera(this._canvas, this._scene);
-		const objects = await initializeGame(this._scene, this._rapierWorker);
-		startEveryFrame(this._scene, objects, this._rapierWorker);
+		// const objects = await initializeGame(this._scene, this._rapierWorker);
+		createGoblin(this._scene, this._rapierWorker);
+		// startEveryFrame(this._scene, objects, this._rapierWorker);
 		const world = await this._rapierWorker.startPhysics();
 		world.gravity = { x: 0, y: -9.81, z: 0 };
 
 		// Create the player
-		this._player = new Player(this.assets, scene, shadowGenerator);
+		// this._player = new Player(this.assets, scene, shadowGenerator);
 
 		// GAME LOOP
-		scene.onBeforeRenderObservable.add(() => {
-			// Loop
-		});
+		// scene.onBeforeRenderObservable.add(() => {
+		// 	// Loop
+		// });
 	}
-}
-
-// ! BREAK --------------------------------------------------
-
-let bodyObject: {
-	meshId: number,
-	p: {
-		x: number,
-		y: number,
-		z: number,
-	},
-	r: {
-		x: number,
-		y: number,
-		z: number,
-		w: number,
-	},
-	mass: number,
-	size: number,
-};
-const createGoblin = (scene: Scene) => {
-
-}
-
-// Define the gameworld class
-export class GameWorld {
-	world: any;
-	// Define the components
-	Position = defineComponent({
-		x: Types.f32,
-		y: Types.f32,
-		z: Types.f32,
-	});
-
-	Rotation = defineComponent({
-		x: Types.f32,
-		y: Types.f32,
-		z: Types.f32,
-		w: Types.f32,
-	});
-
-	Mass = defineComponent({
-		value: Types.f32,
-	});
-
-	Size = defineComponent({
-		value: Types.f32,
-	});
-
-	// Define the queries
-	// Query for all entities with a position and rotation
-	PositionRotationQuery = defineQuery([Changed(Position), Changed(Rotation)]);
-}
-
-export default async (scene: Scene, rapierWorker: rapierWorkerType) => {
-	const {babylonMesh, bodyObjectsArray} = createGoblin(scene);
-	await rapierWorker.newBodies(bodyObjectsArray);
-	return new Promise((resolve) => {
-		resolve(babylonMesh);
-	}) as Promise<Mesh>;
 }

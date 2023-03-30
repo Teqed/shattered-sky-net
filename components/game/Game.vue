@@ -2,22 +2,36 @@
   <canvas id="renderCanvas" touch-action="none" />
 </template>
 <script setup lang="ts">
-import { loadGame, type babylonWorkerType } from '../../utils/worker/babylon-wrap';
+// import { type babylonWorkerType } from '../../utils/worker/babylon-wrap';
+import { loadGame as loadGameMain } from '../../utils/worker/babylon-main';
 import { attachMouseEvents } from '../../utils/worker/mouseEventsMain';
 import { type rapierWorkerType } from '~~/utils/worker/rapier-wrap';
-let babylonWorker: babylonWorkerType;
+let babylonWorker: any;
 let rapierWorker: rapierWorkerType;
 onMounted(async () => {
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!;
-	const workers = await loadGame(canvas, 'scene0');
-	babylonWorker = workers.babylonWorker;
-	rapierWorker = workers.rapierWorker;
-	attachMouseEvents(canvas);
+	// if offscreen canvas available
+	if (false) {
+		// dynamically import loadGameWorker from babylon-wrap
+		const {
+			loadGame: loadGameWorker,
+		} = await import('../../utils/worker/babylon-wrap');
+		const workers = await loadGameWorker(canvas, 'scene0');
+		babylonWorker = workers.babylonWorker;
+		rapierWorker = workers.rapierWorker;
+		attachMouseEvents(babylonWorker, canvas);
+	} else {
+		({ rapierWorker } = await loadGameMain(canvas, 'scene0'));
+	}
 });
 
 onUnmounted(() => {
-	babylonWorker.dispose();
-	rapierWorker.dispose();
+	try {
+		rapierWorker.dispose();
+		babylonWorker.dispose();
+	} catch (error) {
+		console.log(error);
+	}
 });
 
 </script>

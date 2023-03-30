@@ -40,6 +40,7 @@ export default (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	light.intensity = 0.5;
 	// const camera = new FreeCamera('Camera', new Vector3.Zero(), scene);
 	const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
+	camera.attachControl(canvas, true);
 	camera.setTarget(new Vector3(-150, 0, 0));
 	camera.radius = 50;
 	camera.alpha = Math.PI / 1;
@@ -50,20 +51,20 @@ export default (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	camera.upperRadiusLimit = 20
 	camera.wheelPrecision = 50
 	// scene.ambientColor = new BABYLON.Color3(0.62, 0.51, 0.68)
-	const fx = createVisualChain(scene)
-	let fxLevel = 0.0
-	const fxTarget = 0.20
+	// const fx = createVisualChain(scene)
+	// let fxLevel = 0.0
+	// const fxTarget = 0.20
 
-	scene.onReadyObservable.addOnce(() => {
-		scene.onBeforeRenderObservable.add(() => {
-			if (fxLevel < fxTarget) {
-				// @ts-ignore - private property is stil accessible
-				fx.downsample._options = fxLevel
-				fxLevel += 0.0005
-			} else {
-				// @ts-ignore - private property is stil accessible
-				fx.downsample._options = fxTarget
-			}
-		})
-	})
+	// scene.onReadyObservable.addOnce(() => {
+	// 	scene.onBeforeRenderObservable.add(() => {
+	// 		if (fxLevel < fxTarget) {
+	// 			// @ts-ignore - private property is stil accessible
+	// 			fx.downsample._options = fxLevel
+	// 			fxLevel += 0.0005
+	// 		} else {
+	// 			// @ts-ignore - private property is stil accessible
+	// 			fx.downsample._options = fxTarget
+	// 		}
+	// 	})
+	// })
 }

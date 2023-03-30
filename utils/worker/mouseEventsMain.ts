@@ -1,4 +1,5 @@
-import {babylonWorker} from './babylon-wrap';
+// import {babylonWorker} from './babylon-wrap';
+let babylonWorker: any;
 const onMouseEvent = (event: MouseEvent) => {
 	const type = event.type;
 	const button = event.button;
@@ -34,16 +35,21 @@ const onMouseEvent = (event: MouseEvent) => {
 	}
 };
 // eslint-disable-next-line import/prefer-default-export
-export const attachMouseEvents = (canvas: HTMLCanvasElement) => {
-	canvas.addEventListener('contextmenu', (event) => {
-		event.preventDefault();
-	});
-	canvas.addEventListener('pointerdown', onMouseEvent);
-	canvas.addEventListener('pointermove', onMouseEvent);
-	canvas.addEventListener('pointerup', onMouseEvent);
-	canvas.addEventListener('wheel', onMouseEvent);
-	babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
-	window.addEventListener('resize', () => {
+export const attachMouseEvents = (parentWorker: any, canvas: HTMLCanvasElement) => {
+	try {
+		babylonWorker = parentWorker;
+		canvas.addEventListener('contextmenu', (event) => {
+			event.preventDefault();
+		});
+		canvas.addEventListener('pointerdown', onMouseEvent);
+		canvas.addEventListener('pointermove', onMouseEvent);
+		canvas.addEventListener('pointerup', onMouseEvent);
+		canvas.addEventListener('wheel', onMouseEvent);
 		babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
-	});
+		window.addEventListener('resize', () => {
+			babylonWorker.resize(canvas.clientWidth, canvas.clientHeight);
+		});
+	} catch (error) {
+		console.error('attachMouseEvents', error);
+	}
 };
