@@ -234,6 +234,7 @@ export default defineNuxtConfig({
 						// rapier: ['@dimforge/rapier3d-compat'],
 					},
 					// format: 'iife',
+					// inlineDynamicImports: true,
 					globals: {
 						// vue: 'Vue',
 						// 'vue-router': 'VueRouter',

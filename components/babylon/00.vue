@@ -3,17 +3,26 @@
   <div id="meshcount" class="meshcount" />
 </template>
 <script setup lang="ts">
-import { loadGame, type babylonWorkerType } from '../../utils/worker/babylon-wrap';
+import { loadGame as loadGameMain } from '../../utils/worker/babylon-main';
 import { attachMouseEvents } from '../../utils/worker/mouseEventsMain';
 import { type rapierWorkerType } from '~~/utils/worker/rapier-wrap';
-let babylonWorker: babylonWorkerType;
+let babylonWorker: any;
 let rapierWorker: rapierWorkerType;
 onMounted(async () => {
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!;
-	const workers = await loadGame(canvas, 'manyIcosahedrons');
-	babylonWorker = workers.babylonWorker;
-	rapierWorker = workers.rapierWorker;
-	attachMouseEvents(babylonWorker, canvas);
+	// if offscreen canvas available
+	if (false) {
+		// dynamically import loadGameWorker from babylon-wrap
+		const {
+			loadGame: loadGameWorker,
+		} = await import('../../utils/worker/babylon-wrap');
+		const workers = await loadGameWorker(canvas, 'manyIcosahedrons');
+		babylonWorker = workers.babylonWorker;
+		rapierWorker = workers.rapierWorker;
+		attachMouseEvents(babylonWorker, canvas);
+	} else {
+		({ rapierWorker } = await loadGameMain(canvas, 'manyIcosahedrons'));
+	}
 	setInterval(async () => {
 		const meshCount = await babylonWorker.meshCounter();
 		const meshCountDiv = document.querySelector('#meshcount')!;

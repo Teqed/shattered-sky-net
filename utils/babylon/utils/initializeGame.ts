@@ -31,8 +31,8 @@ import { type rapierWorkerType } from '../../worker/rapier-wrap';
 // import { setMatricesSize } from '../../nbody/everyFrame';
 import createPixelCamera from './createPixelCamera';
 // import '@babylonjs/core/Debug/debugLayer';
-import '@babylonjs/inspector';
-import '@babylonjs/loaders/glTF';
+// import '@babylonjs/inspector';
+// import '@babylonjs/loaders/glTF';
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null;
