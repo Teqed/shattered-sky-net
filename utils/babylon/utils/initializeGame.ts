@@ -26,13 +26,15 @@ import '@babylonjs/core/Helpers/sceneHelpers';
 // } from 'bitecs'
 import { AdvancedDynamicTexture, StackPanel, Button, TextBlock, Rectangle } from '@babylonjs/gui';
 import { Engine } from '@babylonjs/core/Engines/engine';
-import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
+import { Control } from '@babylonjs/gui/2D/controls/control';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 // import { setMatricesSize } from '../../nbody/everyFrame';
 import createPixelCamera from './createPixelCamera';
+import createUICamera from './createUICamera';
 // import '@babylonjs/core/Debug/debugLayer';
 // import '@babylonjs/inspector';
 // import '@babylonjs/loaders/glTF';
+import titleScreenBackground from './titleScreenBackground';
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null;
@@ -62,50 +64,6 @@ const getFontOffset = (font: string): FontOffset => {
 
 const patchEngine = (engine: Engine) => {
 	engine.getFontOffset = getFontOffset;
-}
-
-const createGoblin = (scene: Scene, rapierWorker: rapierWorkerType) => {
-	// Create a ground, and place a box on it
-	// Create a rapier physics body too
-	const ground = MeshBuilder.CreateBox('ground', { width: 10, height: 0.1, depth: 10 }, scene);
-	ground.position.y = -1;
-	// ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
-	// ground.physicsImpostor.physicsBody.setFriction(0.5);
-	// ground.physicsImpostor.physicsBody.setAngularDamping(0.5);
-	// ground.physicsImpostor.physicsBody.setLinearDamping(0.5);
-	// ground.physicsImpostor.physicsBody.setRigidBodyType(RigidBodyType.Static);
-	// ground.physicsImpostor.physicsBody.setGravityEnabled(false);
-	// ground.physicsImpostor.physicsBody.setActive(false);
-	// ground.physicsImpostor.physicsBody.setCanSleep(false);
-
-	const box = MeshBuilder.CreateBox('box', { width: 1, height: 1, depth: 1 }, scene);
-	box.position.y = 5;
-	// box.physicsImpostor = new PhysicsImpostor(box, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, scene);
-	// box.physicsImpostor.physicsBody.setFriction(0.5);
-	// box.physicsImpostor.physicsBody.setAngularDamping(0.5);
-	// box.physicsImpostor.physicsBody.setLinearDamping(0.5);
-	// box.physicsImpostor.physicsBody.setRigidBodyType(RigidBodyType.Dynamic);
-	// box.physicsImpostor.physicsBody.setGravityEnabled(true);
-	// box.physicsImpostor.physicsBody.setActive(true);
-	// box.physicsImpostor.physicsBody.setCanSleep(true);
-
-	const newBody = {
-		meshId: 1,
-		p: {
-			x: box.position.x,
-			y: box.position.y,
-			z: box.position.z,
-		},
-		r: {
-			x: 0,
-			y: 0,
-			z: 0,
-			w: 0,
-		},
-		mass: 1,
-		size: 1,
-	}
-	// rapierWorker.newBody(newBody)
 }
 
 enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
@@ -165,6 +123,10 @@ export class Game {
 				}
 			});
 		}
+		// Add resize listener
+		window.addEventListener('resize', () => {
+			this._engine.resize();
+		});
 
 		await this._main();
 	}
@@ -204,12 +166,13 @@ export class Game {
 		const scene = this._gamescene;
 		await this._initializeGameAsync(scene);
 		const winUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
+		winUI.layer!.layerMask = 0x10000000;
 		winUI.idealHeight = 720;
 		const mainMenu = Button.CreateSimpleButton('mainmenu', 'NEW GAME');
-		// mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+		mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
 		mainMenu.fontFamily = 'Viga';
 		mainMenu.width = 0.2
-		mainMenu.height = '40px';
+		mainMenu.height = '30px';
 		mainMenu.color = 'white';
 		mainMenu.cornerRadius = 20;
 		mainMenu.onPointerEnterObservable.add(() => {
@@ -401,9 +364,13 @@ export class Game {
 	}
 
 	private async _initializeGameAsync (scene: Scene): Promise<void> {
-		createPixelCamera(this._canvas, this._scene);
+		// const gameCam = createPixelCamera(this._canvas, this._scene);
+		// deconstruct the two objects created by createPixelCamera
+		const { camera: gameCam, shadows: shadowGenerator } = createPixelCamera(this._canvas, this._scene);
+		const UICam = createUICamera(this._canvas, this._scene);
+		this._scene.activeCameras = [gameCam, UICam];
 		// const objects = await initializeGame(this._scene, this._rapierWorker);
-		createGoblin(this._scene, this._rapierWorker);
+		titleScreenBackground(this._scene, this._rapierWorker, shadowGenerator);
 		// startEveryFrame(this._scene, objects, this._rapierWorker);
 		const world = await this._rapierWorker.startPhysics();
 		world.gravity = { x: 0, y: -9.81, z: 0 };
