@@ -23,7 +23,7 @@ import { NodeMaterial } from '@babylonjs/core/Materials/Node/nodeMaterial';
 import * as BABYLON from '@babylonjs/core';
 
 const createNewEffect = (scene: Scene) => {
-	const nodeMaterial = new BABYLON.NodeMaterial('node');
+	const nodeMaterial = new BABYLON.NodeMaterial('node', scene);
 
 	// InputBlock
 	const positiond = new BABYLON.InputBlock('position2d');
@@ -128,74 +128,84 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// const toneMap = new TonemapPostProcess('tonemap', TonemappingOperator.HejiDawson, 1.8, scene.activeCamera);
 	// downsample.alwaysForcePOT = true;
 
-	// eslint-disable-next-line dot-notation
-	// Effect.ShadersStore['customFragmentShader'] = `
-    // #ifdef GL_ES
-    //     precision highp float;
-    // #endif
+	// 	Effect.ShadersStore['customVertexShader'] = `
+	// 	#if defined(WEBGL2) || defines(WEBGPU)
+	// precision highp sampler2DArray;
+	// #endif
+	// precision highp float;
 
-	// uniform sampler2D tDiffuse;
-	// uniform sampler2D tDepth;
-	// uniform sampler2D tNormal;
-	// uniform vec4 resolution;
-	// uniform float normalEdgeStrength;
-	// uniform float depthEdgeStrength;
-	// varying vec2 vUV;
-	// float getDepth(int x, int y) {
-	// 	return texture2D( tDepth, vUV + vec2(x, y) * resolution.zw ).r;
-	// }
-	// vec3 getNormal(int x, int y) {
-	// 	return texture2D( tNormal, vUV + vec2(x, y) * resolution.zw ).rgb * 2.0 - 1.0;
-	// }
-	// float depthEdgeIndicator(float depth, vec3 normal) {
-	// 	float diff = 0.0;
-	// 	diff += clamp(getDepth(1, 0) - depth, 0.0, 1.0);
-	// 	diff += clamp(getDepth(-1, 0) - depth, 0.0, 1.0);
-	// 	diff += clamp(getDepth(0, 1) - depth, 0.0, 1.0);
-	// 	diff += clamp(getDepth(0, -1) - depth, 0.0, 1.0);
-	// 	return floor(smoothstep(0.01, 0.02, diff) * 2.) / 2.;
-	// }
-	// float neighborNormalEdgeIndicator(int x, int y, float depth, vec3 normal) {
-	// 	float depthDiff = getDepth(x, y) - depth;
-	// 	vec3 neighborNormal = getNormal(x, y);
+	// //Attributes
+	// attribute vec2 position;
 
-	// 	// Edge pixels should yield to faces who's normals are closer to the bias normal.
-	// 	vec3 normalEdgeBias = vec3(1., 1., 1.); // This should probably be a parameter.
-	// 	float normalDiff = dot(normal - neighborNormal, normalEdgeBias);
-	// 	float normalIndicator = clamp(smoothstep(-.01, .01, normalDiff), 0.0, 1.0);
+	// //Uniforms
+	// uniform vec2 u_Scale;
 
-	// 	// Only the shallower pixel should detect the normal edge.
-	// 	float depthIndicator = clamp(sign(depthDiff * .25 + .0025), 0.0, 1.0);
-	// 	return (1.0 - dot(normal, neighborNormal)) * depthIndicator * normalIndicator;
-	// }
-	// float normalEdgeIndicator(float depth, vec3 normal) {
+	// //Varyings
+	// varying vec2 v_position;
 
-	// 	float indicator = 0.0;
-	// 	indicator += neighborNormalEdgeIndicator(0, -1, depth, normal);
-	// 	indicator += neighborNormalEdgeIndicator(0, 1, depth, normal);
-	// 	indicator += neighborNormalEdgeIndicator(-1, 0, depth, normal);
-	// 	indicator += neighborNormalEdgeIndicator(1, 0, depth, normal);
-	// 	return step(0.1, indicator);
-	// }
-	// void main() {
-	// 	vec4 texel = texture2D( tDiffuse, vUV );
-	// 	float depth = 0.0;
-	// 	vec3 normal = vec3(0.0);
-	// 	if (depthEdgeStrength > 0.0 || normalEdgeStrength > 0.0) {
-	// 		depth = getDepth(0, 0);
-	// 		normal = getNormal(0, 0);
-	// 	}
-	// 	float dei = 0.0;
-	// 	if (depthEdgeStrength > 0.0)
-	// 		dei = depthEdgeIndicator(depth, normal);
-	// 	float nei = 0.0;
-	// 	if (normalEdgeStrength > 0.0)
-	// 		nei = normalEdgeIndicator(depth, normal);
-	// 	float Strength = dei > 0.0 ? (1.0 - depthEdgeStrength * dei) : (1.0 + normalEdgeStrength * nei);
-	// 	gl_FragColor = texel * Strength;
+	// //Constants
+	// float u_Constant = 1.0;
+
+	// //Entry point
+	// void main(void) {
+
+	// //Position3D
+	// vec4 xyzw = vec4(position, 0.0, u_Constant).xyzw;
+
+	// //VertexOutput
+	// gl_Position = xyzw;
+	// v_position = position;
+
 	// }
 	// `;
-	// const postProcess = new PostProcess('My custom post process', 'custom', ['position'], null, 1.0, scene.activeCamera);
+
+	// 	// eslint-disable-next-line dot-notation
+	// 	Effect.ShadersStore['customFragmentShader'] = `
+	// 	#if defined(WEBGL2) || defines(WEBGPU)
+	// 	precision highp sampler2DArray;
+	// 	#endif
+	// 	precision highp float;
+
+	// 	//Uniforms
+	// 	uniform vec2 u_Scale;
+
+	// 	//Samplers
+	// 	uniform sampler2D textureSampler;
+
+	// 	//Varyings
+	// 	varying vec2 v_position;
+
+	// 	//CurrentScreen
+	// 	#include<helperFunctions>
+
+	// 	//Constants
+	// 	float u_Constant = 1.0;
+
+	// 	//Entry point
+	// 	void main(void) {
+
+	// 	//uv0
+	// 	vec2 output1 = 0.0 + (v_position - -1.0) * (1.0 - 0.0) / (1.0 - -1.0);
+
+	// 	//Posterize
+	// 	vec2 output0 = floor(output1 / (1.0 / u_Scale)) * (1.0 / u_Scale);
+
+	// 	//CurrentScreen
+	// 	vec4 tempTextureRead = texture2D(textureSampler, output0);
+	// 	vec4 rgba = tempTextureRead.rgba;
+
+	// 	//FragmentOutput
+	// 	gl_FragColor = rgba;
+	// 	#ifdef CONVERTTOLINEAR0
+	// 	gl_FragColor = toLinearSpace(gl_FragColor);
+	// 	#endif
+	// 	#ifdef CONVERTTOGAMMA0
+	// 	gl_FragColor = toGammaSpace(gl_FragColor);
+	// 	#endif
+
+	// 	}
+	// 	`;
+	// 	const postProcess = new PostProcess('My custom post process', 'custom', ['position'], null, 1.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
 	// postProcess.onApply = (effect) => {
 	// 	// effect.setFloat2('screenSize', postProcess.width, postProcess.height);
 	// 	// effect.setFloat('threshold', 0.60);

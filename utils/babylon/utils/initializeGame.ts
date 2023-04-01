@@ -70,7 +70,9 @@ enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
 	// General Entire Application
-	private _scene: Scene;
+	private _activeScene: Scene;
+	private _loadingScene: Scene;
+	private _uiScene: Scene | undefined;
 	private _canvas: HTMLCanvasElement | OffscreenCanvas;
 	private _engine: Engine;
 	private _rapierWorker: rapierWorkerType;
@@ -90,7 +92,7 @@ export class Game {
 	// Scene - related
 	// private _objects: Mesh;
 	private _state = 0;
-	private _gamescene: Scene;
+	private _gamescene: Scene | undefined;
 	// private _cutscene: Scene;
 
 	// post process
@@ -104,8 +106,8 @@ export class Game {
 		if (canvas instanceof OffscreenCanvas) {
 			patchEngine(this._engine);
 		}
-		this._scene = new Scene(this._engine);
-		// this._gamescene = new Scene(this._engine);
+		this._loadingScene = new Scene(this._engine);
+		this._activeScene = this._loadingScene;
 		this._init();
 	}
 
@@ -115,10 +117,10 @@ export class Game {
 			window.addEventListener('keydown', (event_) => {
 			// Shift+I
 				if (event_.shiftKey && event_.key === 'I') {
-					if (this._scene.debugLayer.isVisible()) {
-						this._scene.debugLayer.hide();
+					if (this._activeScene.debugLayer.isVisible()) {
+						this._activeScene.debugLayer.hide();
 					} else {
-						this._scene.debugLayer.show();
+						this._activeScene.debugLayer.show();
 					}
 				}
 			});
@@ -128,68 +130,74 @@ export class Game {
 			this._engine.resize();
 		});
 
+		await this._goToStart();
 		await this._main();
 	}
 
+	// eslint-disable-next-line require-await
 	private async _main (): Promise<void> {
-		await this._goToStart();
-
 		this._engine.runRenderLoop(() => {
-			switch (this._state) {
-				case State.START:
-					this._scene.render();
-					break;
-				case State.CUTSCENE:
-					this._scene.render();
-					break;
-				case State.GAME:
-					// if 240seconds/ 4mins have have passed, go to the lose state
-					// if (this._ui.time >= 240 && !this._player.win) {
-					// 	this._goToLose();
-					// 	this._ui.stopTimer();
-					// }
-					// if (this._ui.quit) {
-					// 	this._goToStart();
-					// 	this._ui.quit = false;
-					// }
-					this._scene.render();
-					break;
-				case State.LOSE:
-					this._scene.render();
-					break;
-				default: break;
+			try {
+				this._activeScene.render();
+			} catch (error) {
+				console.error(error);
 			}
 		});
 	}
 
 	private async _goToStart () {
-		const scene = this._gamescene;
-		await this._initializeGameAsync(scene);
-		const winUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
-		winUI.layer!.layerMask = 0x10000000;
-		winUI.idealHeight = 720;
-		const mainMenu = Button.CreateSimpleButton('mainmenu', 'NEW GAME');
-		mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-		mainMenu.fontFamily = 'Viga';
-		mainMenu.width = 0.2
-		mainMenu.height = '30px';
-		mainMenu.color = 'white';
-		mainMenu.cornerRadius = 20;
-		mainMenu.onPointerEnterObservable.add(() => {
-			mainMenu.color = 'black';
-			mainMenu.background = 'white';
-		});
-		winUI.addControl(mainMenu);
-		// this._showWin();
-		// Start menu here
+		try { this._uiScene?.dispose(); } catch (error) { }
+		this._uiScene = undefined;
+		this._uiScene = new Scene(this._engine);
+		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._uiScene);
+		titleScreenBackground(this._uiScene, this._rapierWorker, shadowGenerator);
+		const UICam = createUICamera(this._canvas, this._uiScene);
+		this._uiScene.activeCameras = [gameCam, UICam];
+		const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
+		mainMenuUI.layer!.layerMask = 0x10000000;
+		mainMenuUI.idealHeight = 720;
+		const createControl = (label: string, position: number, action?: (scene: Scene) => void) => {
+			const button = Button.CreateSimpleButton(label.toLocaleLowerCase.toString(), label);
+			// button.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+			button.top = `${position}px`;
+			button.fontFamily = 'Viga';
+			button.width = 0.2
+			button.height = '30px';
+			button.color = 'white';
+			button.cornerRadius = 20;
+			button.thickness = 0;
+			button.background = 'black';
+			button.onPointerEnterObservable.add(() => {
+				button.color = 'black';
+				button.background = 'white';
+			});
+			button.onPointerOutObservable.add(() => {
+				button.color = 'white';
+				button.background = 'black';
+			});
+			if (action) {
+				button.onPointerDownObservable.add(() => action(this._uiScene!));
+			}
+			mainMenuUI.addControl(button);
+		}
+		createControl('CONTINUE', -70, this._goToGame);
+		createControl('NEW GAME', -35);
+		createControl('LOAD GAME', 0);
+		createControl('OPTIONS', 35);
+		createControl('CREDITS', 70);
+		this._activeScene = this._uiScene;
+		this._setUpGame();
 	}
 
-	// eslint-disable-next-line require-await
 	private async _setUpGame () {
-		// Start game here
-		// CREATE SCENE
-		const scene = new Scene(this._engine);
-		this._gamescene = scene;
+		this._gamescene = new Scene(this._engine);
+		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._gamescene);
+		const UICam = createUICamera(this._canvas, this._gamescene);
+		this._gamescene.activeCameras = [gameCam, UICam];
+		// const objects = await initializeGame(this._scene, this._rapierWorker);
+		// startEveryFrame(this._scene, objects, this._rapierWorker);
+		const world = await this._rapierWorker.startPhysics();
+		world.gravity = { x: 0, y: -9.81, z: 0 };
 
 		// SOUNDS
 		// this._loadSounds(scene);
@@ -200,180 +208,6 @@ export class Game {
 		// Load environment and character assets
 		// await this._environment.load();
 		// await this._loadCharacterAssets(scene);
-	}
-
-	private _loadSounds (_scene: Scene) {
-		// There are no sounds yet, so this is a placeholder
-		// this.sfx = new Sound('sfx', './sounds/sfx.mp3', scene, null, { loop: false, autoplay: false });
-		// this.music = new Sound('music', './sounds/music.mp3', scene, null, { loop: true, autoplay: false });
-	}
-
-	private async _goToGame () {
-		// SETUP SCENE
-		this._scene.detachControl();
-		const scene = this._gamescene;
-
-		// GUI
-		// const ui = new Hud(scene);
-		// this._ui = ui;
-		scene.detachControl();
-
-		// IBL
-		// const environmentHdri = CubeTexture.CreateFromPrefilteredData(
-		// 	'./assets/environment/environment.env',
-		// 	scene,
-		// );
-		// environmentHdri.name = 'env';
-		// environmentHdri.gammaSpace = false;
-		// scene.environmentTexture = environmentHdri;
-		// scene.environmentIntensity = 0.04;
-
-		// INPUT
-		// this._input = new PlayerInput(scene, this._ui);
-
-		// Initialize game loop
-		// await this._initializeGameAsync(scene);
-
-		// When finished loading
-		await scene.whenReadyAsync();
-
-		// Actions to complete once game loop is setup
-		this._scene.dispose();
-		this._state = State.GAME;
-		this._scene = scene;
-		this._engine.hideLoadingUI();
-		this._scene.attachControl();
-
-		// this.game.play();
-	}
-
-	private _showWin (): void {
-		// this.game.dispose();
-		// this.end.play();
-		// this._player.onRun.clear();
-
-		const winUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
-		winUI.idealHeight = 720;
-
-		const rect = new Rectangle();
-		rect.thickness = 0;
-		rect.background = 'black';
-		rect.alpha = 0.4;
-		rect.width = 0.4;
-		winUI.addControl(rect);
-
-		const stackPanel = new StackPanel('credits');
-		stackPanel.width = 0.4;
-		stackPanel.fontFamily = 'Viga';
-		stackPanel.fontSize = '16px';
-		stackPanel.color = 'white';
-		winUI.addControl(stackPanel);
-
-		const wincreds = new TextBlock('special');
-		wincreds.resizeToFit = true;
-		wincreds.color = 'white';
-		wincreds.text = 'Special thanks to the Babylon Team!';
-		wincreds.textWrapping = true;
-		wincreds.height = '24px';
-		wincreds.width = '100%';
-		wincreds.fontFamily = 'Viga';
-		stackPanel.addControl(wincreds);
-
-		// Credits for music & SFX
-		const music = new TextBlock('music', 'Music');
-		music.fontSize = 22;
-		music.resizeToFit = true;
-		music.textWrapping = true;
-
-		const source = new TextBlock('sources', 'Sources: freesound.org, opengameart.org, and itch.io')
-		source.textWrapping = true;
-		source.resizeToFit = true;
-
-		const jumpCred = new TextBlock('jumpCred', 'jump2 by LloydEvans09 - freesound.org');
-		jumpCred.textWrapping = true;
-		jumpCred.resizeToFit = true;
-
-		const walkCred = new TextBlock('walkCred', 'Concrete 2 by MayaSama @mayasama.itch.io / ig: @mayaragandra');
-		walkCred.textWrapping = true;
-		walkCred.resizeToFit = true;
-
-		const gameCred = new TextBlock('gameSong', 'Christmas synths by 3xBlast - opengameart.org');
-		gameCred.textWrapping = true;
-		gameCred.resizeToFit = true;
-
-		const pauseCred = new TextBlock('pauseSong', 'Music by Matthew Pablo / www.matthewpablo.com - opengameart.org');
-		pauseCred.textWrapping = true;
-		pauseCred.resizeToFit = true;
-
-		const endCred = new TextBlock('startendSong', 'copycat by syncopika - opengameart.org');
-		endCred.textWrapping = true;
-		endCred.resizeToFit = true;
-
-		const loseCred = new TextBlock('loseSong', 'Eye of the Storm by Joth - opengameart.org');
-		loseCred.textWrapping = true;
-		loseCred.resizeToFit = true;
-
-		const fireworksSfx = new TextBlock('fireworks', 'rubberduck - opengameart.org')
-		fireworksSfx.textWrapping = true;
-		fireworksSfx.resizeToFit = true;
-
-		const dashCred = new TextBlock('dashCred', 'Woosh Noise 1 by potentjello - freesound.org');
-		dashCred.textWrapping = true;
-		dashCred.resizeToFit = true;
-
-		// quit, sparkwarning, reset
-		const sfxCred = new TextBlock('sfxCred', '200 Free SFX - https://kronbits.itch.io/freesfx');
-		sfxCred.textWrapping = true;
-		sfxCred.resizeToFit = true;
-
-		// lighting lantern, sparkreset
-		const sfxCred2 = new TextBlock('sfxCred2', 'sound pack by wobbleboxx.com - opengameart.org');
-		sfxCred2.textWrapping = true;
-		sfxCred2.resizeToFit = true;
-
-		const selectionSfxCred = new TextBlock('select', '8bit menu select by Fupi - opengameart.org');
-		selectionSfxCred.textWrapping = true;
-		selectionSfxCred.resizeToFit = true;
-
-		stackPanel.addControl(music);
-		stackPanel.addControl(source);
-		stackPanel.addControl(jumpCred);
-		stackPanel.addControl(walkCred);
-		stackPanel.addControl(gameCred);
-		stackPanel.addControl(pauseCred);
-		stackPanel.addControl(endCred);
-		stackPanel.addControl(loseCred);
-		stackPanel.addControl(fireworksSfx);
-		stackPanel.addControl(dashCred);
-		stackPanel.addControl(sfxCred);
-		stackPanel.addControl(sfxCred2);
-		stackPanel.addControl(selectionSfxCred);
-
-		const mainMenu = Button.CreateSimpleButton('mainmenu', 'RETURN');
-		// mainMenu.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
-		mainMenu.fontFamily = 'Viga';
-		mainMenu.width = 0.2
-		mainMenu.height = '40px';
-		mainMenu.color = 'white';
-		winUI.addControl(mainMenu);
-
-		// mainMenu.onPointerDownObservable.add(() => {
-		// 	this._ui.transition = true;
-		// 	this._ui.quitSfx.play();
-		// })
-	}
-
-	private async _initializeGameAsync (scene: Scene): Promise<void> {
-		// const gameCam = createPixelCamera(this._canvas, this._scene);
-		// deconstruct the two objects created by createPixelCamera
-		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._scene);
-		const UICam = createUICamera(this._canvas, this._scene);
-		this._scene.activeCameras = [gameCam, UICam];
-		// const objects = await initializeGame(this._scene, this._rapierWorker);
-		titleScreenBackground(this._scene, this._rapierWorker, shadowGenerator);
-		// startEveryFrame(this._scene, objects, this._rapierWorker);
-		const world = await this._rapierWorker.startPhysics();
-		world.gravity = { x: 0, y: -9.81, z: 0 };
 
 		// Create the player
 		// this._player = new Player(this.assets, scene, shadowGenerator);
@@ -382,5 +216,41 @@ export class Game {
 		// scene.onBeforeRenderObservable.add(() => {
 		// 	// Loop
 		// });
+		// resolve promise
+		return Promise.resolve();
+	}
+
+	private async _goToGame (activeScene: Scene) {
+		activeScene.removeCamera(activeScene.activeCameras![0]);
+		console.log('go to game')
+		this._gamescene = new Scene(this._engine);
+		try { activeScene.detachControl() } catch (error) { }
+		if (this._gamescene) {
+			// INPUT
+			// this._input = new PlayerInput(scene, this._ui);
+
+			// Initialize game loop
+			// await this._initializeGameAsync(scene);
+
+			// When finished loading
+			await this._gamescene.whenReadyAsync();
+
+			// Actions to complete once game loop is setup
+			// this._activeScene.dispose();
+			this._state = State.GAME;
+			this._activeScene = this._gamescene;
+			// this._engine.hideLoadingUI();
+			this._activeScene.attachControl();
+
+			this._uiScene = undefined;
+			console.log(this._uiScene)
+
+		// this.game.play();
+		} else {
+			await this._setUpGame();
+			// await this._gamescene!.whenReadyAsync();
+			await this._goToGame(activeScene);
+		}
+		return Promise.resolve();
 	}
 }
