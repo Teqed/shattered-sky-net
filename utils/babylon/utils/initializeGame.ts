@@ -35,10 +35,89 @@ import createUICamera from './createUICamera';
 // import '@babylonjs/inspector';
 // import '@babylonjs/loaders/glTF';
 import titleScreenBackground from './titleScreenBackground';
+interface ILoadingScreen {
+	// What happens when loading starts
+	displayLoadingUI: () => void;
+	// What happens when loading stops
+	hideLoadingUI: () => void;
+	// default loader support. Optional!
+	loadingUIBackgroundColor: string;
+	loadingUIText: string;
+}
+class CustomLoadingScreen implements ILoadingScreen {
+	// optional, but needed due to interface definitions
+	public loadingUIBackgroundColor: string
+	constructor (public loadingUIText: string) {
+		this.loadingUIBackgroundColor = '#151729';
+	}
+
+	public displayLoadingUI () {
+		// create a loading screen UI
+		const loadingScreenDiv = document.createElement('div');
+		loadingScreenDiv.style.width = '100%';
+		loadingScreenDiv.style.height = '100%';
+		loadingScreenDiv.style.backgroundColor = this.loadingUIBackgroundColor;
+		loadingScreenDiv.style.color = 'white';
+		loadingScreenDiv.style.position = 'absolute';
+		loadingScreenDiv.style.top = '0';
+		loadingScreenDiv.style.left = '0';
+		loadingScreenDiv.style.display = 'flex';
+		loadingScreenDiv.style.justifyContent = 'center';
+		loadingScreenDiv.style.alignItems = 'center';
+		loadingScreenDiv.style.zIndex = '1000';
+		// loadingScreenDiv.innerHTML = this.loadingUIText;
+		document.body.appendChild(loadingScreenDiv);
+		// Give it the #loadingScreenDiv id
+		loadingScreenDiv.id = 'loadingScreenDiv';
+		// Use keyframes to fade in the loading screen
+		// First, create a style element
+		const style = document.createElement('style');
+		style.innerHTML = `
+			@keyframes fadeIn {
+				from {
+					opacity: 0;
+				}
+				to {
+					opacity: 1;
+				}
+				`;
+		loadingScreenDiv.appendChild(style);
+		loadingScreenDiv.style.animation = 'fadeIn 1s';
+	}
+
+	public hideLoadingUI () {
+		// remove loading screen UI
+		const loadingScreenDiv = document.querySelector('#loadingScreenDiv');
+		if (loadingScreenDiv) {
+			// First, transition the opacity to 0
+			// Use keyframe animations
+			// To do this, we need to create a style element
+			const style = document.createElement('style');
+			style.innerHTML = `
+				@keyframes fadeOut {
+					from {
+						opacity: 1;
+					}
+					to {
+						opacity: 0;
+					}
+				}
+			`;
+			loadingScreenDiv.appendChild(style);
+			// @ts-expect-error - style is an element of loadingScreenDiv
+			loadingScreenDiv.style.animation = 'fadeOut 1s';
+			// When the animation is done, remove the element
+			loadingScreenDiv.addEventListener('animationend', () => {
+				if (loadingScreenDiv) {
+					loadingScreenDiv.remove();
+				}
+			});
+		}
+	}
+}
 
 let canvas: OffscreenCanvas;
 let context: OffscreenCanvasRenderingContext2D | null;
-
 interface FontOffset {
 	ascent: number
 	height: number
@@ -70,8 +149,7 @@ enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
 	// General Entire Application
-	private _activeScene: Scene;
-	private _loadingScene: Scene;
+	private _activeScene: Scene | undefined;
 	private _uiScene: Scene | undefined;
 	private _canvas: HTMLCanvasElement | OffscreenCanvas;
 	private _engine: Engine;
@@ -106,8 +184,6 @@ export class Game {
 		if (canvas instanceof OffscreenCanvas) {
 			patchEngine(this._engine);
 		}
-		this._loadingScene = new Scene(this._engine);
-		this._activeScene = this._loadingScene;
 		this._init();
 	}
 
@@ -117,10 +193,10 @@ export class Game {
 			window.addEventListener('keydown', (event_) => {
 			// Shift+I
 				if (event_.shiftKey && event_.key === 'I') {
-					if (this._activeScene.debugLayer.isVisible()) {
-						this._activeScene.debugLayer.hide();
+					if (this._activeScene!.debugLayer.isVisible()) {
+						this._activeScene!.debugLayer.hide();
 					} else {
-						this._activeScene.debugLayer.show();
+						this._activeScene!.debugLayer.show();
 					}
 				}
 			});
@@ -137,15 +213,21 @@ export class Game {
 	// eslint-disable-next-line require-await
 	private async _main (): Promise<void> {
 		this._engine.runRenderLoop(() => {
-			try {
-				this._activeScene.render();
-			} catch (error) {
-				console.error(error);
+			if (this._activeScene) {
+				try {
+					this._activeScene.render();
+				} catch (error) {
+					console.error(error);
+				}
 			}
 		});
 	}
 
 	private async _goToStart () {
+		const loadingScreen = new CustomLoadingScreen('Loading...')
+		this._engine.loadingScreen = loadingScreen;
+		this._engine.loadingScreen.loadingUIBackgroundColor = '#151729';
+		this._engine.displayLoadingUI();
 		try { this._uiScene?.dispose(); } catch (error) { }
 		this._uiScene = undefined;
 		this._uiScene = new Scene(this._engine);
@@ -185,7 +267,20 @@ export class Game {
 		createControl('LOAD GAME', 0);
 		createControl('OPTIONS', 35);
 		createControl('CREDITS', 70);
+		// Create a game title text
+		// It'll be big, bold, and white
+		// Center it horizontally and place it middle-top of the screen
+		const title = new TextBlock();
+		title.text = 'Game Title';
+		title.color = 'white';
+		title.fontSize = 100;
+		title.fontFamily = 'Viga';
+		title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+		title.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+		title.top = '100px';
+		mainMenuUI.addControl(title);
 		this._activeScene = this._uiScene;
+		this._engine.hideLoadingUI();
 		this._setUpGame();
 	}
 
