@@ -366,7 +366,7 @@ export class Game {
 	private async _initializeGameAsync (scene: Scene): Promise<void> {
 		// const gameCam = createPixelCamera(this._canvas, this._scene);
 		// deconstruct the two objects created by createPixelCamera
-		const { camera: gameCam, shadows: shadowGenerator } = createPixelCamera(this._canvas, this._scene);
+		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._scene);
 		const UICam = createUICamera(this._canvas, this._scene);
 		this._scene.activeCameras = [gameCam, UICam];
 		// const objects = await initializeGame(this._scene, this._rapierWorker);

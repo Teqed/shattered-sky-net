@@ -9,7 +9,7 @@ import '@babylonjs/core/Materials/Textures/baseTexture';
 // @ts-ignore
 import checkPattern from '../../../assets/textures/checker.png';
 // @ts-ignore
-import amigaPattern from '../../../assets/textures/amiga.jpg';
+import amigaPattern from '../../../assets/textures/mygrid.jpg';
 import '@babylonjs/core/Rendering/edgesRenderer'
 // import shadows
 
@@ -24,6 +24,7 @@ export default (scene: Scene, _rapierWorker: rapierWorkerType, shadows) => {
 	const amigaTexture = new Texture(amigaPattern, scene);
 	amigaTexture.uScale = 3;
 	amigaTexture.vScale = 3;
+	amigaTexture.updateSamplingMode(1);
 	forGround.diffuseTexture = amigaTexture;
 	ground.material = forGround;
 	// ground.physicsImpostor = new PhysicsImpostor(ground, PhysicsImpostor.BoxImpostor, { mass: 0, restitution: 0.9 }, scene);
@@ -42,6 +43,7 @@ export default (scene: Scene, _rapierWorker: rapierWorkerType, shadows) => {
 	box.rotate(new Vector3(0, 1, 0), Math.PI / 4);
 	const forBox = new StandardMaterial('forBox', scene);
 	const amigaSmallTexture = new Texture(amigaPattern, scene);
+	amigaSmallTexture.updateSamplingMode(1);
 	amigaSmallTexture.uScale = 1.5;
 	amigaSmallTexture.vScale = 1.5;
 	forBox.diffuseTexture = amigaSmallTexture;
