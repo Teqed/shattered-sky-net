@@ -31,57 +31,66 @@ const baseMessages = [
 ] as ChatCompletionRequestMessage[]
 const chatCompletionStreaming = async (messages: ChatCompletionRequestMessage[],
 	io: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, unknown>) => {
-	writeLog(messages[messages.length - 1].content, true)
-	messages = baseMessages.concat(messages)
-	try {
-		console.time('moderation');
-		const moderation = await openai.createModeration({
-			input: messages[messages.length - 1].content,
-		});
-		console.timeEnd('moderation');
-		if (moderation.data.results[0].flagged === true) {
-			messages.pop();
-			return deniedReply;
-		} else {
-			console.time('conversation');
-			try {
-				const response = await openai.createChatCompletion({
-					model: 'gpt-3.5-turbo',
-					messages,
-					stream: true,
-				}, { responseType: 'stream' });
-				const readableStream = response.data as unknown as NodeJS.ReadableStream;
-				readableStream.on('data', (data: { toString: () => string; }) => {
-					const lines = data.toString().split('\n').filter((line: string) => line.trim() !== '');
-					for (const line of lines) {
-						const message = line.replace(/^data: /, '');
-						if (message === '[DONE]') {
-							io.emit('GPTanswer', message)
-							console.timeEnd('conversation');
-							readableStream.off('data', () => { });
-							return message;
-						} else {
-							const parsed: ResponseChunk = JSON.parse(message);
-							const token: string = parsed.choices[0].delta.content;
-							if (token) {
-								io.emit('GPTanswer', token)
+	const latestMessage = messages[messages.length - 1];
+	if (latestMessage) {
+		writeLog(latestMessage.content, true)
+		messages = baseMessages.concat(messages)
+		try {
+			console.time('moderation');
+			const moderation = await openai.createModeration({
+				input: latestMessage.content,
+			});
+			console.timeEnd('moderation');
+			if (moderation.data.results[0]) {
+				if (moderation.data.results[0].flagged === true) {
+					messages.pop();
+					return deniedReply;
+				} else {
+					console.time('conversation');
+					try {
+						const response = await openai.createChatCompletion({
+							model: 'gpt-3.5-turbo',
+							messages,
+							stream: true,
+						}, { responseType: 'stream' });
+						const readableStream = response.data as unknown as NodeJS.ReadableStream;
+						readableStream.on('data', (data: { toString: () => string; }) => {
+							const lines = data.toString().split('\n').filter((line: string) => line.trim() !== '');
+							for (const line of lines) {
+								const message = line.replace(/^data: /, '');
+								if (message === '[DONE]') {
+									io.emit('GPTanswer', message)
+									console.timeEnd('conversation');
+									readableStream.off('data', () => { });
+									return message;
+								} else {
+									const parsed: ResponseChunk = JSON.parse(message); if (parsed.choices[0]) {
+										const token: string = parsed.choices[0].delta.content;
+										if (token) {
+											io.emit('GPTanswer', token)
+											return token;
+										}
+									}
+								}
 							}
-						}
+							return '';
+						});
+					} catch (error) {
+						console.error('An error occurred during OpenAI request', error);
+						io.emit('GPTanswer', errorReply);
+						io.emit('GPTanswer', '[DONE]');
+						return errorReply;
 					}
-				});
-			} catch (error) {
-				console.error('An error occurred during OpenAI request', error);
-				io.emit('GPTanswer', errorReply);
-				io.emit('GPTanswer', '[DONE]');
-				return errorReply;
+				}
 			}
+		} catch (error) {
+			console.error('An error occurred during OpenAI request', error);
+			io.emit('GPTanswer', errorReply);
+			io.emit('GPTanswer', '[DONE]');
+			return errorReply;
 		}
-	} catch (error) {
-		console.error('An error occurred during OpenAI request', error);
-		io.emit('GPTanswer', errorReply);
-		io.emit('GPTanswer', '[DONE]');
-		return errorReply;
 	}
+	return errorReply;
 }
 
 // eslint-disable-next-line require-await

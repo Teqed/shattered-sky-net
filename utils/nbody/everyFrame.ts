@@ -55,15 +55,15 @@ export default (scene: Scene, babylonMesh: Mesh, rapierWorker: rapierWorkerType)
 			matrix = Matrix.Compose(
 				standardSizeVector3,
 				standardRotationQuaternion.copyFromFloats(
-					matricesUpdate[index + 4],
-					matricesUpdate[index + 5],
-					matricesUpdate[index + 6],
-					matricesUpdate[index + 7]
+					matricesUpdate[index + 4] ?? 0,
+					matricesUpdate[index + 5] ?? 0,
+					matricesUpdate[index + 6] ?? 0,
+					matricesUpdate[index + 7] ?? 0
 				),
 				standardTranslationVector3.copyFromFloats(
-					matricesUpdate[index + 1],
-					matricesUpdate[index + 2],
-					matricesUpdate[index + 3]
+					matricesUpdate[index + 1] ?? 0,
+					matricesUpdate[index + 2] ?? 0,
+					matricesUpdate[index + 3] ?? 0
 				)
 			)
 			matrix.copyToArray(matricesData0, index_)
@@ -95,21 +95,21 @@ export default (scene: Scene, babylonMesh: Mesh, rapierWorker: rapierWorkerType)
 		const alphaPos2 = physicsUpdateTime2 / physicsUpdateTime3;
 
 		for (let index = 0; index < matricesData0.length; index += 16) {
-			const vx1 = matricesData0[index + 12] - matricesData1[index + 12] * alphaPos0;
-			const vy1 = matricesData0[index + 13] - matricesData1[index + 13] * alphaPos0;
-			const vz1 = matricesData0[index + 14] - matricesData1[index + 14] * alphaPos0;
-			const vx2 = matricesData1[index + 12] - matricesData2[index + 12] * alphaPos1;
-			const vy2 = matricesData1[index + 13] - matricesData2[index + 13] * alphaPos1;
-			const vz2 = matricesData1[index + 14] - matricesData2[index + 14] * alphaPos1;
-			const vx3 = matricesData2[index + 12] - matricesData3[index + 12] * alphaPos2;
-			const vy3 = matricesData2[index + 13] - matricesData3[index + 13] * alphaPos2;
-			const vz3 = matricesData2[index + 14] - matricesData3[index + 14] * alphaPos2;
+			const vx1 = (matricesData0[index + 12] ?? 0) - (matricesData1[index + 12] ?? 0) * alphaPos0;
+			const vy1 = (matricesData0[index + 13] ?? 0) - (matricesData1[index + 13] ?? 0) * alphaPos0;
+			const vz1 = (matricesData0[index + 14] ?? 0) - (matricesData1[index + 14] ?? 0) * alphaPos0;
+			const vx2 = (matricesData1[index + 12] ?? 0) - (matricesData2[index + 12] ?? 0) * alphaPos1;
+			const vy2 = (matricesData1[index + 13] ?? 0) - (matricesData2[index + 13] ?? 0) * alphaPos1;
+			const vz2 = (matricesData1[index + 14] ?? 0) - (matricesData2[index + 14] ?? 0) * alphaPos1;
+			const vx3 = (matricesData2[index + 12] ?? 0) - (matricesData3[index + 12] ?? 0) * alphaPos2;
+			const vy3 = (matricesData2[index + 13] ?? 0) - (matricesData3[index + 13] ?? 0) * alphaPos2;
+			const vz3 = (matricesData2[index + 14] ?? 0) - (matricesData3[index + 14] ?? 0) * alphaPos2;
 			const ax1 = vx1 - vx2;
 			const ay1 = vy1 - vy2;
 			const az1 = vz1 - vz2;
-			const x = matricesData0[index + 12] + vx1 * alpha + ax1 * alpha2 + (ax1 - (vx2 - vx3)) * alpha2 * alpha;
-			const y = matricesData0[index + 13] + vy1 * alpha + ay1 * alpha2 + (ay1 - (vy2 - vy3)) * alpha2 * alpha;
-			const z = matricesData0[index + 14] + vz1 * alpha + az1 * alpha2 + (az1 - (vz2 - vz3)) * alpha2 * alpha;
+			const x = (matricesData0[index + 12] ?? 0) + vx1 * alpha + ax1 * alpha2 + (ax1 - (vx2 - vx3)) * alpha2 * alpha;
+			const y = (matricesData0[index + 13] ?? 0) + vy1 * alpha + ay1 * alpha2 + (ay1 - (vy2 - vy3)) * alpha2 * alpha;
+			const z = (matricesData0[index + 14] ?? 0) + vz1 * alpha + az1 * alpha2 + (az1 - (vz2 - vz3)) * alpha2 * alpha;
 			if (!isNaN(x) && !isNaN(y) && !isNaN(z) && isFinite(x) && isFinite(y) && isFinite(z)) {
 				matricesDataEstimated[index + 12] = x;
 				matricesDataEstimated[index + 13] = y;
@@ -138,9 +138,9 @@ export default (scene: Scene, babylonMesh: Mesh, rapierWorker: rapierWorkerType)
 
 	setInterval(() => {
 		for (let index_ = 0; index_ < instanceCount; index_++) {
-			colorData[index_ * 4] = -matricesData0[index_ * 16 + 12] / 50;
-			colorData[index_ * 4 + 1] = -matricesData0[index_ * 16 + 13] / 50;
-			colorData[index_ * 4 + 2] = -matricesData0[index_ * 16 + 14] / 50;
+			colorData[index_ * 4] = -(matricesData0[index_ * 16 + 12] ?? 0) / 50;
+			colorData[index_ * 4 + 1] = -(matricesData0[index_ * 16 + 13] ?? 0) / 50;
+			colorData[index_ * 4 + 2] = -(matricesData0[index_ * 16 + 14] ?? 0) / 50;
 		}
 		// Update the instance buffer
 		babylonMesh.thinInstanceSetBuffer('color', colorData, 4);

@@ -149,13 +149,15 @@ const insertNodes = (meshBodies: MeshBodyVirtual) => {
 	for (let index = 0; index < meshBodiesLength; index++) {
 		try {
 			meshBody = meshBodies[index];
-			body = meshBody.body
-			meshBody.virtualPos = body.translation();
-			if (rotationCounter % 8 === 0) {
-				meshBody.virtualRot = body.rotation();
+			if (meshBody) {
+				body = meshBody.body
+				meshBody.virtualPos = body.translation();
+				if (rotationCounter % 8 === 0) {
+					meshBody.virtualRot = body.rotation();
+				}
+				// barnesHutTree.insert(translation, body.mass());
+				barnesHutTree.insert(meshBody.virtualPos, 1);
 			}
-			// barnesHutTree.insert(translation, body.mass());
-			barnesHutTree.insert(meshBody.virtualPos, 1);
 		} catch (error) {
 			console.error('Error in barnesHutAttraction.insert', error);
 		}
@@ -169,10 +171,12 @@ const enforceBoundary = (meshBodies: MeshBodyVirtual) => {
 	for (let index = 0; index < meshBodiesLength; index++) {
 		try {
 			meshBody = meshBodies[index];
-			body = meshBody.body;
-			const enforcedTranslation = barnesHutTree.enforceBoundary(meshBody.virtualPos);
-			if (enforcedTranslation !== meshBody.virtualPos) {
-				body.setTranslation(enforcedTranslation, true);
+			if (meshBody) {
+				body = meshBody.body;
+				const enforcedTranslation = barnesHutTree.enforceBoundary(meshBody.virtualPos);
+				if (enforcedTranslation !== meshBody.virtualPos) {
+					body.setTranslation(enforcedTranslation, true);
+				}
 			}
 		} catch (error) {
 			console.error('Error in barnesHutAttraction.enforceBoundary', error);
@@ -183,19 +187,21 @@ const calculateForces = (meshBodies: MeshBodyVirtual) => {
 	for (let index = 0; index < meshBodiesLength; index++) {
 		try {
 			meshBody = meshBodies[index];
-			barnesHutTree.updateForces(meshBody.virtualPos, meshBody.force!);
-			body = meshBody.body;
-			body.resetForces(true);
-			body.addForce({
-				x: meshBody.force!.x,
-				y: meshBody.force!.y,
-				z: meshBody.force!.z,
-				// x: Math.min(Math.max(meshBody.force!.x * 1, -10), 10),
-				// y: Math.min(Math.max(meshBody.force!.y * 1, -10), 10),
-				// z: Math.min(Math.max(meshBody.force!.z * 1, -10), 10),
-			},
-			true);
-			meshBody.force = {x: 0, y: 0, z: 0};
+			if (meshBody) {
+				barnesHutTree.updateForces(meshBody.virtualPos, meshBody.force!);
+				body = meshBody.body;
+				body.resetForces(true);
+				body.addForce({
+					x: meshBody.force!.x,
+					y: meshBody.force!.y,
+					z: meshBody.force!.z,
+					// x: Math.min(Math.max(meshBody.force!.x * 1, -10), 10),
+					// y: Math.min(Math.max(meshBody.force!.y * 1, -10), 10),
+					// z: Math.min(Math.max(meshBody.force!.z * 1, -10), 10),
+				},
+				true);
+				meshBody.force = {x: 0, y: 0, z: 0};
+			}
 		} catch (error) {
 			console.error('Error in barnesHutAttraction.addForce', error);
 		}
@@ -206,7 +212,9 @@ export const barnesHutAttraction = (meshBodies: MeshBodyVirtual) => {
 	meshBodiesLength = Object.keys(meshBodies).length;
 	for (let index = 0; index < meshBodiesLength; index++) {
 		meshBody = meshBodies[index];
-		meshBody.force = {x: 0, y: 0, z: 0};
+		if (meshBody) {
+			meshBody.force = {x: 0, y: 0, z: 0};
+		}
 	}
 	insertNodes(meshBodies);
 	enforceBoundary(meshBodies);

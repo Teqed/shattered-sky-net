@@ -107,9 +107,9 @@ const createIco = (scene: Scene) => {
 				meshId: index,
 				size: 1,
 				p: {
-					x: matricesData[index * 16 + 12],
-					y: matricesData[index * 16 + 13],
-					z: matricesData[index * 16 + 14],
+					x: matricesData[index * 16 + 12] ?? 0,
+					y: matricesData[index * 16 + 13] ?? 0,
+					z: matricesData[index * 16 + 14] ?? 0,
 				},
 				r: {
 				// random values

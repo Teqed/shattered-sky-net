@@ -24,11 +24,61 @@ import {
 	pipe,
 } from 'bitecs'
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import {component, field, system, System, Type, World} from '@lastolivegames/becsy';
 // @ts-ignore
 import amigaPattern from '../../../assets/textures/mygrid.jpg';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createUICamera from './createUICamera';
 import createPixelCamera from './createPixelCamera';
+
+const createStartersBecsy = async (scene: Scene) => {
+	// We're going to reimplement the starter selection screen using becsy instead of bitecs.
+	// @component class Position {
+	// 	@field.float64 declare x: number;
+	// 	@field.float64 declare y: number;
+	// 	@field.float64 declare z: number;
+	// }
+	// @ts-expect-error
+	@component class Position {
+		// @ts-expect-error
+		@field.float64 declare x: number;
+		// @ts-expect-error
+		@field.float64 declare y: number;
+		// @ts-expect-error
+		@field.float64 declare z: number;
+	}
+	// @ts-expect-error
+	@system class PositionLogSystem extends System {
+		entities = this.query(q => q.current.with(Position));
+
+		override execute () {
+			for (const entity of this.entities.current) {
+				const position = entity.read(Position);
+				console.log(
+					`Entity with ordinal ${entity.ordinal} has component ` +
+					`Position={x: ${position.x}, y: ${position.y}, z: ${position.z}}`
+				)
+			}
+		}
+	}
+	const world = await World.create();
+
+	world.createEntity(Position);
+	for (let index = 0; index < 10; index++) {
+		world.createEntity(
+			Position, {
+				x: Math.random() * 10,
+				y: Math.random() * 10,
+				z: 0,
+			}
+		)
+	}
+	const run = async () => {
+		await world.execute()
+		requestAnimationFrame(run)
+	}
+	run()
+};
 
 const createStarters = (scene: Scene) => {
 	const f32Vector2 = { x: Types.f32, y: Types.f32 };
@@ -122,6 +172,7 @@ const createStarters = (scene: Scene) => {
 	const positionQuery = defineQuery([Position]);
 	const enteredPositionQuery = enterQuery(positionQuery);
 	const exitedPositionQuery = exitQuery(positionQuery);
+	const changedPositionQuery = defineQuery([Changed(Position)]);
 	// *** Setup texture ***
 	const amigaTexture = new Texture(amigaPattern, scene);
 	amigaTexture.uScale = 3;
@@ -135,44 +186,78 @@ const createStarters = (scene: Scene) => {
 		const entitiesThatExitedPositionQuery = exitedPositionQuery(world);
 		for (let index = 0; index < entitiesThatExitedPositionQuery.length; index++) {
 			const entity = entitiesThatExitedPositionQuery[index];
-			const name = Name.name[entity];
-			const position = {x: Position.f32Vector3.x[entity],
-				y: Position.f32Vector3.y[entity],
-				z: Position.f32Vector3.z[entity]};
-			console.log(`Entity ${name} exited the position query with position ${position.x}, ${position.y}, ${position.z}`);
-			// Find the mesh for the entity and remove it by using the entity's UID
-			const uid = UID.uid[entity];
-			const mesh = scene.getMeshByUniqueId(uid);
-			try { mesh?.dispose(); } catch (error) {
-				console.log(error);
+			if (entity) {
+				const name = Name.name[entity];
+				const position = {x: Position.f32Vector3.x[entity],
+					y: Position.f32Vector3.y[entity],
+					z: Position.f32Vector3.z[entity]};
+				console.log(`Entity ${name} exited the position query with position ${position.x}, ${position.y}, ${position.z}`);
+				// Find the mesh for the entity and remove it by using the entity's UID
+				const uid = UID.uid[entity];
+				if (uid) {
+					const mesh = scene.getMeshByUniqueId(uid);
+					try { mesh?.dispose(); } catch (error) {
+						console.log(error);
+					}
+				}
 			}
 		}
 		// For entities that have entered the query, console.log their name and position
 		const entitiesThatEnteredPositionQuery = enteredPositionQuery(world);
 		for (let index = 0; index < entitiesThatEnteredPositionQuery.length; index++) {
 			const entity = entitiesThatEnteredPositionQuery[index];
-			const name = Name.name[entity];
-			const position = {x: Position.f32Vector3.x[entity],
-				y: Position.f32Vector3.y[entity],
-				z: Position.f32Vector3.z[entity]};
-			console.log(`Entity ${name} entered the position query with position ${position.x}, ${position.y}, ${position.z}`);
-			// Create a mesh for the entity at the position
-			const mesh = MeshBuilder.CreateSphere('sphere', { diameter: 1 }, scene);
-			mesh.position = new Vector3(position.x, position.y, position.z);
-			mesh.material = checkeredMaterial;
-			// Give the mesh the UID so we can find it later
-			mesh.metadata = {uid: UID.uid[entity]};
-			mesh.uniqueId = UID.uid[entity];
+			if (entity) {
+				const name = Name.name[entity];
+				const position = {x: Position.f32Vector3.x[entity],
+					y: Position.f32Vector3.y[entity],
+					z: Position.f32Vector3.z[entity]};
+				console.log(`Entity ${name} entered the position query with position ${position.x}, ${position.y}, ${position.z}`);
+				// First, make sure no mesh already exists for the entity
+				const uid = UID.uid[entity];
+				if (uid) {
+					const meshOld = scene.getMeshByUniqueId(uid);
+					try { meshOld?.dispose(); } catch (error) { console.log(error); }
+					// Create a mesh for the entity at the position
+					const mesh = MeshBuilder.CreateSphere('sphere', { diameter: 1 }, scene);
+					mesh.position = new Vector3(position.x, position.y, position.z);
+					mesh.material = checkeredMaterial;
+					// Give the mesh the UID so we can find it later
+					mesh.metadata = {uid};
+					mesh.uniqueId = uid;
+				}
+			}
 		}
-		const entitiesThatHavePosition = positionQuery(world);
-		// For every entity with a position, console.log their name and position
-		for (let index = 0; index < entitiesThatHavePosition.length; index++) {
-			const entity = entitiesThatHavePosition[index];
-			const name = Name.name[entity];
-			const position = {x: Position.f32Vector3.x[entity],
-				y: Position.f32Vector3.y[entity],
-				z: Position.f32Vector3.z[entity]};
-			// console.log(`Entity ${name} has position ${position.x}, ${position.y}, ${position.z}`);
+		// const entitiesThatHavePosition = positionQuery(world);
+		// // For every entity with a position, console.log their name and position
+		// for (let index = 0; index < entitiesThatHavePosition.length; index++) {
+		// 	const entity = entitiesThatHavePosition[index];
+		// 	const name = Name.name[entity];
+		// 	const position = {x: Position.f32Vector3.x[entity],
+		// 		y: Position.f32Vector3.y[entity],
+		// 		z: Position.f32Vector3.z[entity]};
+		// 	// console.log(`Entity ${name} has position ${position.x}, ${position.y}, ${position.z}`);
+		// }
+		// For entities that have changed position, console.log their name and position
+		const entitiesThatHaveChangedPosition = changedPositionQuery(world);
+		for (let index = 0; index < entitiesThatHaveChangedPosition.length; index++) {
+			const entity = entitiesThatHaveChangedPosition[index];
+			if (entity) {
+				const name = Name.name[entity];
+				const position = {x: Position.f32Vector3.x[entity] ?? 0,
+					y: Position.f32Vector3.y[entity] ?? 0,
+					z: Position.f32Vector3.z[entity] ?? 0 };
+				console.log(`Entity ${name} has changed position to ${position.x}, ${position.y}, ${position.z}`);
+				// Find the mesh for the entity and move it to the new position
+				const uid = UID.uid[entity];
+				if (uid) {
+					const mesh = scene.getMeshByUniqueId(uid);
+					try {
+						if (mesh) {
+							mesh.position.set(position.x, position.y, position.z)
+						}
+					} catch (error) {	}
+				}
+			}
 		}
 		return world;
 	}
@@ -286,7 +371,7 @@ const createStarters = (scene: Scene) => {
 };
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
-	createStarters(scene);
+	createStartersBecsy(scene);
 	// *** Create some placeholder objects ***
 	// const amigaTexture = new Texture(amigaPattern, scene);
 	// amigaTexture.uScale = 3;

@@ -52,20 +52,22 @@ export class SavegameManager implements Savegame {
 	}
 
 	public static newSaveSlot (name: string, slotNumber: number, saveGame: Savegame, override?: boolean) {
-		if (saveGame.saveSlot[slotNumber] && !override && (saveGame.saveSlot[slotNumber].name !== 'Unnamed')) {
-			const _override = window.confirm('Are you sure you want to override this slot?')
-			if (_override) {
-				SavegameManager.newSaveSlot(name, slotNumber, saveGame, _override)
+		if (saveGame.saveSlot[slotNumber] && !override) {
+			if (saveGame.saveSlot[slotNumber]!.name !== 'Unnamed') {
+				const _override = window.confirm('Are you sure you want to override this slot?')
+				if (_override) {
+					SavegameManager.newSaveSlot(name, slotNumber, saveGame, _override)
+				}
+			} else {
+				const newSave: SaveSlot = {
+					name,
+					saveData: {
+						testData: 1,
+					},
+				}
+				saveGame.saveSlot[slotNumber] = newSave
+				saveGame.lastSaveSlot = slotNumber
 			}
-		} else {
-			const newSave: SaveSlot = {
-				name,
-				saveData: {
-					testData: 1,
-				},
-			}
-			saveGame.saveSlot[slotNumber] = newSave
-			saveGame.lastSaveSlot = slotNumber
 		}
 		return SavegameManager.save(saveGame)
 	}
@@ -82,7 +84,15 @@ export class SavegameManager implements Savegame {
 	}
 
 	public static loadSlot (saveSlot: number, saveGame: Savegame) {
-		return saveGame.saveSlot[saveSlot]
+		if (saveGame.saveSlot[saveSlot]) {
+			saveGame.lastSaveSlot = saveSlot
+			SavegameManager.save(saveGame)
+			return saveGame.saveSlot[saveSlot]!
+		}
+		SavegameManager.newSaveSlot('Unnamed', saveSlot, saveGame)
+		saveGame.lastSaveSlot = saveSlot
+		SavegameManager.save(saveGame)
+		return saveGame.saveSlot[saveSlot]!
 	}
 
 	public static save (save: Savegame) {

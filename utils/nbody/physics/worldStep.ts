@@ -28,16 +28,18 @@ const virtualUpdate = (meshBodies: MeshBodyVirtual) => {
 	let index = 0;
 	for (const key of Object.keys(meshBodies)) {
 		const meshBody = meshBodies[Number(key)];
-		const translation = meshBody.virtualPos;
-		const rotation = meshBody.virtualRot;
-		update[index++] = Number(key);
-		update[index++] = translation.x;
-		update[index++] = translation.y;
-		update[index++] = translation.z;
-		update[index++] = rotation.x;
-		update[index++] = rotation.y;
-		update[index++] = rotation.z;
-		update[index++] = rotation.w;
+		if (meshBody) {
+			const translation = meshBody.virtualPos;
+			const rotation = meshBody.virtualRot;
+			update[index++] = Number(key);
+			update[index++] = translation.x;
+			update[index++] = translation.y;
+			update[index++] = translation.z;
+			update[index++] = rotation.x;
+			update[index++] = rotation.y;
+			update[index++] = rotation.z;
+			update[index++] = rotation.w;
+		}
 	}
 	updateFlag(true)
 	return new Float32Array(update).buffer;

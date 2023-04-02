@@ -1,4 +1,4 @@
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai'
+import { ChatCompletionRequestMessage, ChatCompletionResponseMessage, Configuration, OpenAIApi } from 'openai'
 import writeLog from '../utils/writeLog';
 interface ResponseSingle {
 	data: {
@@ -28,31 +28,38 @@ const baseMessages = [
 ] as ChatCompletionRequestMessage[]
 const chatCompletion = async (body: { messages: ConcatArray<ChatCompletionRequestMessage>; }) => {
 	const messages = baseMessages.concat(body.messages)
-	writeLog(messages[messages.length - 1].content, true)
-	try {
-		console.time('moderation');
-		const moderation = await openai.createModeration({
-			input: messages[messages.length - 1].content,
-		});
-		console.timeEnd('moderation');
-		if (moderation.data.results[0].flagged === true) {
-			messages.pop();
-			return deniedReply;
-		} else {
-			console.time('conversation');
-			const conversation = await openai.createChatCompletion({
-				model: 'gpt-3.5-turbo',
-				messages,
-			}) as unknown as ResponseSingle;
-			console.timeEnd('conversation');
-			const reply = conversation.data.choices[0].message.content;
-			writeLog(reply, false)
-			return reply
+	const latestMessage: ChatCompletionResponseMessage | undefined = messages[messages.length - 1];
+	if (latestMessage) {
+		writeLog(latestMessage.content, true)
+		try {
+			console.time('moderation');
+			const moderation = await openai.createModeration({
+				input: latestMessage.content,
+			});
+			console.timeEnd('moderation');
+			if (moderation.data.results[0]) {
+				if (moderation.data.results[0].flagged === true) {
+					messages.pop();
+					return deniedReply;
+				} else {
+					console.time('conversation');
+					const conversation = await openai.createChatCompletion({
+						model: 'gpt-3.5-turbo',
+						messages,
+					}) as unknown as ResponseSingle;
+					console.timeEnd('conversation'); if (conversation.data.choices[0]) {
+						const reply = conversation.data.choices[0].message.content;
+						writeLog(reply, false)
+						return reply
+					}
+				}
+			}
+		} catch (error) {
+			console.error('Error:', error);
+			return errorReply;
 		}
-	} catch (error) {
-		console.error('Error:', error);
-		return errorReply;
 	}
+	return errorReply;
 };
 export default defineEventHandler(async (event) => {
 	const body = await readBody(event)

@@ -270,7 +270,7 @@ export interface IMouseEvent extends IUIEvent {
 }
 
 export class CustomMouseEvent extends Event {
-	type: string;
+	// type: string;
 	clientX: number;
 	clientY: number;
 	button: number;
@@ -290,7 +290,7 @@ export class CustomMouseEvent extends Event {
 	shiftKey: boolean;
 	x: number;
 	y: number;
-	currentTarget: EventTarget | null;
+	// currentTarget: EventTarget | null;
 	deltaX: number;
 	deltaY: number;
 	deltaZ: number;
@@ -310,7 +310,7 @@ export class CustomMouseEvent extends Event {
 			deltaMode?: number
 		}) {
 		super(type);
-		this.type = type;
+		// this.type = type;
 		this.clientX = options.clientX;
 		this.clientY = options.clientY;
 		this.button = options.button;
@@ -330,7 +330,7 @@ export class CustomMouseEvent extends Event {
 		this.shiftKey = false;
 		this.x = options.clientX;
 		this.y = options.clientY;
-		this.currentTarget = options.currentTarget;
+		// this.currentTarget = options.currentTarget;
 		this.deltaX = options.deltaX ?? 0;
 		this.deltaY = options.deltaY ?? 0;
 		this.deltaZ = options.deltaZ ?? 0;

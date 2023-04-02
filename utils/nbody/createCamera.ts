@@ -30,7 +30,7 @@ export default (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
 	// This attaches the camera to the canvas
 	camera.attachControl();
 	scene.onPointerObservable.add((event) => {
-		console.log('observable detected', event);
+		// console.log('observable detected', event);
 	});
 	scene.pointerX = 0;
 	scene.pointerY = 0;

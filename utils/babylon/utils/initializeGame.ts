@@ -286,10 +286,13 @@ export class Game {
 						this._savegame,
 					);
 					this._saveSlotNum = newSlotNumber;
-					this._loadedSaveSlot = this._savegame.saveSlot[newSlotNumber];
-					this._saveCurrentSlot();
-					window.alert('New save slot created.')
-					this._goToStart();
+					const attemptToLoadSaveSlot = this._savegame.saveSlot[this._saveSlotNum];
+					if (attemptToLoadSaveSlot) {
+						this._loadedSaveSlot = attemptToLoadSaveSlot;
+						this._saveCurrentSlot();
+						window.alert('New save slot created.')
+						this._goToStart();
+					} else { window.alert('Save slot not created.') }
 				} else {
 					window.alert('Save slot not created.')
 				}
@@ -320,7 +323,7 @@ export class Game {
 			this._saveSlotNum = slotNumber ?? this._savegame.lastSaveSlot;
 			this._loadedSaveSlot = SavegameManager.loadSlot(this._saveSlotNum, this._savegame);
 			return this._loadedSaveSlot;
-		} catch (error) { console.log('no saveslot found') }
+		} catch (error) { console.log('could not load save slot'); return this._loadedSaveSlot }
 	}
 
 	private _promptForSlot = () => {

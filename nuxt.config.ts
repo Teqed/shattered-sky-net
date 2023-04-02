@@ -7,6 +7,27 @@
 import vuetify from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
+	typescript: {
+		strict: true,
+		typeCheck: true,
+		tsConfig: {
+			compilerOptions: {
+				strict: true,
+				strictNullChecks: true,
+				strictBindCallApply: true,
+				strictFunctionTypes: true,
+				strictPropertyInitialization: true,
+				noImplicitThis: true,
+				noImplicitAny: true,
+				noImplicitReturns: true,
+				noFallthroughCasesInSwitch: true,
+				// noUnusedLocals: true,
+				// noUnusedParameters: true,
+				noImplicitOverride: true,
+				// noPropertyAccessFromIndexSignature: true,
+				noUncheckedIndexedAccess: true,
+			},},
+	},
 	css: [
 		// 'vuetify/lib/styles/main.sass',
 		// '@mdi/font/css/materialdesignicons.min.css',
