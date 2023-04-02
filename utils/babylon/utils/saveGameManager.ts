@@ -38,7 +38,7 @@ export class SavegameManager implements Savegame {
 	}[]
 
 	constructor (name: string) {
-		this.UID = 'testID0000'
+		this.UID = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
 		this.version = 1
 		this.dateCreated = new Date().toISOString()
 		this.dateUpdated = new Date().toISOString()
@@ -52,22 +52,22 @@ export class SavegameManager implements Savegame {
 	}
 
 	public static newSaveSlot (name: string, slotNumber: number, saveGame: Savegame, override?: boolean) {
-		// If the slot already exists, check if we want to override it
-		if (saveGame.saveSlot[slotNumber] && !override) {
-			saveGame.saveSlot[slotNumber] = {
-				name,
-				saveData: {
-					testData: 0,
-				},
-			}
-			saveGame.lastSaveSlot = slotNumber
-		} else {
+		if (saveGame.saveSlot[slotNumber] && !override && (saveGame.saveSlot[slotNumber].name !== 'Unnamed')) {
 			const _override = window.confirm('Are you sure you want to override this slot?')
 			if (_override) {
 				SavegameManager.newSaveSlot(name, slotNumber, saveGame, _override)
 			}
+		} else {
+			const newSave: SaveSlot = {
+				name,
+				saveData: {
+					testData: 1,
+				},
+			}
+			saveGame.saveSlot[slotNumber] = newSave
+			saveGame.lastSaveSlot = slotNumber
 		}
-		return saveGame
+		return SavegameManager.save(saveGame)
 	}
 
 	public static saveSlot (
@@ -96,11 +96,13 @@ export class SavegameManager implements Savegame {
 		return save;
 	}
 
-	public static load (): Savegame | undefined {
+	public static load (): Savegame {
 		try {
 			const savegame = localStorage.getItem('savegame');
-			if (savegame) { return JSON.parse(savegame) }
+			if (savegame) {
+				return JSON.parse(savegame)
+			} else { console.warn('No savegame found') }
 		} catch (error) { console.error('Could not load savegame', error) }
-		return undefined;
+		return new SavegameManager('Unnamed')
 	}
 }

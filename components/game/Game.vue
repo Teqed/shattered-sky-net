@@ -23,6 +23,13 @@ onMounted(async () => {
 	} else {
 		({ rapierWorker } = await loadGameMain(canvas, 'scene0'));
 	}
+	// After a few seconds, remove the element named header
+	setTimeout(() => {
+		const header = document.querySelector('header');
+		if (header) {
+			header.remove();
+		}
+	}, 3000);
 });
 
 onUnmounted(() => {
@@ -37,18 +44,18 @@ onUnmounted(() => {
 </script>
   <style>
   header *:not(canvas) {
-animation: fadeout 1s ease-in-out forwards;
-z-index: -3;
+	animation: fadeout 1s ease-in-out forwards;
+	z-index: -3;
   }
 
   html,
   body {
-z-index: -2;
-  overflow: hidden;
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
+	z-index: -2;
+	overflow: hidden;
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
   }
 
   #renderCanvas {
@@ -59,13 +66,13 @@ z-index: -2;
   }
 
 canvas {
-outline: none;
--webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
-position: fixed;
-top: 0;
-left: 0;
-opacity: 0;
-animation: fadein 1s ease-in-out forwards;
+	outline: none;
+	-webkit-tap-highlight-color: rgba(255, 255, 255, 0); /* mobile webkit */
+	position: fixed;
+	top: 0;
+	left: 0;
+	opacity: 0;
+	animation: fadein 1s ease-in-out forwards;
 }
 
   @keyframes fadein {
