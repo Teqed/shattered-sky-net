@@ -38,10 +38,12 @@ onUnmounted(() => {
   <style>
   header *:not(canvas) {
 animation: fadeout 1s ease-in-out forwards;
+z-index: -3;
   }
 
   html,
   body {
+z-index: -2;
   overflow: hidden;
   width: 100%;
   height: 100%;
@@ -50,6 +52,7 @@ animation: fadeout 1s ease-in-out forwards;
   }
 
   #renderCanvas {
+	z-index: -1;
 	width: 100%;
 	height: 100%;
 	touch-action: none;
@@ -61,7 +64,6 @@ outline: none;
 position: fixed;
 top: 0;
 left: 0;
-/* z-index: -1; */
 opacity: 0;
 animation: fadein 1s ease-in-out forwards;
 }

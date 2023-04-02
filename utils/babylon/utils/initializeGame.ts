@@ -31,119 +31,15 @@ import { type rapierWorkerType } from '../../worker/rapier-wrap';
 // import { setMatricesSize } from '../../nbody/everyFrame';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
-// import '@babylonjs/core/Debug/debugLayer';
-// import '@babylonjs/inspector';
+// ! Debugger
+import '@babylonjs/core/Debug/debugLayer';
+// ! Inspector
+import '@babylonjs/inspector';
 // import '@babylonjs/loaders/glTF';
 import titleScreenBackground from './titleScreenBackground';
-interface ILoadingScreen {
-	// What happens when loading starts
-	displayLoadingUI: () => void;
-	// What happens when loading stops
-	hideLoadingUI: () => void;
-	// default loader support. Optional!
-	loadingUIBackgroundColor: string;
-	loadingUIText: string;
-}
-class CustomLoadingScreen implements ILoadingScreen {
-	// optional, but needed due to interface definitions
-	public loadingUIBackgroundColor: string
-	constructor (public loadingUIText: string) {
-		this.loadingUIBackgroundColor = '#151729';
-	}
-
-	public displayLoadingUI () {
-		// create a loading screen UI
-		const loadingScreenDiv = document.createElement('div');
-		loadingScreenDiv.style.width = '100%';
-		loadingScreenDiv.style.height = '100%';
-		loadingScreenDiv.style.backgroundColor = this.loadingUIBackgroundColor;
-		loadingScreenDiv.style.color = 'white';
-		loadingScreenDiv.style.position = 'absolute';
-		loadingScreenDiv.style.top = '0';
-		loadingScreenDiv.style.left = '0';
-		loadingScreenDiv.style.display = 'flex';
-		loadingScreenDiv.style.justifyContent = 'center';
-		loadingScreenDiv.style.alignItems = 'center';
-		loadingScreenDiv.style.zIndex = '1000';
-		// loadingScreenDiv.innerHTML = this.loadingUIText;
-		document.body.appendChild(loadingScreenDiv);
-		// Give it the #loadingScreenDiv id
-		loadingScreenDiv.id = 'loadingScreenDiv';
-		// Use keyframes to fade in the loading screen
-		// First, create a style element
-		const style = document.createElement('style');
-		style.innerHTML = `
-			@keyframes fadeIn {
-				from {
-					opacity: 0;
-				}
-				to {
-					opacity: 1;
-				}
-				`;
-		loadingScreenDiv.appendChild(style);
-		loadingScreenDiv.style.animation = 'fadeIn 1s';
-	}
-
-	public hideLoadingUI () {
-		// remove loading screen UI
-		const loadingScreenDiv = document.querySelector('#loadingScreenDiv');
-		if (loadingScreenDiv) {
-			// First, transition the opacity to 0
-			// Use keyframe animations
-			// To do this, we need to create a style element
-			const style = document.createElement('style');
-			style.innerHTML = `
-				@keyframes fadeOut {
-					from {
-						opacity: 1;
-					}
-					to {
-						opacity: 0;
-					}
-				}
-			`;
-			loadingScreenDiv.appendChild(style);
-			// @ts-expect-error - style is an element of loadingScreenDiv
-			loadingScreenDiv.style.animation = 'fadeOut 1s';
-			// When the animation is done, remove the element
-			loadingScreenDiv.addEventListener('animationend', () => {
-				if (loadingScreenDiv) {
-					loadingScreenDiv.remove();
-				}
-			});
-		}
-	}
-}
-
-let canvas: OffscreenCanvas;
-let context: OffscreenCanvasRenderingContext2D | null;
-interface FontOffset {
-	ascent: number
-	height: number
-	descent: number
-}
-
-const getFontOffset = (font: string): FontOffset => {
-	if (!canvas || !context) {
-		canvas = new OffscreenCanvas(64, 64);
-		context = canvas.getContext('2d');
-		if (!context) {
-			throw new Error('2D context in offscreen not available!')
-		}
-	}
-
-	context.font = font;
-	context.textBaseline = 'alphabetic';
-	const descent = context.measureText('Hg').actualBoundingBoxDescent;
-	context.textBaseline = 'bottom';
-	const ascent = context.measureText('Hg').actualBoundingBoxAscent;
-	return { ascent, height: ascent + descent, descent };
-}
-
-const patchEngine = (engine: Engine) => {
-	engine.getFontOffset = getFontOffset;
-}
+import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
+import CustomLoadingScreen from './loadingScreen';
+import patchEngine from './fixFont';
 
 enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
 // eslint-disable-next-line import/prefer-default-export
@@ -155,6 +51,9 @@ export class Game {
 	private _engine: Engine;
 	private _rapierWorker: rapierWorkerType;
 	private _navigationToLoad: string;
+	private _savegame: Savegame;
+	private _saveSlotNum: number;
+	private _loadedSaveSlot: SaveSlot;
 
 	// Game State Related
 	// public assets;
@@ -177,6 +76,9 @@ export class Game {
 	// private _transition: boolean = false;
 
 	constructor (canvas: HTMLCanvasElement | OffscreenCanvas, navigationToLoad: string, rapierWorker: rapierWorkerType) {
+		this._savegame = SavegameManager.load() ?? new SavegameManager('Unnamed')
+		this._saveSlotNum = this._savegame.lastSaveSlot
+		this._loadedSaveSlot = SavegameManager.loadSlot(this._saveSlotNum, this._savegame)
 		this._navigationToLoad = navigationToLoad;
 		this._rapierWorker = rapierWorker;
 		this._canvas = canvas as HTMLCanvasElement;
@@ -184,10 +86,6 @@ export class Game {
 		if (canvas instanceof OffscreenCanvas) {
 			patchEngine(this._engine);
 		}
-		this._init();
-	}
-
-	private async _init (): Promise<void> {
 		//* *for development: make inspector visible/invisible
 		if (canvas instanceof HTMLCanvasElement) {
 			window.addEventListener('keydown', (event_) => {
@@ -201,6 +99,10 @@ export class Game {
 				}
 			});
 		}
+		this._init();
+	}
+
+	private _init = async (): Promise<void> => {
 		// Add resize listener
 		window.addEventListener('resize', () => {
 			this._engine.resize();
@@ -211,7 +113,7 @@ export class Game {
 	}
 
 	// eslint-disable-next-line require-await
-	private async _main (): Promise<void> {
+	private _main = async (): Promise<void> => {
 		this._engine.runRenderLoop(() => {
 			if (this._activeScene) {
 				try {
@@ -223,7 +125,7 @@ export class Game {
 		});
 	}
 
-	private async _goToStart () {
+	private _goToStart = async () => {
 		const loadingScreen = new CustomLoadingScreen('Loading...')
 		this._engine.loadingScreen = loadingScreen;
 		this._engine.loadingScreen.loadingUIBackgroundColor = '#151729';
@@ -238,7 +140,19 @@ export class Game {
 		const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
 		mainMenuUI.layer!.layerMask = 0x10000000;
 		mainMenuUI.idealHeight = 720;
-		const createControl = (label: string, position: number, action?: (scene: Scene) => void) => {
+		// Create a game title text
+		// It'll be big, bold, and white
+		// Center it horizontally and place it middle-top of the screen
+		const title = new TextBlock();
+		title.text = 'Game Title';
+		title.color = 'white';
+		title.fontSize = 100;
+		title.fontFamily = 'Viga';
+		title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
+		title.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
+		title.top = '100px';
+		mainMenuUI.addControl(title);
+		const createControl = (label: string, position: number, action?: () => void) => {
 			const button = Button.CreateSimpleButton(label.toLocaleLowerCase.toString(), label);
 			// button.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
 			button.top = `${position}px`;
@@ -258,33 +172,21 @@ export class Game {
 				button.background = 'black';
 			});
 			if (action) {
-				button.onPointerDownObservable.add(() => action(this._uiScene!));
+				button.onPointerDownObservable.add(() => action());
 			}
 			mainMenuUI.addControl(button);
 		}
 		createControl('CONTINUE', -70, this._goToGame);
-		createControl('NEW GAME', -35);
-		createControl('LOAD GAME', 0);
+		createControl('NEW GAME', -35, this._createNewSave);
+		createControl('LOAD GAME', 0, this._loadSavegame);
 		createControl('OPTIONS', 35);
 		createControl('CREDITS', 70);
-		// Create a game title text
-		// It'll be big, bold, and white
-		// Center it horizontally and place it middle-top of the screen
-		const title = new TextBlock();
-		title.text = 'Game Title';
-		title.color = 'white';
-		title.fontSize = 100;
-		title.fontFamily = 'Viga';
-		title.textHorizontalAlignment = Control.HORIZONTAL_ALIGNMENT_CENTER;
-		title.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
-		title.top = '100px';
-		mainMenuUI.addControl(title);
 		this._activeScene = this._uiScene;
 		this._engine.hideLoadingUI();
 		this._setUpGame();
 	}
 
-	private async _setUpGame () {
+	private _setUpGame = async () => {
 		this._gamescene = new Scene(this._engine);
 		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._gamescene);
 		const UICam = createUICamera(this._canvas, this._gamescene);
@@ -315,11 +217,11 @@ export class Game {
 		return Promise.resolve();
 	}
 
-	private async _goToGame (activeScene: Scene) {
-		activeScene.removeCamera(activeScene.activeCameras![0]);
+	private _goToGame = async () => {
+		this._activeScene!.removeCamera(this._activeScene!.activeCameras![0]);
 		console.log('go to game')
 		this._gamescene = new Scene(this._engine);
-		try { activeScene.detachControl() } catch (error) { }
+		try { this._activeScene!.detachControl() } catch (error) { }
 		if (this._gamescene) {
 			// INPUT
 			// this._input = new PlayerInput(scene, this._ui);
@@ -344,8 +246,56 @@ export class Game {
 		} else {
 			await this._setUpGame();
 			// await this._gamescene!.whenReadyAsync();
-			await this._goToGame(activeScene);
+			await this._goToGame();
 		}
 		return Promise.resolve();
+	}
+
+	private _createNewSave = () => {
+		this._savegame = new SavegameManager('Unnamed');
+		return SavegameManager.saveSlot(0, this._loadedSaveSlot, this._savegame);
+	}
+
+	private _createNewSaveSlot = () => {
+		try {
+			// Find out how many slots our save has
+			// If it's less than three, we can make a new one
+			// Otherwise, we can't
+			const saveSlots = Object.keys(this._savegame.saveSlot);
+			if (saveSlots.length < 3) {
+				const newSlotNumber = saveSlots.length + 1;
+				this._saveSlotNum = newSlotNumber;
+				this._loadedSaveSlot = this._savegame.saveSlot[newSlotNumber];
+				this._savegame = SavegameManager.newSaveSlot(
+					`Unnamed ${newSlotNumber}`,
+					newSlotNumber,
+					this._savegame,
+				);
+				this._saveCurrentSlot();
+			} else {
+				window.alert('You can only have three save slots at a time. Delete one to make room for a new one.')
+			}
+		} catch (error) { console.log('could not create new saveslot') }
+	}
+
+	private _saveCurrentSlot = () => {
+		try {
+			SavegameManager.saveSlot(this._saveSlotNum, this._loadedSaveSlot, this._savegame);
+		} catch (error) { console.log('could not savegame') }
+	}
+
+	private _loadSavegame = () => {
+		try {
+			this._savegame = SavegameManager.load() ?? this._createNewSave();
+			this._loadSaveSlot(this._saveSlotNum);
+		} catch (error) { console.log('no savegame found') }
+	}
+
+	private _loadSaveSlot = (slotNumber?: number) => {
+		try {
+			this._saveSlotNum = slotNumber ?? this._savegame.lastSaveSlot;
+			this._loadedSaveSlot = SavegameManager.loadSlot(this._saveSlotNum, this._savegame);
+			return this._loadedSaveSlot;
+		} catch (error) { console.log('no saveslot found') }
 	}
 }
