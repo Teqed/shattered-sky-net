@@ -4,16 +4,14 @@ import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { Color3 } from '@babylonjs/core/Maths/math.color';
 import { Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import '@babylonjs/core/Materials/Textures/baseTexture';
 // @ts-ignore
-import checkPattern from '../../../assets/textures/checker.png';
-// @ts-ignore
 import amigaPattern from '../../../assets/textures/mygrid.jpg';
 import '@babylonjs/core/Rendering/edgesRenderer'
-// import shadows
 
-export default (scene: Scene, _rapierWorker: rapierWorkerType, shadows) => {
+export default (scene: Scene, _rapierWorker: rapierWorkerType, shadows: ShadowGenerator) => {
 	// Create a ground, and place a box on it
 	// Create a rapier physics body too
 	const ground = MeshBuilder.CreateBox('ground', { width: 3, height: 0.01, depth: 3 }, scene);
@@ -127,10 +125,12 @@ export default (scene: Scene, _rapierWorker: rapierWorkerType, shadows) => {
 		crystal.rotate(new Vector3(0, 1, 0), Math.PI / 360);
 	});
 
-	shadows.getShadowMap().renderList.push(ground);
-	shadows.getShadowMap().renderList.push(box);
-	shadows.getShadowMap().renderList.push(box2);
-	shadows.getShadowMap().renderList.push(crystal);
+	try {
+		shadows.getShadowMap()?.renderList?.push(ground);
+		shadows.getShadowMap()?.renderList?.push(box);
+		shadows.getShadowMap()?.renderList?.push(box2);
+		shadows.getShadowMap()?.renderList?.push(crystal);
+	} catch (error) { }
 	ground.receiveShadows = true;
 	box.receiveShadows = true;
 	box2.receiveShadows = true;

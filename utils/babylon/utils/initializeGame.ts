@@ -145,11 +145,6 @@ export class Game {
 		this._engine.loadingScreen = loadingScreen;
 		this._engine.loadingScreen.loadingUIBackgroundColor = '#151729';
 		this._engine.displayLoadingUI();
-		// Remove HTML element named "header"
-		const header = document.querySelector('#header');
-		if (header) {
-			header.remove();
-		}
 		try { this._uiScene?.dispose(); } catch (error) { }
 		this._uiScene = undefined;
 		this._uiScene = new Scene(this._engine);
@@ -220,35 +215,8 @@ export class Game {
 
 	private _setUpGame = async () => {
 		this._gamescene = new Scene(this._engine);
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._gamescene);
-		const UICam = createUICamera(this._canvas, this._gamescene);
-		this._gamescene.activeCameras = [gameCam, UICam];
-		// const objects = await initializeGame(this._scene, this._rapierWorker);
-		// startEveryFrame(this._scene, objects, this._rapierWorker);
-		const world = await this._rapierWorker.startPhysics();
-		world.gravity = { x: 0, y: -9.81, z: 0 };
 
-		// SOUNDS
-		// this._loadSounds(scene);
-
-		// CREATE ENVIRONMENT
-		// const environment = new Environment(scene);
-		// this._environment = environment;
-		// Load environment and character assets
-		// await this._environment.load();
-		// await this._loadCharacterAssets(scene);
-
-		// Create the player
-		// this._player = new Player(this.assets, scene, shadowGenerator);
-
-		// GAME LOOP
-		// scene.onBeforeRenderObservable.add(() => {
-		// 	// Loop
-		// });
-		// resolve promise
-
-		createStarterSelection(this._gamescene);
+		await createStarterSelection(this._gamescene, this._canvas, this._rapierWorker);
 
 		return Promise.resolve();
 	}
