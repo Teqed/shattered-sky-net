@@ -86,7 +86,8 @@ export class Game {
 	// *** *** CONSTRUCTOR *** ***
 	// *** *** *** *** *** *** ***
 
-	constructor (canvas: HTMLCanvasElement | OffscreenCanvas, navigationToLoad: string, rapierWorker: rapierWorkerType) {
+	constructor (canvas: HTMLCanvasElement | OffscreenCanvas,
+		navigationToLoad: string, rapierWorker: rapierWorkerType) {
 		this._savegame = this._loadSavegame()
 		this._saveSlotNum = this._savegame.lastSaveSlot
 		this._loadedSaveSlot = SavegameManager.loadSlot(this._saveSlotNum, this._savegame)
@@ -148,8 +149,11 @@ export class Game {
 		try { this._uiScene?.dispose(); } catch (error) { }
 		this._uiScene = undefined;
 		this._uiScene = new Scene(this._engine);
-		const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(this._canvas, this._uiScene);
-		titleScreenBackground(this._uiScene, this._rapierWorker, shadowGenerator);
+		const {	camera: gameCam,
+			shadows: shadowGenerator } = await createPixelCamera(this._canvas,
+			this._uiScene);
+		titleScreenBackground(this._uiScene,
+			this._rapierWorker, shadowGenerator);
 		const UICam = createUICamera(this._canvas, this._uiScene);
 		this._uiScene.activeCameras = [gameCam, UICam];
 		const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
@@ -167,9 +171,12 @@ export class Game {
 		title.textVerticalAlignment = Control.VERTICAL_ALIGNMENT_TOP;
 		title.top = '100px';
 		mainMenuUI.addControl(title);
-		const createControl = (label: string, position: number, action?: () => void, disable?: boolean) => {
-			const button = Button.CreateSimpleButton(label.toLocaleLowerCase.toString(), label);
-			// button.verticalAlignment = Control.VERTICAL_ALIGNMENT_BOTTOM;
+		const createControl = (label: string,
+			position: number, action?: () => void,
+			disable?: boolean) => {
+			const button = Button.CreateSimpleButton(
+				label.toLocaleLowerCase.toString(),
+				label);
 			button.top = `${position}px`;
 			button.fontFamily = 'Viga';
 			button.width = 0.2
@@ -195,9 +202,7 @@ export class Game {
 			}
 			mainMenuUI.addControl(button);
 		}
-		// Check if there is a save slot
 		const newGameBoo = () => {
-			// If the loaded savegame has any name other than 'Unnamed', then it's a valid save slot
 			if (this._loadedSaveSlot.name !== 'Unnamed') {
 				return false;
 			}
@@ -216,7 +221,8 @@ export class Game {
 	private _setUpGame = async () => {
 		this._gamescene = new Scene(this._engine);
 
-		await createStarterSelection(this._gamescene, this._canvas, this._rapierWorker);
+		await createStarterSelection(this._gamescene,
+			this._canvas, this._rapierWorker);
 
 		return Promise.resolve();
 	}
@@ -288,14 +294,16 @@ export class Game {
 					window.alert('Save slot not created.')
 				}
 			} else {
-				window.alert('You can only have three save slots at a time. Delete one to make room for a new one.')
+				window.alert(`You can only have three save slots at a time.
+					Delete one to make room for a new one.`)
 			}
 		} catch (error) { console.log('could not create new saveslot') }
 	}
 
 	private _saveCurrentSlot = () => {
 		try {
-			SavegameManager.saveSlot(this._saveSlotNum, this._loadedSaveSlot, this._savegame);
+			SavegameManager.saveSlot(
+				this._saveSlotNum, this._loadedSaveSlot, this._savegame);
 		} catch (error) { console.log('could not savegame') }
 	}
 
