@@ -32,9 +32,9 @@ import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
 // ! Debugger
-import '@babylonjs/core/Debug/debugLayer';
+// import '@babylonjs/core/Debug/debugLayer';
 // ! Inspector
-import '@babylonjs/inspector';
+// import '@babylonjs/inspector';
 // import '@babylonjs/loaders/glTF';
 import titleScreenBackground from './titleScreenBackground';
 import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
