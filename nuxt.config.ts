@@ -26,6 +26,7 @@ export default defineNuxtConfig({
 				noImplicitOverride: true,
 				// noPropertyAccessFromIndexSignature: true,
 				noUncheckedIndexedAccess: true,
+				experimentalDecorators: true,
 			},},
 	},
 	css: [
