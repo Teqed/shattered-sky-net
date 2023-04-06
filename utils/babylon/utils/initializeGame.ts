@@ -40,7 +40,7 @@ import titleScreenBackground from './titleScreenBackground';
 import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
 import CustomLoadingScreen from './loadingScreen';
 import patchEngine from './fixFont';
-import createStarterSelection from './starterSelection';
+import createStarterSelection from './startSystems';
 // *** *** *** *** *** *** ***
 // *** *** END IMPORTS *** ***
 // *** *** *** *** *** *** ***

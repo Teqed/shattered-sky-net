@@ -72,8 +72,6 @@ export default async (scene: Scene) => {
 	}
 	@component class CombatDisabled {
 	}
-	@component class BelongsToCollection {
-	}
 	@component class RestingInCollection {
 	}
 	@component class MoveFromCollectionIntoCombat {
@@ -103,9 +101,9 @@ export default async (scene: Scene) => {
 			}
 		}
 	}
-	@component class ArchetypeCombatParticipant {
+	@component class ArchetypeCombatMonster {
 		static validate (entity: Entity): void {
-			if (entity.has(ArchetypeCombatParticipant)) {
+			if (entity.has(ArchetypeCombatMonster)) {
 				if (entity.has(Health) === false) {
 					throw new Error('ArchetypeCombatParticipant must have Health');
 				}
@@ -115,8 +113,14 @@ export default async (scene: Scene) => {
 				if (entity.has(Speed) === false) {
 					throw new Error('ArchetypeCombatParticipant must have Speed');
 				}
-				if (entity.has(Team) === false) {
-					throw new Error('ArchetypeCombatParticipant must have Team');
+			}
+		}
+	}
+	@component class ArchetypeCollectedMonster {
+		static validate (entity: Entity): void {
+			if (entity.has(ArchetypeCollectedMonster)) {
+				if (entity.has(RestingInCollection) === false && entity.has(ArchetypeCombatMonster) === false) {
+					throw new Error('ArchetypeCollectedMonster must have RestingInCollection or ArchetypeCombatMonster');
 				}
 			}
 		}
@@ -141,12 +145,12 @@ export default async (scene: Scene) => {
 	@system(s => s.after(ListenForSpace)) class MoveIntoCombat extends System {
 		entities = this.query(q => q.current
 			.with(MoveFromCollectionIntoCombat).write
-			.using(ArchetypeCombatParticipant, Position).write);
+			.using(ArchetypeCombatMonster, Position).write);
 
 		override execute () {
 			for (const entity of this.entities.current) {
 				entity.remove(MoveFromCollectionIntoCombat);
-				entity.add(ArchetypeCombatParticipant);
+				entity.add(ArchetypeCombatMonster);
 				// Generate a random position for the entity
 				entity.add(Position);
 				const position = entity.write(Position);
@@ -157,7 +161,7 @@ export default async (scene: Scene) => {
 	@system(s => s.after(MoveIntoCombat)) class EnergySystem extends System {
 		entities = this.query(q => q.current
 			.with(Speed, Energy).write
-			.with(ArchetypeCombatParticipant)
+			.with(ArchetypeCombatMonster)
 			.without(ActionReady).write
 			.without(CombatDisabled));
 
@@ -203,11 +207,11 @@ export default async (scene: Scene) => {
 		// First, query new entities with ActionReady.
 		private readyEntities = this.query(q => q.added
 			.with(ActionReady).write
-			.with(Team, QueuedAction, Attack, ArchetypeCombatParticipant)
+			.with(Team, QueuedAction, Attack, ArchetypeCombatMonster)
 			.without(CombatDisabled));
 
 		private combatants = this.query(q => q.current
-			.with(Team, Health, ArchetypeCombatParticipant)
+			.with(Team, Health, ArchetypeCombatMonster)
 			.without(CombatDisabled)
 			.using(IncomingDamage).write);
 
@@ -243,7 +247,7 @@ export default async (scene: Scene) => {
 		// First, query new entities with IncomingDamage.
 		private incomingDamageEntities = this.query(q => q.added
 			.with(IncomingDamage, Health, Position).write
-			.with(ArchetypeCombatParticipant)
+			.with(ArchetypeCombatMonster)
 			.without(CombatDisabled).write);
 
 		override execute () {
@@ -265,13 +269,13 @@ export default async (scene: Scene) => {
 		// This runs when all entities on the Foe team have been disabled.
 		// It removes all entities from the scene except for the ones that belong to the collection.
 		private activeCombatants = this.query(q => q.current
-			.with(ArchetypeCombatParticipant)
+			.with(ArchetypeCombatMonster)
 			.without(CombatDisabled)
 			.using(Team).read);
 
 		private defeatedFoes = this.query(q => q.current
-			.with(ArchetypeCombatParticipant)
-			.without(BelongsToCollection)
+			.with(ArchetypeCombatMonster)
+			.without(ArchetypeCollectedMonster)
 			.using(Position).write
 			.usingAll.write);
 
@@ -301,7 +305,7 @@ export default async (scene: Scene) => {
 			Team, { value: 'Foe' },
 			Attack, { value: 10 },
 			Health, { value: 100 },
-			ArchetypeCombatParticipant
+			ArchetypeCombatMonster
 		);
 	};
 	for (let index = 0; index < 5; index++) {
@@ -312,7 +316,7 @@ export default async (scene: Scene) => {
 			Team, { value: 'Friend' },
 			Attack, { value: 10 },
 			Health, { value: 100 },
-			BelongsToCollection,
+			ArchetypeCollectedMonster,
 			RestingInCollection
 		);
 		createRandomMonster();

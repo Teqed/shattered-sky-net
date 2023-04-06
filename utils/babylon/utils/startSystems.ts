@@ -2,7 +2,7 @@ import { type Scene } from '@babylonjs/core/scene';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createUICamera from './createUICamera';
 import createPixelCamera from './createPixelCamera';
-import createStartersBecsy from './createStartersBecsy';
+import createStartersBecsy from './mainSystem';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	createStartersBecsy(scene);
