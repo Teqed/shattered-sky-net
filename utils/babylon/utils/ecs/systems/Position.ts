@@ -5,7 +5,7 @@ import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
 import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { type Scene } from '@babylonjs/core/scene';
 // @ts-ignore
-import amigaPattern from '../../../../assets/textures/mygrid.jpg';
+import amigaPattern from '../../../../../assets/textures/mygrid.jpg';
 import * as Component from '../components';
 
 export default (afterSystem: SystemGroup | SystemType<System>, scene: Scene) => {
