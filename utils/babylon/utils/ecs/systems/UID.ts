@@ -1,5 +1,5 @@
 import { system, System } from '@lastolivegames/becsy';
-import * as Component from '../components';
+import * as Component from '../components/components';
 export default () => {
 	@system class UIDSystem extends System {
 		unassignedEntities = this.query(q => q.current.without(Component.UID).write);

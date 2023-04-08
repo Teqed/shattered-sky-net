@@ -6,7 +6,7 @@ import { MeshBuilder } from '@babylonjs/core/Meshes/meshBuilder';
 import { type Scene } from '@babylonjs/core/scene';
 // @ts-ignore
 import amigaPattern from '../../../../../assets/textures/mygrid.jpg';
-import * as Component from '../components';
+import * as Component from '../components/components';
 
 export default (afterSystem: SystemGroup | SystemType<System>, scene: Scene) => {
 	// *** Setup texture ***
@@ -17,8 +17,8 @@ export default (afterSystem: SystemGroup | SystemType<System>, scene: Scene) => 
 	const checkeredMaterial = new StandardMaterial('newMaterial', scene);
 	checkeredMaterial.diffuseTexture = amigaTexture;
 	@system(s => s.after(afterSystem)) class PositionSystem extends System {
-		entitiesEntered = this.query(q => q.added.with(Component.Position, Component.UID));
-		entitiesExited = this.query(q => q.removed.with(Component.Position, Component.UID));
+		entitiesEntered = this.query(q => q.added.with(Component.Monster.Combat.Position, Component.UID));
+		entitiesExited = this.query(q => q.removed.with(Component.Monster.Combat.Position, Component.UID));
 		// entitiesChanged = this.query(q => q.changed.with(Position, UID));
 
 		override execute () {
@@ -29,7 +29,7 @@ export default (afterSystem: SystemGroup | SystemType<System>, scene: Scene) => 
 			}
 			for (const entity of this.entitiesEntered.added) {
 				console.log(`Entity with ordinal ${entity.ordinal} has gained position!`);
-				const position = entity.read(Component.Position);
+				const position = entity.read(Component.Monster.Combat.Position);
 				const uid = entity.read(Component.UID).value;
 				try { const meshOld = scene.getMeshByUniqueId(uid); meshOld?.dispose(); } catch (error) { }
 				const mesh = MeshBuilder.CreateSphere('sphere', { diameter: 1 }, scene);

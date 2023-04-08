@@ -1,9 +1,9 @@
 import { type Scene } from '@babylonjs/core/scene';
-import { system, System, World } from '@lastolivegames/becsy';
+import { World } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../../worker/rapier-wrap';
 import createUICamera from '../createUICamera';
 import createPixelCamera from '../createPixelCamera';
-import * as Component from './components';
+import * as Component from './components/components';
 import initializeUIDSystem from './systems/UID';
 import initializeInputSystem from './systems/Input';
 import initializeMoveIntoCombatSystem from './systems/MoveIntoCombat';
@@ -126,28 +126,28 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const createRandomMonster = () => {
 		world.createEntity(
-			Component.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
-			Component.Speed, { value: Math.random() * 100, baseValue: 100 },
-			Component.Energy, { value: 0 },
-			Component.QueuedAction, { value: 'AttackEnemies' },
-			Component.Team, { value: 'Foe' },
-			Component.Attack, { value: 10, baseValue: 10 },
-			Component.Health, { value: 100, baseValue: 100 },
-			Component.ArchetypeMonster,
-			Component.ArchetypeCombatMonster
+			Component.Monster.Combat.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
+			Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
+			Component.Monster.Combat.Energy, { value: 0 },
+			Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
+			Component.Monster.Team, { value: 'Foe' },
+			Component.Monster.Attack, { value: 10, baseValue: 10 },
+			Component.Monster.Health, { value: 100, baseValue: 100 },
+			Component.Monster.ArchetypeMonster,
+			Component.Monster.Combat.ArchetypeCombatMonster
 		);
 	};
 	for (let index = 0; index < 5; index++) {
 		world.createEntity(
-			Component.Speed, { value: Math.random() * 100, baseValue: 100 },
-			Component.Energy, { value: 0 },
-			Component.QueuedAction, { value: 'AttackEnemies' },
-			Component.Team, { value: 'Friend' },
-			Component.Attack, { value: 10, baseValue: 10 },
-			Component.Health, { value: 100, baseValue: 100 },
-			Component.ArchetypeMonster,
-			Component.ArchetypeCollectedMonster,
-			Component.RestingInCollection
+			Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
+			Component.Monster.Combat.Energy, { value: 0 },
+			Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
+			Component.Monster.Team, { value: 'Friend' },
+			Component.Monster.Attack, { value: 10, baseValue: 10 },
+			Component.Monster.Health, { value: 100, baseValue: 100 },
+			Component.Monster.ArchetypeMonster,
+			Component.Monster.Collection.ArchetypeCollectedMonster,
+			Component.Monster.Collection.RestingInCollection
 		);
 		createRandomMonster();
 	}

@@ -1,28 +1,28 @@
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
-import * as Component from '../components';
+import * as Component from '../components/components';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class CleanupCombatScene extends System {
 	// This runs when all entities on the Foe team have been disabled.
 	// It removes all entities from the scene except for the ones that belong to the collection.
 		private activeCombatants = this.query(q => q.current
-			.with(Component.ArchetypeCombatMonster)
-			.without(Component.CombatDisabled)
-			.using(Component.Team).read);
+			.with(Component.Monster.Combat.ArchetypeCombatMonster)
+			.without(Component.Monster.Combat.CombatDisabled)
+			.using(Component.Monster.Team).read);
 
 		private defeatedFoes = this.query(q => q.current
-			.with(Component.ArchetypeCombatMonster)
-			.without(Component.ArchetypeCollectedMonster)
-			.using(Component.Position).write
+			.with(Component.Monster.Combat.ArchetypeCombatMonster)
+			.without(Component.Monster.Collection.ArchetypeCollectedMonster)
+			.using(Component.Monster.Combat.Position).write
 			.usingAll.write);
 
 		override execute () {
-			const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Team).value === 'Foe');
+			const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Foe');
 			if (allFoesDisabled) {
 				console.log('All foes have been disabled. Cleaning up combat scene.');
 				window.alert('Victory! All foes have been defeated.');
 				for (const entity of this.defeatedFoes.current) {
 				// Remove them from the battlefield by removing their position.
-					entity.remove(Component.Position);
+					entity.remove(Component.Monster.Combat.Position);
 					// Remove the entity from the world.
 					entity.delete();
 				}
