@@ -5,4 +5,7 @@ import _Monster from './monster/monster';
 @component export class UID {
 	@field.int32 declare value: number;
 }
+@component export class Global {
+	@field.uint8 declare value: number;
+}
 export const Monster = _Monster;

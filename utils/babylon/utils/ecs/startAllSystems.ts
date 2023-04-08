@@ -12,6 +12,7 @@ import intializeActionSystem from './systems/Action';
 import initializePositionSystem from './systems/Position';
 import initializeDamageSystem from './systems/Damage';
 import initializeCleanupCombatSceneSystem from './systems/CleanupCombatScene';
+import initializeSaveGameSystem from './systems/SaveGame';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
@@ -22,8 +23,9 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const PositionSystem = initializePositionSystem(ActionSystem, scene);
 	const DamageSystem = initializeDamageSystem(ActionSystem);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const CleanupCombatSceneSystem = initializeCleanupCombatSceneSystem(DamageSystem);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const SaveGameSystem = initializeSaveGameSystem(CleanupCombatSceneSystem);
 
 	interface EntityData {
 		UID: {
