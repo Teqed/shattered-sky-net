@@ -19,6 +19,7 @@ module.exports = {
 	},
 	rules: {
 	// Enforce tabs over spaces
+		'no-empty': 'warn',
 		'@typescript-eslint/indent': ['warn', 'tab'],
 		'@typescript-eslint/no-unused-vars': 'warn',
 		'vue/html-end-tags': 'off',

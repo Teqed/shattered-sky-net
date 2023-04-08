@@ -1,34 +1,10 @@
 import { Scene } from '@babylonjs/core/scene';
-// import { CreateIcoSphere } from '@babylonjs/core/Meshes/Builders/icoSphereBuilder';
-// import { Vector3, Matrix } from '@babylonjs/core/Maths/math.vector';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
-// import { StandardMaterial } from '@babylonjs/core/Materials/standardMaterial';
-// import '@babylonjs/core/Physics/physicsEngineComponent'
-// import '@babylonjs/core/Helpers/sceneHelpers';
-// import { Mesh } from '@babylonjs/core/Meshes/mesh';
-// import {
-// 	createWorld,
-// 	addEntity,
-// 	removeEntity,
-// 	Types,
-// 	defineComponent,
-// 	addComponent,
-// 	removeComponent,
-// 	hasComponent,
-// 	defineQuery,
-// 	Changed,
-// 	Not,
-// 	enterQuery,
-// 	exitQuery,
-// 	defineSerializer,
-// 	defineDeserializer,
-// 	pipe,
-// } from 'bitecs'
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Control } from '@babylonjs/gui/2D/controls/control';
+import { type World } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
-// import { setMatricesSize } from '../../nbody/everyFrame';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
 // ! Debugger
@@ -40,7 +16,7 @@ import titleScreenBackground from './titleScreenBackground';
 import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
 import CustomLoadingScreen from './loadingScreen';
 import patchEngine from './fixFont';
-import createStarterSelection from './startSystems';
+import createWorld from './ecs/startSystems';
 // *** *** *** *** *** *** ***
 // *** *** END IMPORTS *** ***
 // *** *** *** *** *** *** ***
@@ -63,24 +39,10 @@ export class Game {
 	private _loadedSaveSlot: SaveSlot;
 
 	// Game State Related
-	// public assets;
-	// private _input: PlayerInput;
-	// private _player: Player;
-	// private _ui: Hud;
-	// private _environment;
-
-	// Sounds
-	// public sfx: Sound;
-	// public music: Sound;
-
-	// Scene - related
-	// private _objects: Mesh;
 	private _state = 0;
 	private _gamescene: Scene | undefined;
+	private _world: World | undefined;
 	// private _cutscene: Scene;
-
-	// post process
-	// private _transition: boolean = false;
 
 	// *** *** *** *** *** *** ***
 	// *** *** CONSTRUCTOR *** ***
@@ -118,6 +80,7 @@ export class Game {
 	// *** *** *** *** *** *** ***
 
 	private _init = async (): Promise<void> => {
+		this._world = await this._setUpGame();
 		this._saveCurrentSlot()
 		// Add resize listener
 		window.addEventListener('resize', () => {
@@ -139,6 +102,13 @@ export class Game {
 				}
 			}
 		});
+		setInterval(() => {
+			try {
+				this._world!.execute();
+			} catch (error) {
+				console.error(error);
+			}
+		}, 1000 / 4);
 	}
 
 	private _goToStart = async () => {
@@ -215,16 +185,13 @@ export class Game {
 		createControl('CREDITS', 70);
 		this._activeScene = this._uiScene;
 		this._engine.hideLoadingUI();
-		this._setUpGame();
 	}
 
 	private _setUpGame = async () => {
 		this._gamescene = new Scene(this._engine);
 
-		await createStarterSelection(this._gamescene,
+		return await createWorld(this._gamescene,
 			this._canvas, this._rapierWorker);
-
-		return Promise.resolve();
 	}
 
 	private _goToGame = async () => {

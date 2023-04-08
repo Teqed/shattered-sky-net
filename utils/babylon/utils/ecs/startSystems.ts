@@ -1,11 +1,11 @@
 import { type Scene } from '@babylonjs/core/scene';
-import { type rapierWorkerType } from '../../worker/rapier-wrap';
-import createUICamera from './createUICamera';
-import createPixelCamera from './createPixelCamera';
-import createStartersBecsy from './mainSystem';
+import { type rapierWorkerType } from '../../../worker/rapier-wrap';
+import createUICamera from '../createUICamera';
+import createPixelCamera from '../createPixelCamera';
+import startMainSystem from './mainSystem';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
-	createStartersBecsy(scene);
+	const world = startMainSystem(scene);
 	// *** Create some placeholder objects ***
 	// const amigaTexture = new Texture(amigaPattern, scene);
 	// amigaTexture.uScale = 3;
@@ -61,4 +61,5 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 		// shadowGenerator.getShadowMap()?.renderList?.push(box);
 		// shadowGenerator.getShadowMap()?.renderList?.push(cylinder);
 	} catch (error) { }
+	return world;
 };
