@@ -74,10 +74,6 @@ export class Game {
 					}
 				}
 			});
-			window.addEventListener('gameStateChange', (event_) => {
-				const { detail } = event_ as CustomEvent;
-				this._state = detail.gameState;
-			});
 		}
 		this._init();
 	}
@@ -95,6 +91,15 @@ export class Game {
 		// Add resize listener
 		window.addEventListener('resize', () => {
 			this._engine.resize();
+		});
+		window.addEventListener('gameStateChange', (event_) => {
+			const { detail } = event_ as CustomEvent;
+			this._state = detail.gameState;
+		});
+		window.addEventListener('save', (event) => {
+			const detail: string = (event as CustomEvent).detail;
+			this._loadedSaveSlot.saveData.systemsData = detail;
+			this._saveCurrentSlot();
 		});
 
 		await this._goToStart();
@@ -184,7 +189,7 @@ export class Game {
 			} catch (error) {
 				console.error(error);
 			}
-		}, 1000 / 4);
+		}, 1000 / 1);
 	}
 
 	private _goToStart = async () => {

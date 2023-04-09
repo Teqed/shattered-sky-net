@@ -237,33 +237,33 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const world = await World.create();
 
-	const createRandomMonster = () => {
-		world.createEntity(
-			// Component.Monster.Combat.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
-			Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
-			Component.Monster.Combat.Energy, { value: 0 },
-			Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
-			Component.Monster.Team, { value: 'Foe' },
-			Component.Monster.Attack, { value: 10, baseValue: 10 },
-			Component.Monster.Health, { value: 100, baseValue: 100 },
-			Component.Monster.ArchetypeMonster,
-			Component.Monster.Combat.TriggerMoveFromWildIntoCombat
-		);
-	};
-	for (let index = 0; index < 5; index++) {
-		world.createEntity(
-			Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
-			Component.Monster.Combat.Energy, { value: 0 },
-			Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
-			Component.Monster.Team, { value: 'Friend' },
-			Component.Monster.Attack, { value: 10, baseValue: 10 },
-			Component.Monster.Health, { value: 100, baseValue: 100 },
-			Component.Monster.ArchetypeMonster,
-			Component.Monster.Collection.ArchetypeCollectedMonster,
-			Component.Monster.Collection.RestingInCollection
-		);
-		createRandomMonster();
-	}
+	// const createRandomMonster = () => {
+	// 	world.createEntity(
+	// 		// Component.Monster.Combat.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
+	// 		Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
+	// 		Component.Monster.Combat.Energy, { value: 0 },
+	// 		Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
+	// 		Component.Monster.Team, { value: 'Foe' },
+	// 		Component.Monster.Attack, { value: 10, baseValue: 10 },
+	// 		Component.Monster.Health, { value: 100, baseValue: 100 },
+	// 		Component.Monster.ArchetypeMonster,
+	// 		Component.Monster.Combat.TriggerMoveFromWildIntoCombat
+	// 	);
+	// };
+	// for (let index = 0; index < 5; index++) {
+	// 	world.createEntity(
+	// 		Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
+	// 		Component.Monster.Combat.Energy, { value: 0 },
+	// 		Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
+	// 		Component.Monster.Team, { value: 'Friend' },
+	// 		Component.Monster.Attack, { value: 10, baseValue: 10 },
+	// 		Component.Monster.Health, { value: 100, baseValue: 100 },
+	// 		Component.Monster.ArchetypeMonster,
+	// 		Component.Monster.Collection.ArchetypeCollectedMonster,
+	// 		Component.Monster.Collection.RestingInCollection
+	// 	);
+	// 	createRandomMonster();
+	// }
 	// *** Create some placeholder objects ***
 	// const amigaTexture = new Texture(amigaPattern, scene);
 	// amigaTexture.uScale = 3;

@@ -2,7 +2,7 @@
 export interface SaveSlot {
 	name: string
 	saveData: {
-		testData: number
+		systemsData: string
 	},
 }
 
@@ -33,7 +33,7 @@ export class SavegameManager implements Savegame {
 	saveSlot: {
 		name: string
 		saveData: {
-			testData: number
+			systemsData: string
 		},
 	}[]
 
@@ -46,7 +46,7 @@ export class SavegameManager implements Savegame {
 		this.saveSlot = [{
 			name,
 			saveData: {
-				testData: 0,
+				systemsData: '0',
 			},
 		}]
 	}
@@ -62,7 +62,7 @@ export class SavegameManager implements Savegame {
 				const newSave: SaveSlot = {
 					name,
 					saveData: {
-						testData: 1,
+						systemsData: '1',
 					},
 				}
 				saveGame.saveSlot[slotNumber] = newSave

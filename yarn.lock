@@ -2924,6 +2924,14 @@
   resolved "https://registry.npmjs.org/@stdlib/utils-noop/-/utils-noop-0.0.14.tgz"
   integrity sha512-A5faFEUfszMgd93RCyB+aWb62hQxgP+dZ/l9rIOwNWbIrCYNwSuL4z50lNJuatnwwU4BQ4EjQr+AmBsnvuLcyQ==
 
+"@stdlib/utils-parse-json@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@stdlib/utils-parse-json/-/utils-parse-json-0.0.8.tgz#c9da66010edd6d7427a35a5055599068affcf1e6"
+  integrity sha512-S5sjvdcUFctVrwGGKk0XDgiXz2ORdwCQ20Ngw88jyTWFI31TK8okZ0DctsbgnGadupXoSwkkopWqfXtgblF6Sw==
+  dependencies:
+    "@stdlib/assert-is-function" "^0.0.x"
+    "@stdlib/assert-is-string" "^0.0.x"
+
 "@stdlib/utils-regexp-from-string@^0.0.x":
   version "0.0.9"
   resolved "https://registry.npmjs.org/@stdlib/utils-regexp-from-string/-/utils-regexp-from-string-0.0.9.tgz"
