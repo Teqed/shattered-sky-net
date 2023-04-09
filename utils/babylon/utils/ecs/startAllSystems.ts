@@ -28,49 +28,159 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const SaveGameSystem = initializeSaveGameSystem(CleanupCombatSceneSystem);
 
-	interface EntityData {
-		UID: {
-			value: number;
-		},
-		Position: {
-			value: [number, number, number];
-		},
-		Speed: {
-			value: number;
-			baseValue: number;
-		},
-		Energy: {
-			value: number;
-		},
-		QueuedAction: {
-			value: string;
-		}
-		Team: {
-		// 'Foe', 'Friend', or 'Other'
-		// 0, 1, or 2
-			value: number;
-		},
-		Attack: {
-			value: number;
-			baseValue: number;
-		},
-		Health: {
-			value: number;
-			baseValue: number;
-		},
-		ArchetypeMonster: {
-			value: boolean;
-		},
-		ArchetypeCombatMonster: {
-			value: boolean;
-		},
-		ArchetypeCollectedMonster: {
-			value: boolean;
-		},
-		RestingInCollection: {
-			value: boolean;
-		},
-	}
+	// interface EntityData {
+	// 	UID: {
+	// 		value: number;
+	// 	},
+	// 	Team: {
+	// 	// 'Friend', 'Foe', or 'Other'
+	// 	// 0, 1, or 2
+	// 		value: number;
+	// 	},
+	// 	Health: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	},
+	// 	Attack: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	},
+	// 	Speed: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	},
+	// 	ArchetypeMonster: {
+	// 		value: boolean;
+	// 	},
+	// 	Collection?: {
+	// 		RestingInCollection: {
+	// 			value: boolean;
+	// 		},
+	// 		TriggerMoveFromCollectionIntoCombat: {
+	// 			value: boolean;
+	// 		},
+	// 		ArchetypeCollectedMonster: {
+	// 			value: boolean;
+	// 		},
+	// 	},
+	// 	Combat?: {
+	// 		Energy: {
+	// 			value: number;
+	// 		},
+	// 		ActionReady: {
+	// 			value: boolean;
+	// 		},
+	// 		QueuedAction: {
+	// 			value: string;
+	// 		},
+	// 		Position: {
+	// 			value: [number, number, number];
+	// 		},
+	// 		FriendlyPosition: {
+	// 			value: number;
+	// 		},
+	// 		EnemyPosition: {
+	// 			value: number;
+	// 		},
+	// 		ArchetypeCombatMonster: {
+	// 			value: boolean;
+	// 		},
+	// 		IncomingDamage: {
+	// 			value: number;
+	// 		},
+	// 		CombatDisabled: {
+	// 			value: boolean;
+	// 		},
+	// 		TriggerMoveFromWildIntoCombat: {
+	// 			value: boolean;
+	// 		},
+	// 	}
+	// }
+	// class MonsterEntity implements EntityData {
+	// 	UID: {
+	// 		value: number;
+	// 	};
+
+	// 	Team: {
+	// 	// 'Friend', 'Foe', or 'Other'
+	// 	// 0, 1, or 2
+	// 		value: number;
+	// 	};
+
+	// 	Health: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	};
+
+	// 	Attack: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	};
+
+	// 	Speed: {
+	// 		value: number;
+	// 		baseValue: number;
+	// 	};
+
+	// 	ArchetypeMonster: {
+	// 		value: boolean;
+	// 	} = { value: true };
+
+	// 	Collection?: {
+	// 		RestingInCollection: {
+	// 			value: boolean;
+	// 		},
+	// 		TriggerMoveFromCollectionIntoCombat: {
+	// 			value: boolean;
+	// 		},
+	// 		ArchetypeCollectedMonster: {
+	// 			value: boolean;
+	// 		},
+	// 	};
+
+	// 	Combat?: {
+	// 		Energy: {
+	// 			value: number;
+	// 		},
+	// 		ActionReady: {
+	// 			value: boolean;
+	// 		},
+	// 		QueuedAction: {
+	// 			value: string;
+	// 		},
+	// 		Position: {
+	// 			value: [number, number, number];
+	// 		},
+	// 		FriendlyPosition: {
+	// 			value: number;
+	// 		},
+	// 		EnemyPosition: {
+	// 			value: number;
+	// 		},
+	// 		ArchetypeCombatMonster: {
+	// 			value: boolean;
+	// 		},
+	// 		IncomingDamage: {
+	// 			value: number;
+	// 		},
+	// 		CombatDisabled: {
+	// 			value: boolean;
+	// 		},
+	// 		TriggerMoveFromWildIntoCombat: {
+	// 			value: boolean;
+	// 		},
+	// 	};
+
+	// 	constructor (entityData: EntityData) {
+	// 		this.UID = entityData.UID;
+	// 		this.Team = entityData.Team;
+	// 		this.Health = entityData.Health;
+	// 		this.Attack = entityData.Attack;
+	// 		this.Speed = entityData.Speed;
+	// 		this.Collection = entityData.Collection;
+	// 		this.Combat = entityData.Combat;
+	// 	}
+	// }
 	// @system(s => s.after(CleanupCombatScene)) class SerializeAllEntities extends System {
 	// 	// This system will serialize all entities to JSON.
 	// 	// First, query all entities.

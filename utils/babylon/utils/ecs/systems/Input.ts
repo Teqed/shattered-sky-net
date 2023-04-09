@@ -18,8 +18,11 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				}
 				if (event.code === 'KeyS') {
 					console.log('S pressed');
-					// Save the game by setting the global value to 1.
 					this.global.triggerSave = 1;
+				}
+				if (event.code === 'KeyL') {
+					console.log('L pressed');
+					this.global.triggerLoad = 1;
 				}
 				if (event.code === 'Digit0') {
 					console.log('0 pressed');
