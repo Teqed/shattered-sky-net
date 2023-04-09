@@ -3,7 +3,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Control } from '@babylonjs/gui/2D/controls/control';
-import { type World } from '@lastolivegames/becsy';
+import { System, type World } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
@@ -21,7 +21,7 @@ import createWorld from './ecs/startAllSystems';
 // *** *** END IMPORTS *** ***
 // *** *** *** *** *** *** ***
 
-enum State { START = 0, GAME = 1, LOSE = 2, CUTSCENE = 3 }
+enum State { Preload = -1, Title = 0, Combat = 1, Collection = 2, Cutscene = 3 }
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
 	// *** *** *** *** *** *** ***
@@ -39,9 +39,11 @@ export class Game {
 	private _loadedSaveSlot: SaveSlot;
 
 	// Game State Related
-	private _state = 0;
+	private _state: State = State.Title;
+	private _laststate: State = State.Preload;
 	private _gamescene: Scene | undefined;
 	private _world: World | undefined;
+	private _systems: any | undefined;
 	// private _cutscene: Scene;
 
 	// *** *** *** *** *** *** ***
@@ -72,6 +74,10 @@ export class Game {
 					}
 				}
 			});
+			window.addEventListener('gameStateChange', (event_) => {
+				const { detail } = event_ as CustomEvent;
+				this._state = detail.gameState;
+			});
 		}
 		this._init();
 	}
@@ -80,7 +86,11 @@ export class Game {
 	// *** *** *** *** *** *** ***
 
 	private _init = async (): Promise<void> => {
-		this._world = await this._setUpGame();
+		const game = await this._setUpGame();
+		const world = game.world;
+		const systems = game.systems;
+		this._world = world;
+		this._systems = systems;
 		this._saveCurrentSlot()
 		// Add resize listener
 		window.addEventListener('resize', () => {
@@ -103,6 +113,58 @@ export class Game {
 			}
 		});
 		setInterval(() => {
+			if (this._state !== this._laststate) {
+				switch (this._state) {
+					case State.Title:
+						this._world?.control({
+							stop: [
+								this._systems.InputSystem,
+								this._systems.MoveIntoCombatSystem,
+								this._systems.EnergySystem,
+								this._systems.ActionSystem,
+								this._systems.PositionSystem,
+								this._systems.DamageSystem,
+								this._systems.CleanupCombatSceneSystem,
+							],
+							restart: []
+						})
+						break;
+					case State.Combat:
+						this._world?.control({
+							stop: [],
+							restart: [
+								this._systems.InputSystem,
+								this._systems.MoveIntoCombatSystem,
+								this._systems.EnergySystem,
+								this._systems.ActionSystem,
+								this._systems.PositionSystem,
+								this._systems.DamageSystem,
+								this._systems.CleanupCombatSceneSystem,
+							]
+						})
+						break;
+					case State.Collection:
+						this._world?.control({
+							stop: [
+								this._systems.InputSystem,
+								this._systems.MoveIntoCombatSystem,
+								this._systems.EnergySystem,
+								this._systems.ActionSystem,
+								this._systems.PositionSystem,
+								this._systems.DamageSystem,
+								this._systems.CleanupCombatSceneSystem,
+							],
+							restart: []
+						})
+						console.warn('Collection not implemented yet')
+						break;
+					case State.Cutscene:
+					default:
+						break;
+				}
+				this._laststate = this._state;
+			}
+
 			try {
 				this._world!.execute();
 			} catch (error) {
@@ -204,7 +266,7 @@ export class Game {
 			await this._gamescene.whenReadyAsync();
 			this._activeScene = this._gamescene;
 			this._activeScene.attachControl();
-			this._state = State.GAME;
+			this._state = State.Combat;
 			// INPUT
 			// this._input = new PlayerInput(scene, this._ui);
 

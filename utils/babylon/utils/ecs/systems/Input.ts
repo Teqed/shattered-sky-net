@@ -19,7 +19,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				if (event.code === 'KeyS') {
 					console.log('S pressed');
 					// Save the game by setting the global value to 1.
-					this.global.value = 1;
+					this.global.triggerSave = 1;
+				}
+				if (event.code === 'KeyC') {
+					console.log('C pressed');
+					// Change the game state to 2 (collection).
+					this.global.gameState = 2;
 				}
 			});
 		}

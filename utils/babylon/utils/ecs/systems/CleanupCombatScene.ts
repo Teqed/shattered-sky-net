@@ -15,6 +15,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			.using(Component.Monster.Combat.Position).write
 			.usingAll.write);
 
+		private defeatedFriendly = this.query(q => q.current
+			.with(Component.Monster.Combat.ArchetypeCombatMonster)
+			.with(Component.Monster.Collection.ArchetypeCollectedMonster)
+			.using(Component.Monster.Combat.Position).write
+			.usingAll.write);
+
 		override execute () {
 			const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Foe');
 			if (allFoesDisabled) {
@@ -23,9 +29,34 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				for (const entity of this.defeatedFoes.current) {
 				// Remove them from the battlefield by removing their position.
 					entity.remove(Component.Monster.Combat.Position);
+					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
+						entity.remove(Component.Monster.Combat.EnemyPosition);
+					}
+					if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
+						entity.remove(Component.Monster.Combat.FriendlyPosition);
+					}
+					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
 					// Remove the entity from the world.
-					entity.delete();
+					// entity.delete();
 				}
+			}
+			const allFriendlyDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Friend');
+			if (allFriendlyDisabled) {
+				console.log('All friendly monsters have been disabled. Cleaning up combat scene.');
+				// window.alert('Defeat! All friendly monsters have been defeated.');
+				// for (const entity of this.defeatedFriendly.current) {
+				// // Remove them from the battlefield by removing their position.
+				// 	entity.remove(Component.Monster.Combat.Position);
+				// 	if (entity.has(Component.Monster.Combat.EnemyPosition)) {
+				// 		entity.remove(Component.Monster.Combat.EnemyPosition);
+				// 	}
+				// 	if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
+				// 		entity.remove(Component.Monster.Combat.FriendlyPosition);
+				// 	}
+				// 	entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
+				// 	// Remove the entity from the world.
+				// 	// entity.delete();
+				// }
 			}
 		}
 	}

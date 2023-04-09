@@ -13,18 +13,19 @@ import initializePositionSystem from './systems/Position';
 import initializeDamageSystem from './systems/Damage';
 import initializeCleanupCombatSceneSystem from './systems/CleanupCombatScene';
 import initializeSaveGameSystem from './systems/SaveGame';
+import initializeGameStateSystem from './systems/GameState';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
-	const InputSystem = initializeInputSystem(UIDSystem);
+	const GameStateSystem = initializeGameStateSystem(UIDSystem);
+	const InputSystem = initializeInputSystem(GameStateSystem);
 	const MoveIntoCombatSystem = initializeMoveIntoCombatSystem(InputSystem);
 	const EnergySystem = initializeEnergySystem(MoveIntoCombatSystem);
 	const ActionSystem = intializeActionSystem(EnergySystem);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const PositionSystem = initializePositionSystem(ActionSystem, scene);
-	const DamageSystem = initializeDamageSystem(ActionSystem);
+	const DamageSystem = initializeDamageSystem(PositionSystem);
 	const CleanupCombatSceneSystem = initializeCleanupCombatSceneSystem(DamageSystem);
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 	const SaveGameSystem = initializeSaveGameSystem(CleanupCombatSceneSystem);
 
 	interface EntityData {
@@ -128,7 +129,7 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const createRandomMonster = () => {
 		world.createEntity(
-			Component.Monster.Combat.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
+			// Component.Monster.Combat.Position, { value: [Math.random() * 10, Math.random() * 10, 0] },
 			Component.Monster.Speed, { value: Math.random() * 100, baseValue: 100 },
 			Component.Monster.Combat.Energy, { value: 0 },
 			Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' },
@@ -136,7 +137,7 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 			Component.Monster.Attack, { value: 10, baseValue: 10 },
 			Component.Monster.Health, { value: 100, baseValue: 100 },
 			Component.Monster.ArchetypeMonster,
-			Component.Monster.Combat.ArchetypeCombatMonster
+			Component.Monster.Combat.TriggerMoveFromWildIntoCombat
 		);
 	};
 	for (let index = 0; index < 5; index++) {
@@ -208,5 +209,17 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 		// shadowGenerator.getShadowMap()?.renderList?.push(box);
 		// shadowGenerator.getShadowMap()?.renderList?.push(cylinder);
 	} catch (error) { }
-	return world;
+	const systems = {
+		UIDSystem,
+		GameStateSystem,
+		InputSystem,
+		MoveIntoCombatSystem,
+		EnergySystem,
+		ActionSystem,
+		PositionSystem,
+		DamageSystem,
+		CleanupCombatSceneSystem,
+		SaveGameSystem,
+	}
+	return { world, systems }
 };

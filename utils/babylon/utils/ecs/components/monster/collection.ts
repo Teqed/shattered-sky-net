@@ -6,16 +6,15 @@ import { component, type Entity } from '@lastolivegames/becsy';
 }
 @component class ArchetypeCollectedMonster {
 	static validate (entity: Entity): void {
-		if (entity.has(ArchetypeCollectedMonster)) {
-			if (
-				entity.has(RestingInCollection) === false
-				// &&
-				// entity.has(ArchetypeCombatMonster) === false
-			) {
-				console.error(
-					'ArchetypeCollectedMonster must have RestingInCollection or ArchetypeCombatMonster');
-			}
-		}
+		// if (entity.has(ArchetypeCollectedMonster)) {
+		// 	if (
+		// 		entity.has(RestingInCollection) === false &&
+		// 		entity.has(ArchetypeCombatMonster) === false
+		// 	) {
+		// 		console.error(
+		// 			'ArchetypeCollectedMonster must have RestingInCollection or ArchetypeCombatMonster');
+		// 	}
+		// }
 	}
 }
 

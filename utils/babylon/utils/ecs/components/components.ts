@@ -6,6 +6,13 @@ import _Monster from './monster/monster';
 	@field.int32 declare value: number;
 }
 @component export class Global {
-	@field.uint8 declare value: number;
+	@field.uint8 declare triggerSave: number;
+	@field.uint8 declare triggerLoad: number;
+	// Game states:
+	// 0: Title screen
+	// 1: Combat
+	// 2: Collection
+	// 4: Cutscene
+	@field.uint8 declare gameState: number;
 }
 export const Monster = _Monster;

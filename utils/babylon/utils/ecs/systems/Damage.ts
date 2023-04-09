@@ -6,21 +6,25 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 	// This system will apply incoming damage to health.
 	// First, query new entities with IncomingDamage.
 		private incomingDamageEntities = this.query(q => q.added
-			.with(Component.Monster.Combat.IncomingDamage, Component.Monster.Health, Component.Monster.Combat.Position).write
-			.with(Component.Monster.Combat.ArchetypeCombatMonster)
+			.with(Component.Monster.Combat.IncomingDamage, Component.Monster.Health).write
 			.without(Component.Monster.Combat.CombatDisabled).write);
 
 		override execute () {
-			for (const entity of this.incomingDamageEntities.added) {
-				const health = entity.write(Component.Monster.Health);
-				const incomingDamage = entity.read(Component.Monster.Combat.IncomingDamage);
-				health.value -= incomingDamage.value;
-				entity.remove(Component.Monster.Combat.IncomingDamage);
-				if (health.value <= 0) {
-					console.log(`Entity with ordinal ${entity.ordinal} has died!`);
-					// Disable them from taking actions by adding the CombatDisabled component.
-					entity.add(Component.Monster.Combat.CombatDisabled);
+			try {
+				for (const entity of this.incomingDamageEntities.added) {
+					const health = entity.write(Component.Monster.Health);
+					const incomingDamage = entity.read(Component.Monster.Combat.IncomingDamage);
+					health.value -= incomingDamage.value;
+					entity.remove(Component.Monster.Combat.IncomingDamage);
+					console.log(`Entity with ordinal ${entity.ordinal} now has ${health.value} health!`)
+					if (health.value <= 0) {
+						console.log(`Entity with ordinal ${entity.ordinal} has died!`);
+						// Disable them from taking actions by adding the CombatDisabled component.
+						entity.add(Component.Monster.Combat.CombatDisabled);
+					}
 				}
+			} catch (error) {
+				console.log(error);
 			}
 		}
 	}
