@@ -21,10 +21,22 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					// Save the game by setting the global value to 1.
 					this.global.triggerSave = 1;
 				}
-				if (event.code === 'KeyC') {
-					console.log('C pressed');
+				if (event.code === 'Digit0') {
+					console.log('0 pressed');
+					this.global.gameState = 0;
+				}
+				if (event.code === 'Digit1') {
+					console.log('1 pressed');
+					this.global.gameState = 1;
+				}
+				if (event.code === 'Digit2') {
+					console.log('2 pressed');
 					// Change the game state to 2 (collection).
 					this.global.gameState = 2;
+				}
+				if (event.code === 'Digit3') {
+					console.log('3 pressed');
+					this.global.gameState = 3;
 				}
 			});
 		}

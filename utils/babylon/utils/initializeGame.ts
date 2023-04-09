@@ -159,6 +159,20 @@ export class Game {
 						console.warn('Collection not implemented yet')
 						break;
 					case State.Cutscene:
+						this._world?.control({
+							stop: [
+								this._systems.InputSystem,
+								this._systems.MoveIntoCombatSystem,
+								this._systems.EnergySystem,
+								this._systems.ActionSystem,
+								this._systems.PositionSystem,
+								this._systems.DamageSystem,
+								this._systems.CleanupCombatSceneSystem,
+							],
+							restart: []
+						})
+						console.warn('Cutscene not implemented yet')
+						break;
 					default:
 						break;
 				}
