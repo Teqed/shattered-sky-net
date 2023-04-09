@@ -78,6 +78,8 @@
   },
   "dependencies": {
     "@lastolivegames/becsy": "^0.14.3",
+    "@stdlib/array-reviver": "^0.0.6",
+    "@stdlib/array-to-json": "^0.0.7",
     "@types/ws": "^8.5.4",
     "bitecs": "^0.3.38",
     "nuxt-socket-io": "^3.0.12",
