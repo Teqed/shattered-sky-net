@@ -337,16 +337,16 @@ export class Game {
 					const attemptToLoadSaveSlot = this._savegame.saveSlot[this._saveSlotNum];
 					if (attemptToLoadSaveSlot) {
 						this._loadedSaveSlot = attemptToLoadSaveSlot;
+						this._loadSaveSlot(this._saveSlotNum);
 						this._saveCurrentSlot();
 						window.alert('New save slot created.')
 						this._goToStart();
-					} else { window.alert('Save slot not created.') }
+					} else { throw new Error('could not load new save slot') }
 				} else {
-					window.alert('Save slot not created.')
+					window.alert('Save slot not created. No name given.')
 				}
 			} else {
-				window.alert(`You can only have three save slots at a time.
-					Delete one to make room for a new one.`)
+				window.alert('You can only have three save slots at a time. Delete one to make room for a new one.')
 			}
 		} catch (error) { console.log('could not create new saveslot') }
 	}

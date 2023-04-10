@@ -27,7 +27,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		CombatDisabled = 1 << 17,
 		TriggerMoveFromWildIntoCombat = 1 << 18,
 	}
-	enum EntityComponentFields {
+	enum Field {
 		UID = 0,
 		Team = 1,
 		// Health
@@ -59,8 +59,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class SaveGameSystem extends System {
 		private global = this.singleton.write(Component.Global);
 		// Get all ArchetypeMonster entities.
-		private monsters = this.query(q => q.current
-			.with(Component.Monster.ArchetypeMonster)
+		private entities = this.query(q => q.current
+			.with(Component.UID)
 			.usingAll.write);
 
 		override execute () {
@@ -68,15 +68,14 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			if (this.global.triggerSave === 1) {
 				console.log('Saving the game!');
 				this.global.triggerSave = 0;
-				const monstersArray = [];
-				for (const entity of this.monsters.current) {
-					const monsterMatrix = new Float32Array(32);
-					monsterMatrix[EntityComponentFields.Flags] = EntityFlags.None;
-					// For each component the entity has...
+				const entitiesArray = [];
+				for (const entity of this.entities.current) {
+					const entityComponent = new Float32Array(32);
+					entityComponent[Field.Flags] = EntityFlags.None;
 					if (entity.has(Component.UID)) {
 						const UID = entity.read(Component.UID);
-						monsterMatrix[EntityComponentFields.UID] = UID.value;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.UID;
+						entityComponent[Field.UID] = UID.value;
+						entityComponent[Field.Flags] += EntityFlags.UID;
 					}
 					if (entity.has(Component.Monster.Team)) {
 						const Team = entity.read(Component.Monster.Team);
@@ -92,43 +91,43 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 								TeamValue = 2;
 								break;
 						}
-						monsterMatrix[EntityComponentFields.Team] = TeamValue;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Team;
+						entityComponent[Field.Team] = TeamValue;
+						entityComponent[Field.Flags] += EntityFlags.Team;
 					}
 					if (entity.has(Component.Monster.Health)) {
 						const Health = entity.read(Component.Monster.Health);
-						monsterMatrix[EntityComponentFields.Health_value] = Health.value;
-						monsterMatrix[EntityComponentFields.Health_baseValue] = Health.baseValue;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Health;
+						entityComponent[Field.Health_value] = Health.value;
+						entityComponent[Field.Health_baseValue] = Health.baseValue;
+						entityComponent[Field.Flags] += EntityFlags.Health;
 					}
 					if (entity.has(Component.Monster.Attack)) {
 						const Attack = entity.read(Component.Monster.Attack);
-						monsterMatrix[EntityComponentFields.Attack_value] = Attack.value;
-						monsterMatrix[EntityComponentFields.Attack_baseValue] = Attack.baseValue;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Attack;
+						entityComponent[Field.Attack_value] = Attack.value;
+						entityComponent[Field.Attack_baseValue] = Attack.baseValue;
+						entityComponent[Field.Flags] += EntityFlags.Attack;
 					}
 					if (entity.has(Component.Monster.Speed)) {
 						const Speed = entity.read(Component.Monster.Speed);
-						monsterMatrix[EntityComponentFields.Speed_value] = Speed.value;
-						monsterMatrix[EntityComponentFields.Speed_baseValue] = Speed.baseValue;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Speed;
+						entityComponent[Field.Speed_value] = Speed.value;
+						entityComponent[Field.Speed_baseValue] = Speed.baseValue;
+						entityComponent[Field.Flags] += EntityFlags.Speed;
 					}
 					if (entity.has(Component.Monster.Collection.RestingInCollection)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.RestingInCollection;
+						entityComponent[Field.Flags] += EntityFlags.RestingInCollection;
 					}
 					if (entity.has(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.TriggerMoveFromCollectionIntoCombat;
+						entityComponent[Field.Flags] += EntityFlags.TriggerMoveFromCollectionIntoCombat;
 					}
 					if (entity.has(Component.Monster.Collection.ArchetypeCollectedMonster)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.ArchetypeCollectedMonster;
+						entityComponent[Field.Flags] += EntityFlags.ArchetypeCollectedMonster;
 					}
 					if (entity.has(Component.Monster.Combat.Energy)) {
 						const Energy = entity.read(Component.Monster.Combat.Energy);
-						monsterMatrix[EntityComponentFields.Energy] = Energy.value;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Energy;
+						entityComponent[Field.Energy] = Energy.value;
+						entityComponent[Field.Flags] += EntityFlags.Energy;
 					}
 					if (entity.has(Component.Monster.Combat.ActionReady)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.ActionReady;
+						entityComponent[Field.Flags] += EntityFlags.ActionReady;
 					}
 					if (entity.has(Component.Monster.Combat.QueuedAction)) {
 						const Combat = entity.read(Component.Monster.Combat.QueuedAction);
@@ -147,60 +146,60 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 								QueuedActionValue = -1;
 								break;
 						}
-						monsterMatrix[EntityComponentFields.QueuedAction] = QueuedActionValue;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.QueuedAction;
+						entityComponent[Field.QueuedAction] = QueuedActionValue;
+						entityComponent[Field.Flags] += EntityFlags.QueuedAction;
 					}
 					if (entity.has(Component.Monster.Combat.Position)) {
 						const Position = entity.read(Component.Monster.Combat.Position);
-						monsterMatrix[EntityComponentFields.Position_x] = Position.value.x;
-						monsterMatrix[EntityComponentFields.Position_y] = Position.value.y;
-						monsterMatrix[EntityComponentFields.Position_z] = Position.value.z;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.Position;
+						entityComponent[Field.Position_x] = Position.value.x;
+						entityComponent[Field.Position_y] = Position.value.y;
+						entityComponent[Field.Position_z] = Position.value.z;
+						entityComponent[Field.Flags] += EntityFlags.Position;
 					}
 					if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
 						const FriendlyPosition = entity.read(Component.Monster.Combat.FriendlyPosition);
-						monsterMatrix[EntityComponentFields.FriendlyPosition] = FriendlyPosition.value;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.FriendlyPosition;
+						entityComponent[Field.FriendlyPosition] = FriendlyPosition.value;
+						entityComponent[Field.Flags] += EntityFlags.FriendlyPosition;
 					}
 					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
 						const EnemyPosition = entity.read(Component.Monster.Combat.EnemyPosition);
-						monsterMatrix[EntityComponentFields.EnemyPosition] = EnemyPosition.value;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.EnemyPosition;
+						entityComponent[Field.EnemyPosition] = EnemyPosition.value;
+						entityComponent[Field.Flags] += EntityFlags.EnemyPosition;
 					}
 					if (entity.has(Component.Monster.Combat.ArchetypeCombatMonster)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.ArchetypeCombatMonster;
+						entityComponent[Field.Flags] += EntityFlags.ArchetypeCombatMonster;
 					}
 					if (entity.has(Component.Monster.Combat.IncomingDamage)) {
 						const IncomingDamage = entity.read(Component.Monster.Combat.IncomingDamage);
-						monsterMatrix[EntityComponentFields.IncomingDamage] = IncomingDamage.value;
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.IncomingDamage;
+						entityComponent[Field.IncomingDamage] = IncomingDamage.value;
+						entityComponent[Field.Flags] += EntityFlags.IncomingDamage;
 					}
 					if (entity.has(Component.Monster.Combat.CombatDisabled)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.CombatDisabled;
+						entityComponent[Field.Flags] += EntityFlags.CombatDisabled;
 					}
 					if (entity.has(Component.Monster.Combat.TriggerMoveFromWildIntoCombat)) {
-						monsterMatrix[EntityComponentFields.Flags] += EntityFlags.TriggerMoveFromWildIntoCombat;
+						entityComponent[Field.Flags] += EntityFlags.TriggerMoveFromWildIntoCombat;
 					}
-					monstersArray.push(monsterMatrix);
+					entitiesArray.push(entityComponent);
 				}
-				// console.log(monstersArray); // *** Might be useful for debugging?
-				let monstersJSON = '[';
-				for (const monster of monstersArray) {
-					const monsterJSONRepresentation = typedarray2json(monster);
-					const monsterJSON = JSON.stringify(monsterJSONRepresentation);
-					monstersJSON += monsterJSON + ',';
+				// console.log(entitiesArray); // *** Might be useful for debugging?
+				let entitiesString = '[';
+				for (const entity of entitiesArray) {
+					const entityJSONRepresentation = typedarray2json(entity);
+					const entityJSON = JSON.stringify(entityJSONRepresentation);
+					entitiesString += entityJSON + ',';
 				}
-				monstersJSON = monstersJSON.slice(0, -1); // remove the last comma
-				monstersJSON += ']';
+				entitiesString = entitiesString.slice(0, -1); // remove the last comma
+				entitiesString += ']';
 				// Send event to the game to save the data:
-				const saveEvent = new CustomEvent('save', { detail: monstersJSON });
+				const saveEvent = new CustomEvent('save', { detail: entitiesString });
 				window.dispatchEvent(saveEvent);
 			}
 			if (this.global.triggerLoad === 1) {
 				console.log('Loading the game!');
 				this.global.triggerLoad = 0;
 				// Remove all existing entities:
-				for (const entity of this.monsters.current) {
+				for (const entity of this.entities.current) {
 					entity.delete();
 				}
 				// Fake monster data:
@@ -210,17 +209,17 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				const rawSaveArray = JSON.parse(rawSaveJSON);
 				console.log(rawSaveArray);
 				const processedSaveArray = [];
-				for (const monster of rawSaveArray) {
-					const monsterMatrix = parseJSON(JSON.stringify(monster), reviveTypedArray);
-					processedSaveArray.push(monsterMatrix);
+				for (const entity of rawSaveArray) {
+					const entityData = parseJSON(JSON.stringify(entity), reviveTypedArray);
+					processedSaveArray.push(entityData);
 				}
 				console.log(processedSaveArray);
 				for (const monsterMatrix of processedSaveArray) {
 					// Create the entity
 					const entity = this.createEntity();
 					// Add the components
-					entity.add(Component.UID, { value: monsterMatrix[EntityComponentFields.UID] });
-					switch (monsterMatrix[EntityComponentFields.Team]) {
+					entity.add(Component.UID, { value: monsterMatrix[Field.UID] });
+					switch (monsterMatrix[Field.Team]) {
 						case 0:
 							entity.add(Component.Monster.Team, { value: 'Friend' });
 							break;
@@ -231,38 +230,38 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 							entity.add(Component.Monster.Team, { value: 'Other' });
 							break;
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.Health) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.Health) {
 						entity.add(Component.Monster.Health, {
-							value: monsterMatrix[EntityComponentFields.Health_value],
-							baseValue: monsterMatrix[EntityComponentFields.Health_baseValue] });
+							value: monsterMatrix[Field.Health_value],
+							baseValue: monsterMatrix[Field.Health_baseValue] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.Attack) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.Attack) {
 						entity.add(Component.Monster.Attack, {
-							value: monsterMatrix[EntityComponentFields.Attack_value],
-							baseValue: monsterMatrix[EntityComponentFields.Attack_baseValue] });
+							value: monsterMatrix[Field.Attack_value],
+							baseValue: monsterMatrix[Field.Attack_baseValue] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.Speed) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.Speed) {
 						entity.add(Component.Monster.Speed, {
-							value: monsterMatrix[EntityComponentFields.Speed_value],
-							baseValue: monsterMatrix[EntityComponentFields.Speed_baseValue] });
+							value: monsterMatrix[Field.Speed_value],
+							baseValue: monsterMatrix[Field.Speed_baseValue] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.RestingInCollection) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.RestingInCollection) {
 						entity.add(Component.Monster.Collection.RestingInCollection);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.TriggerMoveFromCollectionIntoCombat) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromCollectionIntoCombat) {
 						entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.ArchetypeCollectedMonster) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCollectedMonster) {
 						entity.add(Component.Monster.Collection.ArchetypeCollectedMonster);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.Energy) {
-						entity.add(Component.Monster.Combat.Energy, { value: monsterMatrix[EntityComponentFields.Energy] });
+					if (monsterMatrix[Field.Flags] & EntityFlags.Energy) {
+						entity.add(Component.Monster.Combat.Energy, { value: monsterMatrix[Field.Energy] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.ActionReady) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.ActionReady) {
 						entity.add(Component.Monster.Combat.ActionReady);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.QueuedAction) {
-						switch (monsterMatrix[EntityComponentFields.QueuedAction]) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.QueuedAction) {
+						switch (monsterMatrix[Field.QueuedAction]) {
 							case 0:
 								entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' });
 								break;
@@ -274,29 +273,29 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 								break;
 						}
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.Position) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.Position) {
 						entity.add(Component.Monster.Combat.Position, {
 							value: {
-								x: monsterMatrix[EntityComponentFields.Position_x],
-								y: monsterMatrix[EntityComponentFields.Position_y],
-								z: monsterMatrix[EntityComponentFields.Position_z] } });
+								x: monsterMatrix[Field.Position_x],
+								y: monsterMatrix[Field.Position_y],
+								z: monsterMatrix[Field.Position_z] } });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.FriendlyPosition) {
-						entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[EntityComponentFields.FriendlyPosition] });
+					if (monsterMatrix[Field.Flags] & EntityFlags.FriendlyPosition) {
+						entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[Field.FriendlyPosition] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.EnemyPosition) {
-						entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[EntityComponentFields.EnemyPosition] });
+					if (monsterMatrix[Field.Flags] & EntityFlags.EnemyPosition) {
+						entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[Field.EnemyPosition] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.ArchetypeCombatMonster) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCombatMonster) {
 						entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.IncomingDamage) {
-						entity.add(Component.Monster.Combat.IncomingDamage, { value: monsterMatrix[EntityComponentFields.IncomingDamage] });
+					if (monsterMatrix[Field.Flags] & EntityFlags.IncomingDamage) {
+						entity.add(Component.Monster.Combat.IncomingDamage, { value: monsterMatrix[Field.IncomingDamage] });
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.CombatDisabled) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.CombatDisabled) {
 						entity.add(Component.Monster.Combat.CombatDisabled);
 					}
-					if (monsterMatrix[EntityComponentFields.Flags] & EntityFlags.TriggerMoveFromWildIntoCombat) {
+					if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromWildIntoCombat) {
 						entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
 					}
 				}

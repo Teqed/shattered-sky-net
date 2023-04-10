@@ -46,7 +46,7 @@ export class SavegameManager implements Savegame {
 		this.saveSlot = [{
 			name,
 			saveData: {
-				systemsData: '0',
+				systemsData: '',
 			},
 		}]
 	}
@@ -56,18 +56,21 @@ export class SavegameManager implements Savegame {
 			if (saveGame.saveSlot[slotNumber]!.name !== 'Unnamed') {
 				const _override = window.confirm('Are you sure you want to override this slot?')
 				if (_override) {
+					console.log('Overriding save slot ' + slotNumber)
 					SavegameManager.newSaveSlot(name, slotNumber, saveGame, _override)
 				}
 			} else {
-				const newSave: SaveSlot = {
-					name,
-					saveData: {
-						systemsData: '1',
-					},
-				}
-				saveGame.saveSlot[slotNumber] = newSave
-				saveGame.lastSaveSlot = slotNumber
+				SavegameManager.newSaveSlot(name, slotNumber, saveGame, true)
 			}
+		} else {
+			const newSave: SaveSlot = {
+				name,
+				saveData: {
+					systemsData: '',
+				},
+			}
+			saveGame.saveSlot[slotNumber] = newSave
+			saveGame.lastSaveSlot = slotNumber
 		}
 		return SavegameManager.save(saveGame)
 	}
