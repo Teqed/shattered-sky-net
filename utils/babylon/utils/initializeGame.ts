@@ -370,6 +370,7 @@ export class Game {
 		try {
 			this._saveSlotNum = slotNumber ?? this._savegame.lastSaveSlot;
 			this._loadedSaveSlot = SavegameManager.loadSlot(this._saveSlotNum, this._savegame);
+			dispatchEvent(new CustomEvent('load', { detail: this._loadedSaveSlot }));
 			return this._loadedSaveSlot;
 		} catch (error) { console.log('could not load save slot'); return this._loadedSaveSlot }
 	}
