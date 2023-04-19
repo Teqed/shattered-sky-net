@@ -6,9 +6,7 @@ import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector';
 import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
 import { SpotLight } from '@babylonjs/core/Lights/spotLight';
 import { GlowLayer } from '@babylonjs/core/Layers/glowLayer';
-import { PassPostProcess } from '@babylonjs/core/PostProcesses/passPostProcess';
 import { BlurPostProcess } from '@babylonjs/core/PostProcesses/blurPostProcess';
-import { TonemapPostProcess, TonemappingOperator } from '@babylonjs/core/PostProcesses/tonemapPostProcess';
 import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 import '@babylonjs/core/Physics/physicsEngineComponent'
@@ -16,109 +14,11 @@ import '@babylonjs/core/Helpers/sceneHelpers';
 import * as BABYLONCAMERA from '@babylonjs/core/Cameras';
 import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent';
-import { Effect } from '@babylonjs/core/Materials/effect';
-import { PostProcess } from '@babylonjs/core/PostProcesses/postProcess';
 import { Nullable } from '@babylonjs/core';
-import { NodeMaterial } from '@babylonjs/core/Materials/Node/nodeMaterial';
 import * as BABYLON from '@babylonjs/core';
-
-// const createNewEffect = (scene: Scene) => {
-// 	const nodeMaterial = new BABYLON.NodeMaterial('node', scene);
-
-// 	// InputBlock
-// 	const positiond = new BABYLON.InputBlock('position2d');
-// 	positiond.visibleInInspector = false;
-// 	positiond.visibleOnFrame = false;
-// 	positiond.target = 1;
-// 	positiond.setAsAttribute('position2d');
-
-// 	// VectorMergerBlock
-// 	const PositionD = new BABYLON.VectorMergerBlock('Position3D');
-// 	PositionD.visibleInInspector = false;
-// 	PositionD.visibleOnFrame = false;
-// 	PositionD.target = 4;
-// 	PositionD.xSwizzle = 'x';
-// 	PositionD.ySwizzle = 'y';
-// 	PositionD.zSwizzle = 'z';
-// 	PositionD.wSwizzle = 'w';
-
-// 	// InputBlock
-// 	const Constant = new BABYLON.InputBlock('Constant1');
-// 	Constant.visibleInInspector = false;
-// 	Constant.visibleOnFrame = false;
-// 	Constant.target = 1;
-// 	Constant.value = 1;
-// 	Constant.min = 0;
-// 	Constant.max = 0;
-// 	Constant.isBoolean = false;
-// 	Constant.matrixMode = 0;
-// 	Constant.animationType = BABYLON.AnimatedInputBlockTypes.None;
-// 	Constant.isConstant = true;
-
-// 	// VertexOutputBlock
-// 	const VertexOutput = new BABYLON.VertexOutputBlock('VertexOutput');
-// 	VertexOutput.visibleInInspector = false;
-// 	VertexOutput.visibleOnFrame = false;
-// 	VertexOutput.target = 1;
-
-// 	// RemapBlock
-// 	const uv = new BABYLON.RemapBlock('uv0');
-// 	uv.visibleInInspector = false;
-// 	uv.visibleOnFrame = false;
-// 	uv.target = 4;
-// 	uv.sourceRange = new BABYLON.Vector2(-1, 1);
-// 	uv.targetRange = new BABYLON.Vector2(0, 1);
-
-// 	// PosterizeBlock
-// 	const Posterize = new BABYLON.PosterizeBlock('Posterize');
-// 	Posterize.visibleInInspector = false;
-// 	Posterize.visibleOnFrame = false;
-// 	Posterize.target = 4;
-
-// 	// InputBlock
-// 	const Scale = new BABYLON.InputBlock('Scale');
-// 	Scale.visibleInInspector = true;
-// 	Scale.visibleOnFrame = false;
-// 	Scale.target = 1;
-// 	Scale.value = new BABYLON.Vector2(50, 50);
-// 	Scale.isConstant = false;
-
-// 	// CurrentScreenBlock
-// 	const CurrentScreen = new BABYLON.CurrentScreenBlock('CurrentScreen');
-// 	CurrentScreen.visibleInInspector = false;
-// 	CurrentScreen.visibleOnFrame = false;
-// 	// CurrentScreen.target = 2;
-
-// 	// FragmentOutputBlock
-// 	const FragmentOutput = new BABYLON.FragmentOutputBlock('FragmentOutput');
-// 	FragmentOutput.visibleInInspector = false;
-// 	FragmentOutput.visibleOnFrame = false;
-// 	FragmentOutput.target = 2;
-// 	FragmentOutput.convertToGammaSpace = false;
-// 	FragmentOutput.convertToLinearSpace = false;
-// 	FragmentOutput.useLogarithmicDepth = false;
-
-// 	// Connections
-// 	positiond.output.connectTo(PositionD.xyIn);
-// 	Constant.output.connectTo(PositionD.w);
-// 	PositionD.xyzw.connectTo(VertexOutput.vector);
-// 	positiond.output.connectTo(uv.input);
-// 	uv.output.connectTo(Posterize.value);
-// 	Scale.output.connectTo(Posterize.steps);
-// 	Posterize.output.connectTo(CurrentScreen.uv);
-// 	CurrentScreen.rgba.connectTo(FragmentOutput.rgba);
-
-// 	// Output nodes
-// 	nodeMaterial.addOutputNode(VertexOutput);
-// 	nodeMaterial.addOutputNode(FragmentOutput);
-// 	nodeMaterial.build();
-
-// 	return nodeMaterial;
-// }
 
 const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Camera>) => {
 	const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('#KMBISP#8', scene)
-	// const nodeMaterial = createNewEffect(scene);
 	const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
 	// myPostProcess!.samples = 4;
 	const glow = new GlowLayer('glow', scene);
@@ -216,6 +116,7 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// };
 
 	return {
+		myPostProcess,
 		glow,
 		// downsample,
 		blurPass1,
@@ -260,7 +161,8 @@ export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene)
 	camera.wheelDeltaPercentage = 0.01
 	// eslint-disable-next-line no-constant-condition
 	if (true) {
-		const fx = await createVisualChain(scene, camera)
+		// const fx =
+		await createVisualChain(scene, camera)
 		// let fxLevel = 0.10
 		// const fxTarget = 0.20
 
