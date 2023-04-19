@@ -3,7 +3,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Control } from '@babylonjs/gui/2D/controls/control';
-import { System, type World } from '@lastolivegames/becsy';
+import { type World, System, type SystemType } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
@@ -43,7 +43,21 @@ export class Game {
 	private _laststate: State = State.Preload;
 	private _gamescene: Scene | undefined;
 	private _world: World | undefined;
-	private _systems: any | undefined;
+	// _systems is an object with systems as properties
+	// systems are classes which extend System from becsy
+	private _systems: {
+		UIDSystem: SystemType<System>,
+		GameStateSystem: SystemType<System>,
+		InputSystem: SystemType<System>,
+		MoveIntoCombatSystem: SystemType<System>,
+		EnergySystem: SystemType<System>,
+		ActionSystem: SystemType<System>,
+		CombatPositionSystem: SystemType<System>,
+		MeshPositionSystem: SystemType<System>,
+		DamageSystem: SystemType<System>,
+		CleanupCombatSceneSystem: SystemType<System>,
+		SaveGameSystem: SystemType<System>,
+	} | undefined;
 	// private _cutscene: Scene;
 
 	// *** *** *** *** *** *** ***
@@ -118,76 +132,86 @@ export class Game {
 			}
 		});
 		setInterval(() => {
-			if (this._state !== this._laststate) {
-				switch (this._state) {
-					case State.Title:
-						this._world?.control({
-							stop: [
-								this._systems.InputSystem,
-								this._systems.MoveIntoCombatSystem,
-								this._systems.EnergySystem,
-								this._systems.ActionSystem,
-								this._systems.PositionSystem,
-								this._systems.DamageSystem,
-								this._systems.CleanupCombatSceneSystem,
-							],
-							restart: []
-						})
-						break;
-					case State.Combat:
-						this._world?.control({
-							stop: [],
-							restart: [
-								this._systems.InputSystem,
-								this._systems.MoveIntoCombatSystem,
-								this._systems.EnergySystem,
-								this._systems.ActionSystem,
-								this._systems.PositionSystem,
-								this._systems.DamageSystem,
-								this._systems.CleanupCombatSceneSystem,
-							]
-						})
-						break;
-					case State.Collection:
-						this._world?.control({
-							stop: [
-								this._systems.InputSystem,
-								this._systems.MoveIntoCombatSystem,
-								this._systems.EnergySystem,
-								this._systems.ActionSystem,
-								this._systems.PositionSystem,
-								this._systems.DamageSystem,
-								this._systems.CleanupCombatSceneSystem,
-							],
-							restart: []
-						})
-						console.warn('Collection not implemented yet')
-						break;
-					case State.Cutscene:
-						this._world?.control({
-							stop: [
-								this._systems.InputSystem,
-								this._systems.MoveIntoCombatSystem,
-								this._systems.EnergySystem,
-								this._systems.ActionSystem,
-								this._systems.PositionSystem,
-								this._systems.DamageSystem,
-								this._systems.CleanupCombatSceneSystem,
-							],
-							restart: []
-						})
-						console.warn('Cutscene not implemented yet')
-						break;
-					default:
-						break;
+			if (this._world) {
+				try {
+					if ((this._state !== this._laststate) && (this._systems)) {
+						switch (this._state) {
+							case State.Title:
+								this._world.control({
+									stop: [
+										this._systems.InputSystem,
+										this._systems.MoveIntoCombatSystem,
+										this._systems.EnergySystem,
+										this._systems.ActionSystem,
+										this._systems.CombatPositionSystem,
+										this._systems.MeshPositionSystem,
+										this._systems.DamageSystem,
+										this._systems.CleanupCombatSceneSystem,
+									],
+									restart: []
+								})
+								break;
+							case State.Combat:
+								this._world.control({
+									stop: [],
+									restart: [
+										this._systems.InputSystem,
+										this._systems.MoveIntoCombatSystem,
+										this._systems.EnergySystem,
+										this._systems.ActionSystem,
+										this._systems.CombatPositionSystem,
+										this._systems.MeshPositionSystem,
+										this._systems.DamageSystem,
+										this._systems.CleanupCombatSceneSystem,
+									]
+								})
+								break;
+							case State.Collection:
+								this._world.control({
+									stop: [
+										this._systems.InputSystem,
+										this._systems.MoveIntoCombatSystem,
+										this._systems.EnergySystem,
+										this._systems.ActionSystem,
+										this._systems.CombatPositionSystem,
+										this._systems.MeshPositionSystem,
+										this._systems.DamageSystem,
+										this._systems.CleanupCombatSceneSystem,
+									],
+									restart: []
+								})
+								console.warn('Collection not implemented yet')
+								break;
+							case State.Cutscene:
+								this._world.control({
+									stop: [
+										this._systems.InputSystem,
+										this._systems.MoveIntoCombatSystem,
+										this._systems.EnergySystem,
+										this._systems.ActionSystem,
+										this._systems.CombatPositionSystem,
+										this._systems.MeshPositionSystem,
+										this._systems.DamageSystem,
+										this._systems.CleanupCombatSceneSystem,
+									],
+									restart: []
+								})
+								console.warn('Cutscene not implemented yet')
+								break;
+							default:
+								break;
+						}
+						this._laststate = this._state;
+					}
+				} catch (error) {
+					console.error(error);
 				}
-				this._laststate = this._state;
-			}
 
-			try {
-				this._world!.execute();
-			} catch (error) {
-				console.error(error);
+				try {
+					this._world.execute();
+				} catch (error) {
+					console.error(error);
+				}
 			}
 		}, 1000 / 1);
 	}

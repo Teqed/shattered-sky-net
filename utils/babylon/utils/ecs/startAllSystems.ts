@@ -9,11 +9,12 @@ import initializeInputSystem from './systems/Input';
 import initializeMoveIntoCombatSystem from './systems/MoveIntoCombat';
 import initializeEnergySystem from './systems/Energy';
 import intializeActionSystem from './systems/Action';
-import initializePositionSystem from './systems/Position';
+import initializeCombatPositionSystem from './systems/CombatPosition';
 import initializeDamageSystem from './systems/Damage';
 import initializeCleanupCombatSceneSystem from './systems/CleanupCombatScene';
 import initializeSaveGameSystem from './systems/SaveGame';
 import initializeGameStateSystem from './systems/GameState';
+import initalizeMeshPositionSystem from './systems/MeshPosition';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
@@ -22,8 +23,9 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 	const MoveIntoCombatSystem = initializeMoveIntoCombatSystem(InputSystem);
 	const EnergySystem = initializeEnergySystem(MoveIntoCombatSystem);
 	const ActionSystem = intializeActionSystem(EnergySystem);
-	const PositionSystem = initializePositionSystem(ActionSystem, scene);
-	const DamageSystem = initializeDamageSystem(PositionSystem);
+	const CombatPositionSystem = initializeCombatPositionSystem(ActionSystem);
+	const MeshPositionSystem = initalizeMeshPositionSystem(CombatPositionSystem, scene);
+	const DamageSystem = initializeDamageSystem(MeshPositionSystem);
 	const CleanupCombatSceneSystem = initializeCleanupCombatSceneSystem(DamageSystem);
 
 	const SaveGameSystem = initializeSaveGameSystem(CleanupCombatSceneSystem);
@@ -74,7 +76,8 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 		MoveIntoCombatSystem,
 		EnergySystem,
 		ActionSystem,
-		PositionSystem,
+		CombatPositionSystem,
+		MeshPositionSystem,
 		DamageSystem,
 		CleanupCombatSceneSystem,
 		SaveGameSystem,
