@@ -3,7 +3,7 @@ import { system, System, type SystemGroup, type SystemType } from '@lastolivegam
 import reviveTypedArray from '@stdlib/array-reviver';
 import typedarray2json from '@stdlib/array-to-json';
 import parseJSON from '@stdlib/utils-parse-json';
-import * as Component from '../components/components';
+import * as Component from '../../components/components';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	enum EntityFlags {
 		None = 0b0,
@@ -57,7 +57,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		Flags = 31,
 	}
 	@system(s => s.after(afterSystem)) class SaveGameSystem extends System {
-		private global = this.singleton.write(Component.Global);
+		private NarratorTriggerLoadSave = this.singleton.write(Component.Narrator.TriggerLoadSave);
 		private entities = this.query(q => q.current
 			.with(Component.UID)
 			.usingAll.write);
@@ -65,9 +65,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		override initialize () {
 			addEventListener('load', (event) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				if (this.global.triggerLoad === 1 && (event as any).detail.saveData.systemsData) {
+				if (this.NarratorTriggerLoadSave.triggerLoad === 1 && (event as any).detail.saveData.systemsData) {
 					console.log('Loading the game!');
-					this.global.triggerLoad = 0;
+					this.NarratorTriggerLoadSave.triggerLoad = 0;
 					// Remove all existing entities:
 					for (const entity of this.entities.current) {
 						entity.delete();
@@ -177,9 +177,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		}
 
 		override execute () {
-			if (this.global.triggerSave === 1) {
+			if (this.NarratorTriggerLoadSave.triggerSave === 1) {
 				console.log('Saving the game!');
-				this.global.triggerSave = 0;
+				this.NarratorTriggerLoadSave.triggerSave = 0;
 				const entitiesArray = [];
 				for (const entity of this.entities.current) {
 					const entityComponent = new Float32Array(32);

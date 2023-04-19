@@ -19,7 +19,7 @@ export default (afterSystem: SystemGroup | SystemType<System>, scene: Scene) => 
 	@system(s => s.after(afterSystem)) class MeshPositionSystem extends System {
 		entitiesEntered = this.query(q => q.added.with(Component.Monster.Combat.Position, Component.UID));
 		entitiesExited = this.query(q => q.removed.with(Component.Monster.Combat.Position, Component.UID));
-		entitiesChanged = this.query(q => q.changed.with(Component.Monster.Combat.Position, Component.UID));
+		entitiesChanged = this.query(q => q.changed.with(Component.Monster.Combat.Position).trackWrites.with(Component.UID));
 
 		override execute () {
 			for (const entity of this.entitiesExited.removed) {

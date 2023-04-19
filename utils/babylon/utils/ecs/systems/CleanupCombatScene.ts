@@ -1,5 +1,6 @@
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
 import * as Component from '../components/components';
+import { State } from '../../utilityTypes';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class CleanupCombatScene extends System {
 	// This runs when all entities on the Foe team have been disabled.
@@ -21,6 +22,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			.using(Component.Monster.Combat.Position).write
 			.usingAll.write);
 
+		private NarratorGameState = this.singleton.write(Component.Narrator.GameState);
+
 		override execute () {
 			const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Foe');
 			if (allFoesDisabled) {
@@ -38,6 +41,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
 					// Remove the entity from the world.
 					// entity.delete();
+					// End combat state
+					this.NarratorGameState.value = State.NoCombat;
 				}
 			}
 			const allFriendlyDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Friend');
@@ -56,6 +61,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
 					// Remove the entity from the world.
 					// entity.delete();
+					// End combat state
+					this.NarratorGameState.value = State.NoCombat;
 				}
 			}
 		}

@@ -4,6 +4,7 @@ import { type rapierWorkerType } from '../../../worker/rapier-wrap';
 import createUICamera from '../createUICamera';
 import createPixelCamera from '../createPixelCamera';
 // import * as Component from './components/components';
+import { type SystemLoop } from '../utilityTypes';
 import initializeUIDSystem from './systems/UID';
 import initializeInputSystem from './systems/Input';
 import initializeMoveIntoCombatSystem from './systems/MoveIntoCombat';
@@ -12,8 +13,8 @@ import intializeActionSystem from './systems/Action';
 import initializeCombatPositionSystem from './systems/CombatPosition';
 import initializeDamageSystem from './systems/Damage';
 import initializeCleanupCombatSceneSystem from './systems/CleanupCombatScene';
-import initializeSaveGameSystem from './systems/SaveGame';
-import initializeGameStateSystem from './systems/GameState';
+import initializeSaveGameSystem from './systems/narrator/SaveGame';
+import initializeGameStateSystem from './systems/narrator/GameState';
 import initalizeMeshPositionSystem from './systems/MeshPosition';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
@@ -69,7 +70,7 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 	const worldPhysics = await rapierWorker.startPhysics();
 	worldPhysics.gravity = { x: 0, y: -9.81, z: 0 };
 
-	const systems = {
+	const systems: SystemLoop = {
 		UIDSystem,
 		GameStateSystem,
 		InputSystem,

@@ -3,7 +3,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Control } from '@babylonjs/gui/2D/controls/control';
-import { type World, System, type SystemType } from '@lastolivegames/becsy';
+import { type World } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
@@ -17,47 +17,33 @@ import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
 import CustomLoadingScreen from './loadingScreen';
 import patchEngine from './fixFont';
 import createWorld from './ecs/startAllSystems';
+import { State, type SystemLoop } from './utilityTypes';
 // *** *** *** *** *** *** ***
 // *** *** END IMPORTS *** ***
 // *** *** *** *** *** *** ***
 
-enum State { Preload = -1, Title = 0, Combat = 1, Collection = 2, Cutscene = 3 }
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
 	// *** *** *** *** *** *** ***
 	// *** *** CLASS BEGIN *** ***
 	// *** *** *** *** *** *** ***
 	// General Entire Application
-	private _activeScene: Scene | undefined;
-	private _uiScene: Scene | undefined;
-	private _canvas: HTMLCanvasElement | OffscreenCanvas;
-	private _engine: Engine;
-	private _rapierWorker: rapierWorkerType;
-	private _navigationToLoad: string;
-	private _savegame: Savegame;
-	private _saveSlotNum: number;
-	private _loadedSaveSlot: SaveSlot;
+	private _activeScene: Scene | undefined; // The active scene is the scene that is currently being rendered.
+	private _titleScene: Scene | undefined; // The title scene does not use ECS, so it can load first. We might also use it when changing the gamescene.
+	private _canvas: HTMLCanvasElement | OffscreenCanvas; // The canvas is the HTML element that is used to render the scene.
+	private _engine: Engine; // The engine is the BabylonJS engine that is used to render the scene.
+	private _rapierWorker: rapierWorkerType; // The rapier worker is the web worker that is used to run the physics simulation.
+	private _navigationToLoad: string; // The navigation to load is sometimes provided by the URL. Not yet implemented.
+	private _savegame: Savegame; // The savegame is the savegame that is loaded from local storage.
+	private _saveSlotNum: number; // The save slot number is the number of the save slot that is currently loaded.
+	private _loadedSaveSlot: SaveSlot; // The loaded save slot is the save slot data that is currently loaded.
 
 	// Game State Related
-	private _state: State = State.Title;
-	private _laststate: State = State.Preload;
-	private _gamescene: Scene | undefined;
-	private _world: World | undefined;
-	// _systems is an object with systems as properties
-	// systems are classes which extend System from becsy
-	private _systems: {
-		UIDSystem: SystemType<System>,
-		GameStateSystem: SystemType<System>,
-		InputSystem: SystemType<System>,
-		MoveIntoCombatSystem: SystemType<System>,
-		EnergySystem: SystemType<System>,
-		ActionSystem: SystemType<System>,
-		CombatPositionSystem: SystemType<System>,
-		MeshPositionSystem: SystemType<System>,
-		DamageSystem: SystemType<System>,
-		CleanupCombatSceneSystem: SystemType<System>,
-		SaveGameSystem: SystemType<System>,
-	} | undefined;
+	private _state: State = State.Title; // The state is the current state of the game.
+	private _laststate: State = State.Preload; // The last state is the previous state of the game. We use this to determine if we need to do any cleanup.
+	private _gamescene: Scene | undefined; // The gamescene is our main scene. It uses ECS heavily.
+	private _world: World | undefined; // The world is the ECS world that is used to manage the game entities.
+	private _systems: SystemLoop | undefined; // The systems are the ECS systems that are used to manage the game entities.
 	// private _cutscene: Scene;
 
 	// *** *** *** *** *** *** ***
@@ -73,11 +59,18 @@ export class Game {
 		this._rapierWorker = rapierWorker;
 		this._canvas = canvas as HTMLCanvasElement;
 		this._engine = new Engine(this._canvas, true);
-		if (canvas instanceof OffscreenCanvas) {
+		this._init();
+	}
+	// *** *** *** *** *** *** ***
+	// *** *** *** GAME *** *** ***
+	// *** *** *** *** *** *** ***
+
+	private _init = async (): Promise<void> => {
+		if (this._canvas instanceof OffscreenCanvas) {
 			patchEngine(this._engine);
 		}
 		//* *for development: make inspector visible/invisible
-		if (canvas instanceof HTMLCanvasElement) {
+		if (this._canvas instanceof HTMLCanvasElement) {
 			window.addEventListener('keydown', (event_) => {
 			// Shift+I
 				if (event_.shiftKey && event_.key === 'I') {
@@ -89,20 +82,6 @@ export class Game {
 				}
 			});
 		}
-		this._init();
-	}
-	// *** *** *** *** *** *** ***
-	// *** *** *** GAME *** *** ***
-	// *** *** *** *** *** *** ***
-
-	private _init = async (): Promise<void> => {
-		const game = await this._setUpGame();
-		const world = game.world;
-		const systems = game.systems;
-		this._world = world;
-		this._systems = systems;
-		this._saveCurrentSlot()
-		// Add resize listener
 		window.addEventListener('resize', () => {
 			this._engine.resize();
 		});
@@ -116,12 +95,18 @@ export class Game {
 			this._saveCurrentSlot();
 		});
 
-		await this._goToStart();
-		await this._main();
+		await this._everyTick();
+		await this._goToTitle();
+		const game = await this._setUpGame();
+		const world = game.world;
+		const systems = game.systems;
+		this._world = world;
+		this._systems = systems;
+		this._saveCurrentSlot();
 	}
 
 	// eslint-disable-next-line require-await
-	private _main = async (): Promise<void> => {
+	private _everyTick = async (): Promise<void> => {
 		this._engine.runRenderLoop(() => {
 			if (this._activeScene) {
 				try {
@@ -149,6 +134,22 @@ export class Game {
 										this._systems.CleanupCombatSceneSystem,
 									],
 									restart: []
+								})
+								break;
+							case State.NoCombat:
+								this._world.control({
+									stop: [
+										this._systems.EnergySystem,
+										this._systems.ActionSystem,
+										this._systems.DamageSystem,
+										this._systems.CleanupCombatSceneSystem,
+									],
+									restart: [
+										this._systems.InputSystem,
+										this._systems.MoveIntoCombatSystem,
+										this._systems.CombatPositionSystem,
+										this._systems.MeshPositionSystem,
+									]
 								})
 								break;
 							case State.Combat:
@@ -190,7 +191,7 @@ export class Game {
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
 										this._systems.CombatPositionSystem,
-										this._systems.MeshPositionSystem,
+										// this._systems.MeshPositionSystem,
 										this._systems.DamageSystem,
 										this._systems.CleanupCombatSceneSystem,
 									],
@@ -216,21 +217,28 @@ export class Game {
 		}, 1000 / 1);
 	}
 
-	private _goToStart = async () => {
-		const loadingScreen = new CustomLoadingScreen('Loading...')
-		this._engine.loadingScreen = loadingScreen;
-		this._engine.loadingScreen.loadingUIBackgroundColor = '#151729';
+	private _showLoadingScreen = (message?: string, color?: string) => {
+		this._engine.loadingScreen = new CustomLoadingScreen(message ?? 'Loading...');
+		this._engine.loadingScreen.loadingUIBackgroundColor = color ?? '#151729';
 		this._engine.displayLoadingUI();
-		try { this._uiScene?.dispose(); } catch (error) { }
-		this._uiScene = undefined;
-		this._uiScene = new Scene(this._engine);
+	}
+
+	private _removeLoadingScreen = () => {
+		this._engine.hideLoadingUI();
+	}
+
+	private _goToTitle = async () => {
+		this._showLoadingScreen();
+		try { this._titleScene?.dispose(); } catch (error) { }
+		this._titleScene = undefined;
+		this._titleScene = new Scene(this._engine);
 		const {	camera: gameCam,
 			shadows: shadowGenerator } = await createPixelCamera(this._canvas,
-			this._uiScene);
-		titleScreenBackground(this._uiScene,
+			this._titleScene);
+		titleScreenBackground(this._titleScene,
 			this._rapierWorker, shadowGenerator);
-		const UICam = createUICamera(this._canvas, this._uiScene);
-		this._uiScene.activeCameras = [gameCam, UICam];
+		const UICam = createUICamera(this._canvas, this._titleScene);
+		this._titleScene.activeCameras = [gameCam, UICam];
 		const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
 		mainMenuUI.layer!.layerMask = 0x10000000;
 		mainMenuUI.idealHeight = 720;
@@ -288,8 +296,8 @@ export class Game {
 		createControl('LOAD GAME', 0, this._promptForSlot, newGameBoo());
 		createControl('OPTIONS', 35);
 		createControl('CREDITS', 70);
-		this._activeScene = this._uiScene;
-		this._engine.hideLoadingUI();
+		this._activeScene = this._titleScene;
+		this._removeLoadingScreen();
 	}
 
 	private _setUpGame = async () => {
@@ -300,8 +308,7 @@ export class Game {
 	}
 
 	private _goToGame = async () => {
-		const loadingScreen = new CustomLoadingScreen('Loading...')
-		this._engine.loadingScreen = loadingScreen;
+		this._showLoadingScreen();
 		// this._activeScene!.removeCamera(this._activeScene!.activeCameras![0]);
 		console.log('go to game')
 		// try { this._activeScene!.detachControl() } catch (error) { }
@@ -310,25 +317,13 @@ export class Game {
 			this._activeScene = this._gamescene;
 			this._activeScene.attachControl();
 			this._state = State.Combat;
-			// INPUT
-			// this._input = new PlayerInput(scene, this._ui);
-
-			// Initialize game loop
-			// await this._initializeGameAsync(scene);
-
-			// When finished loading
-
-			// Actions to complete once game loop is setup
-			try { this._uiScene?.dispose(); } catch (error) { }
-			this._uiScene = undefined;
-
-		// this.game.play();
+			try { this._titleScene?.dispose(); } catch (error) { }
+			this._titleScene = undefined;
 		} else {
 			await this._setUpGame();
-			// await this._gamescene!.whenReadyAsync();
 			await this._goToGame();
 		}
-		this._engine.hideLoadingUI();
+		this._removeLoadingScreen();
 		return Promise.resolve();
 	}
 
@@ -364,7 +359,7 @@ export class Game {
 						this._loadSaveSlot(this._saveSlotNum);
 						this._saveCurrentSlot();
 						window.alert('New save slot created.')
-						this._goToStart();
+						this._goToTitle();
 					} else { throw new Error('could not load new save slot') }
 				} else {
 					window.alert('Save slot not created. No name given.')
