@@ -7,15 +7,32 @@ import _Combat from './combat';
 }
 @component class Health {
 	@field.int16 declare value: number;
-	@field.int16 declare baseValue: number;
 }
 @component class Attack {
 	@field.int16 declare value: number;
-	@field.int16 declare baseValue: number;
 }
 @component class Speed {
 	@field.float64 declare value: number;
-	@field.float64 declare baseValue: number;
+}
+@component class BaseStats {
+	// The BaseStats component is used to create a new entity.
+	// It has all the information needed to create a new monster.
+	@field.int16 declare health: number;
+	@field.int16 declare attack: number;
+	@field.float64 declare speed: number;
+}
+@component class CreateMe {
+	@field.staticString(['Friend', 'Foe', 'Other']) declare team: string;
+	@field.staticString(['Combat', 'Collection']) declare destination: string;
+	// This component should only exist on entities without the ArchetypeActiveMonster.
+	// It will tell the narrator to transform this entity into an ArchetypeActiveMonster.
+	static validate (entity: Entity): void {
+		if (entity.has(CreateMe)) {
+			if (entity.has(ArchetypeMonster)) {
+				console.error('ActivateMe must not have ArchetypeActiveMonster');
+			}
+		}
+	}
 }
 @component class ArchetypeMonster {
 	static validate (entity: Entity): void {
@@ -42,6 +59,8 @@ export default {
 	Health,
 	Attack,
 	Speed,
+	BaseStats,
+	CreateMe,
 	ArchetypeMonster,
 	Collection,
 	Combat

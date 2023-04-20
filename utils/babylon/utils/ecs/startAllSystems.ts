@@ -7,29 +7,33 @@ import createPixelCamera from '../createPixelCamera';
 import { type SystemLoop } from '../utilityTypes';
 import initializeUIDSystem from './systems/UID';
 import initializeInputSystem from './systems/Input';
-import initializeMoveIntoCombatSystem from './systems/MoveIntoCombat';
+import initializeMoveIntoCombatSystem from './systems/narrator/MoveIntoCombat';
 import initializeEnergySystem from './systems/Energy';
 import intializeActionSystem from './systems/Action';
 import initializeCombatPositionSystem from './systems/CombatPosition';
 import initializeDamageSystem from './systems/Damage';
-import initializeCleanupCombatSceneSystem from './systems/CleanupCombatScene';
+import initializeCleanupCombatSceneSystem from './systems/narrator/CleanupCombatScene';
 import initializeSaveGameSystem from './systems/narrator/SaveGame';
 import initializeGameStateSystem from './systems/narrator/GameState';
 import initalizeMeshPositionSystem from './systems/MeshPosition';
+import initializeMonsterMakerSystem from './systems/narrator/MonsterMaker';
+import initializeNoCombatSystem from './systems/narrator/GameStates/NoCombat';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
-	const GameStateSystem = initializeGameStateSystem(UIDSystem);
-	const InputSystem = initializeInputSystem(GameStateSystem);
-	const MoveIntoCombatSystem = initializeMoveIntoCombatSystem(InputSystem);
+	const InputSystem = initializeInputSystem(UIDSystem);
+	const MonsterMakerSystem = initializeMonsterMakerSystem(InputSystem);
+	const MoveIntoCombatSystem = initializeMoveIntoCombatSystem(MonsterMakerSystem);
 	const EnergySystem = initializeEnergySystem(MoveIntoCombatSystem);
 	const ActionSystem = intializeActionSystem(EnergySystem);
 	const CombatPositionSystem = initializeCombatPositionSystem(ActionSystem);
 	const MeshPositionSystem = initalizeMeshPositionSystem(CombatPositionSystem, scene);
 	const DamageSystem = initializeDamageSystem(MeshPositionSystem);
 	const CleanupCombatSceneSystem = initializeCleanupCombatSceneSystem(DamageSystem);
+	const NoCombatSystem = initializeNoCombatSystem(CleanupCombatSceneSystem);
 
-	const SaveGameSystem = initializeSaveGameSystem(CleanupCombatSceneSystem);
+	const SaveGameSystem = initializeSaveGameSystem(NoCombatSystem);
+	const GameStateSystem = initializeGameStateSystem(SaveGameSystem);
 
 	const world = await World.create();
 

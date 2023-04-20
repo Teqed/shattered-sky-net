@@ -7,7 +7,10 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		private narratorGameState = this.singleton.write(Component.Narrator.GameState);
 		entities = this.query(q => q.current
 			.with(Component.Monster.Collection.RestingInCollection).write
-			.using(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat).write);
+			.using(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat,
+				Component.Monster.CreateMe,
+				Component.Monster.BaseStats,
+			).write);
 
 		override initialize () {
 			addEventListener('keydown', (event) => {
@@ -41,6 +44,14 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				if (event.code === 'Digit3') {
 					console.log('3 pressed');
 					this.narratorGameState.value = 3;
+				}
+				if (event.code === 'KeyZ') {
+					console.log('Z pressed');
+					// Create a new friendly monster.
+					this.createEntity(
+						Component.Monster.CreateMe, { team: 'Friend', destination: 'Combat' },
+						Component.Monster.BaseStats, { health: 10, attack: 5, speed: 5 },
+					);
 				}
 			});
 		}

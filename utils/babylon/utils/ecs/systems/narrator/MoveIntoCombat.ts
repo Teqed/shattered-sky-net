@@ -1,6 +1,6 @@
 
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
-import * as Component from '../components/components';
+import * as Component from '../../components/components';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class MoveIntoCombat extends System {
 		entitiesCollection = this.query(q => q.current
@@ -8,7 +8,10 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			.using(
 				Component.Monster.Collection.RestingInCollection,
 				Component.Monster.Combat.ArchetypeCombatMonster,
-				Component.Monster.Combat.FriendlyPosition).write);
+				Component.Monster.Combat.FriendlyPosition,
+				Component.Monster.Combat.QueuedAction,
+				Component.Monster.Combat.Energy,
+			).write);
 
 		entitiesOnFriendlyBattlefield = this.query(q => q.current
 			.with(Component.Monster.Combat.FriendlyPosition).write
@@ -16,7 +19,11 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 
 		entitiesWild = this.query(q => q.current
 			.with(Component.Monster.Combat.TriggerMoveFromWildIntoCombat).write
-			.using(Component.Monster.Combat.ArchetypeCombatMonster, Component.Monster.Combat.EnemyPosition).write
+			.using(Component.Monster.Combat.ArchetypeCombatMonster,
+				Component.Monster.Combat.EnemyPosition,
+				Component.Monster.Combat.QueuedAction,
+				Component.Monster.Combat.Energy,
+			).write
 			.usingAll.write); // For entity.delete() to work, we need to use usingAll.
 
 		entitiesOnEnemyBattlefield = this.query(q => q.current
@@ -39,6 +46,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				if (availablePositions.length > 0) {
 					const position = availablePositions[0];
 					entity.remove(Component.Monster.Collection.RestingInCollection);
+					entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' });
+					entity.add(Component.Monster.Combat.Energy, { value: 0 });
 					entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
 					entity.add(Component.Monster.Combat.FriendlyPosition, { value: position });
 					friendlyPositions.push(entity);
@@ -60,6 +69,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				);
 				if (availablePositions.length > 0) {
 					const position = availablePositions[0];
+					entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' });
+					entity.add(Component.Monster.Combat.Energy, { value: 0 });
 					entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
 					entity.add(Component.Monster.Combat.EnemyPosition, { value: position });
 					enemyPositions.push(entity);

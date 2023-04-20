@@ -1,6 +1,6 @@
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
-import * as Component from '../components/components';
-import { State } from '../../utilityTypes';
+import * as Component from '../../components/components';
+import { State } from '../../../utilityTypes';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class CleanupCombatScene extends System {
 	// This runs when all entities on the Foe team have been disabled.
@@ -41,15 +41,15 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
 					// Remove the entity from the world.
 					// entity.delete();
-					// End combat state
-					this.NarratorGameState.value = State.NoCombat;
 				}
+				// End combat state
+				this.NarratorGameState.value = State.NoCombat;
 			}
 			const allFriendlyDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Friend');
 			if (allFriendlyDisabled) {
 				console.log('All friendly monsters have been disabled. Cleaning up combat scene.');
 				window.alert('Defeat! All friendly monsters have been defeated.');
-				for (const entity of this.defeatedFriendly.current) {
+				for (const entity of this.activeCombatants.current) {
 				// Remove them from the battlefield by removing their position.
 					entity.remove(Component.Monster.Combat.Position);
 					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
@@ -61,9 +61,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
 					// Remove the entity from the world.
 					// entity.delete();
-					// End combat state
-					this.NarratorGameState.value = State.NoCombat;
 				}
+				// End combat state
+				this.NarratorGameState.value = State.NoCombat;
 			}
 		}
 	}

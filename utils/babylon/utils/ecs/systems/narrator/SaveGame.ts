@@ -105,18 +105,15 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Health) {
 							entity.add(Component.Monster.Health, {
-								value: monsterMatrix[Field.Health_value],
-								baseValue: monsterMatrix[Field.Health_baseValue] });
+								value: monsterMatrix[Field.Health_value]});
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Attack) {
 							entity.add(Component.Monster.Attack, {
-								value: monsterMatrix[Field.Attack_value],
-								baseValue: monsterMatrix[Field.Attack_baseValue] });
+								value: monsterMatrix[Field.Attack_value]});
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Speed) {
 							entity.add(Component.Monster.Speed, {
-								value: monsterMatrix[Field.Speed_value],
-								baseValue: monsterMatrix[Field.Speed_baseValue] });
+								value: monsterMatrix[Field.Speed_value]});
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.RestingInCollection) {
 							entity.add(Component.Monster.Collection.RestingInCollection);
@@ -209,19 +206,16 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					if (entity.has(Component.Monster.Health)) {
 						const Health = entity.read(Component.Monster.Health);
 						entityComponent[Field.Health_value] = Health.value;
-						entityComponent[Field.Health_baseValue] = Health.baseValue;
 						entityComponent[Field.Flags] += EntityFlags.Health;
 					}
 					if (entity.has(Component.Monster.Attack)) {
 						const Attack = entity.read(Component.Monster.Attack);
 						entityComponent[Field.Attack_value] = Attack.value;
-						entityComponent[Field.Attack_baseValue] = Attack.baseValue;
 						entityComponent[Field.Flags] += EntityFlags.Attack;
 					}
 					if (entity.has(Component.Monster.Speed)) {
 						const Speed = entity.read(Component.Monster.Speed);
 						entityComponent[Field.Speed_value] = Speed.value;
-						entityComponent[Field.Speed_baseValue] = Speed.baseValue;
 						entityComponent[Field.Flags] += EntityFlags.Speed;
 					}
 					if (entity.has(Component.Monster.Collection.RestingInCollection)) {
