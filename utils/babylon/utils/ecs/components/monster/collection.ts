@@ -2,7 +2,7 @@ import { component, type Entity } from '@lastolivegames/becsy';
 
 @component class RestingInCollection {
 }
-@component class TriggerMoveFromCollectionIntoCombat {
+@component class TriggerMoveFromCollectionIntoParty {
 }
 @component class ArchetypeCollectedMonster {
 	static validate (entity: Entity): void {
@@ -18,4 +18,4 @@ import { component, type Entity } from '@lastolivegames/becsy';
 	}
 }
 
-export default { RestingInCollection, TriggerMoveFromCollectionIntoCombat, ArchetypeCollectedMonster };
+export default { RestingInCollection, TriggerMoveFromCollectionIntoParty, ArchetypeCollectedMonster };

@@ -4,14 +4,16 @@ export enum State { Preload = -1, Title = 0, NoCombat = 10, Combat = 20, Collect
 
 export type SystemLoop = {
 	UIDSystem: SystemType<System>,
-	GameStateSystem: SystemType<System>,
 	InputSystem: SystemType<System>,
-	MoveIntoCombatSystem: SystemType<System>,
+	MonsterMakerSystem: SystemType<System>,
+	CombatNarratorSystem: SystemType<System>,
 	EnergySystem: SystemType<System>,
 	ActionSystem: SystemType<System>,
 	CombatPositionSystem: SystemType<System>,
 	MeshPositionSystem: SystemType<System>,
 	DamageSystem: SystemType<System>,
-	CleanupCombatSceneSystem: SystemType<System>,
+	NoCombatSystem: SystemType<System>,
+	CutsceneSystem: SystemType<System>,
 	SaveGameSystem: SystemType<System>,
+	GameStateSystem: SystemType<System>,
 }

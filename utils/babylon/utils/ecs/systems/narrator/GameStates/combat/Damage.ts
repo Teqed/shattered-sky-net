@@ -1,6 +1,6 @@
 
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
-import * as Component from '../components/components';
+import * as Component from '../../../../components/components';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class DamageSystem extends System {
 	// This system will apply incoming damage to health.

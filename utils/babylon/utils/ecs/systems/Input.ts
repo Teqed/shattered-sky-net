@@ -7,7 +7,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		private narratorGameState = this.singleton.write(Component.Narrator.GameState);
 		entities = this.query(q => q.current
 			.with(Component.Monster.Collection.RestingInCollection).write
-			.using(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat,
+			.using(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty,
 				Component.Monster.CreateMe,
 				Component.Monster.BaseStats,
 			).write);
@@ -17,7 +17,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				if (event.code === 'Space') {
 					console.log('Space pressed');
 					for (const entity of this.entities.current) {
-						entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat);
+						entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty);
 					}
 				}
 				if (event.code === 'KeyS') {
@@ -50,7 +50,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					// Create a new friendly monster.
 					this.createEntity(
 						Component.Monster.CreateMe, { team: 'Friend', destination: 'Combat' },
-						Component.Monster.BaseStats, { health: 10, attack: 5, speed: 5 },
+						Component.Monster.BaseStats, { health: 10, attack: 1, speed: 25 },
 					);
 				}
 			});

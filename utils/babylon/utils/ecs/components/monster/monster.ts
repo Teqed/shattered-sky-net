@@ -34,6 +34,14 @@ import _Combat from './combat';
 		}
 	}
 }
+@component class Party {
+	// Party monsters are currently equipped for use in combat.
+}
+
+@component class Wild {
+	// Wild monsters exist in limbo.
+	// They are neither in the collection or in combat.
+}
 @component class ArchetypeMonster {
 	static validate (entity: Entity): void {
 		if (entity.has(ArchetypeMonster)) {
@@ -61,6 +69,8 @@ export default {
 	Speed,
 	BaseStats,
 	CreateMe,
+	Party,
+	Wild,
 	ArchetypeMonster,
 	Collection,
 	Combat

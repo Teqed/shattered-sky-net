@@ -8,52 +8,49 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 	enum EntityFlags {
 		None = 0b0,
 		UID = 1 << 0,
-		Team = 1 << 1,
-		Health = 1 << 2,
-		Attack = 1 << 3,
-		Speed = 1 << 4,
-		ArchetypeMonster = 1 << 5,
-		RestingInCollection = 1 << 6,
-		TriggerMoveFromCollectionIntoCombat = 1 << 7,
-		ArchetypeCollectedMonster = 1 << 8,
-		Energy = 1 << 9,
-		ActionReady = 1 << 10,
-		QueuedAction = 1 << 11,
-		Position = 1 << 12,
-		FriendlyPosition = 1 << 13,
-		EnemyPosition = 1 << 14,
-		ArchetypeCombatMonster = 1 << 15,
-		IncomingDamage = 1 << 16,
-		CombatDisabled = 1 << 17,
-		TriggerMoveFromWildIntoCombat = 1 << 18,
+		Team = UID << 1,
+		Health = Team << 1,
+		Attack = Health << 1,
+		Speed = Attack << 1,
+		BaseStats = Speed << 1,
+		CreateMe = BaseStats << 1,
+		Party = CreateMe << 1,
+		Wild = Party << 1,
+		ArchetypeMonster = Wild << 1,
+		RestingInCollection = ArchetypeMonster << 1,
+		TriggerMoveFromCollectionIntoParty = RestingInCollection << 1,
+		ArchetypeCollectedMonster = TriggerMoveFromCollectionIntoParty << 1,
+		Energy = ArchetypeCollectedMonster << 1,
+		ActionReady = Energy << 1,
+		QueuedAction = ActionReady << 1,
+		Position = QueuedAction << 1,
+		ArchetypeCombatMonster = Position << 1,
+		IncomingDamage = ArchetypeCombatMonster << 1,
+		CombatDisabled = IncomingDamage << 1,
+		TriggerMoveFromWildIntoCombat = CombatDisabled << 1,
+		FriendlyPosition = TriggerMoveFromWildIntoCombat << 1,
+		EnemyPosition = FriendlyPosition << 1, // 1 << 22
+		// GameState = 1 << 23,
+		// TriggerLoadSave = 1 << 24,
+		// DesiredCutscene = 1 << 25,
 	}
 	enum Field {
-		UID = 0,
-		Team = 1,
-		// Health
-		Health_value = 2,
-		Health_baseValue = 3,
-		// Attack
-		Attack_value = 4,
-		Attack_baseValue = 5,
-		// Speed
-		Speed_value = 6,
-		Speed_baseValue = 7,
-		// Energy
-		Energy = 8,
-		// QueuedAction
-		QueuedAction = 9,
-		// Position
-		Position_x = 10,
-		Position_y = 11,
-		Position_z = 12,
-		// FriendlyPosition
-		FriendlyPosition = 13,
-		// EnemyPosition
-		EnemyPosition = 14,
-		// IncomingDamage
-		IncomingDamage = 15,
-		// Bitwise flags
+		UID,
+		Team,
+		Health,
+		Attack,
+		Speed,
+		BaseStats_health,
+		BaseStats_attack,
+		BaseStats_speed,
+		Energy,
+		QueuedAction,
+		Position_x,
+		Position_y,
+		Position_z,
+		IncomingDamage,
+		FriendlyPosition,
+		EnemyPosition,
 		Flags = 31,
 	}
 	@system(s => s.after(afterSystem)) class SaveGameSystem extends System {
@@ -72,9 +69,6 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					for (const entity of this.entities.current) {
 						entity.delete();
 					}
-					// Fake monster data:
-					// eslint-disable-next-line max-len
-					// const rawSaveJSON = '[{"type":"Float32Array","data":[-557805056,0,100,100,10,10,58.224464416503906,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2911]},{"type":"Float32Array","data":[1625659008,1,100,100,10,10,58.538734436035156,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,264735]},{"type":"Float32Array","data":[-144126112,0,100,100,10,10,45.34804153442383,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2911]},{"type":"Float32Array","data":[-153578352,1,100,100,10,10,25.538976669311523,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,264735]},{"type":"Float32Array","data":[-398403424,0,100,100,10,10,33.215694427490234,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2911]},{"type":"Float32Array","data":[-1802108288,1,100,100,10,10,73.60997009277344,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,264735]},{"type":"Float32Array","data":[-481368320,0,100,100,10,10,91.65564727783203,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2911]},{"type":"Float32Array","data":[216954432,1,100,100,10,10,5.698422908782959,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,264735]},{"type":"Float32Array","data":[-620746112,0,100,100,10,10,91.97325897216797,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2911]},{"type":"Float32Array","data":[-8960669,1,100,100,10,10,59.7160530090332,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,264735]}]';
 					// Fetch the savedata from event.detail.saveData
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const rawSaveJSON: string = (event as any).detail.saveData.systemsData as string;
@@ -105,21 +99,40 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Health) {
 							entity.add(Component.Monster.Health, {
-								value: monsterMatrix[Field.Health_value]});
+								value: monsterMatrix[Field.Health]});
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Attack) {
 							entity.add(Component.Monster.Attack, {
-								value: monsterMatrix[Field.Attack_value]});
+								value: monsterMatrix[Field.Attack]});
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.Speed) {
 							entity.add(Component.Monster.Speed, {
-								value: monsterMatrix[Field.Speed_value]});
+								value: monsterMatrix[Field.Speed]});
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.BaseStats) {
+							entity.add(Component.Monster.BaseStats, {
+								health: monsterMatrix[Field.BaseStats_health],
+								attack: monsterMatrix[Field.BaseStats_attack],
+								speed: monsterMatrix[Field.BaseStats_speed],
+							});
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.CreateMe) {
+							entity.add(Component.Monster.CreateMe);
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.Party) {
+							entity.add(Component.Monster.Party);
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.Wild) {
+							entity.add(Component.Monster.Wild);
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeMonster) {
+							entity.add(Component.Monster.ArchetypeMonster);
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.RestingInCollection) {
 							entity.add(Component.Monster.Collection.RestingInCollection);
 						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromCollectionIntoCombat) {
-							entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat);
+						if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromCollectionIntoParty) {
+							entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty);
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCollectedMonster) {
 							entity.add(Component.Monster.Collection.ArchetypeCollectedMonster);
@@ -150,12 +163,6 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 									y: monsterMatrix[Field.Position_y],
 									z: monsterMatrix[Field.Position_z] } });
 						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.FriendlyPosition) {
-							entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[Field.FriendlyPosition] });
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.EnemyPosition) {
-							entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[Field.EnemyPosition] });
-						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCombatMonster) {
 							entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
 						}
@@ -167,6 +174,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						}
 						if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromWildIntoCombat) {
 							entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.FriendlyPosition) {
+							entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[Field.FriendlyPosition] });
+						}
+						if (monsterMatrix[Field.Flags] & EntityFlags.EnemyPosition) {
+							entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[Field.EnemyPosition] });
 						}
 					}
 				}
@@ -205,24 +218,43 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					}
 					if (entity.has(Component.Monster.Health)) {
 						const Health = entity.read(Component.Monster.Health);
-						entityComponent[Field.Health_value] = Health.value;
+						entityComponent[Field.Health] = Health.value;
 						entityComponent[Field.Flags] += EntityFlags.Health;
 					}
 					if (entity.has(Component.Monster.Attack)) {
 						const Attack = entity.read(Component.Monster.Attack);
-						entityComponent[Field.Attack_value] = Attack.value;
+						entityComponent[Field.Attack] = Attack.value;
 						entityComponent[Field.Flags] += EntityFlags.Attack;
 					}
 					if (entity.has(Component.Monster.Speed)) {
 						const Speed = entity.read(Component.Monster.Speed);
-						entityComponent[Field.Speed_value] = Speed.value;
+						entityComponent[Field.Speed] = Speed.value;
 						entityComponent[Field.Flags] += EntityFlags.Speed;
+					}
+					if (entity.has(Component.Monster.BaseStats)) {
+						const BaseStats = entity.read(Component.Monster.BaseStats);
+						entityComponent[Field.BaseStats_health] = BaseStats.health;
+						entityComponent[Field.BaseStats_attack] = BaseStats.attack;
+						entityComponent[Field.BaseStats_speed] = BaseStats.speed;
+						entityComponent[Field.Flags] += EntityFlags.BaseStats;
+					}
+					if (entity.has(Component.Monster.CreateMe)) {
+						entityComponent[Field.Flags] += EntityFlags.CreateMe;
+					}
+					if (entity.has(Component.Monster.Party)) {
+						entityComponent[Field.Flags] += EntityFlags.Party;
+					}
+					if (entity.has(Component.Monster.Wild)) {
+						entityComponent[Field.Flags] += EntityFlags.Wild;
+					}
+					if (entity.has(Component.Monster.ArchetypeMonster)) {
+						entityComponent[Field.Flags] += EntityFlags.ArchetypeMonster;
 					}
 					if (entity.has(Component.Monster.Collection.RestingInCollection)) {
 						entityComponent[Field.Flags] += EntityFlags.RestingInCollection;
 					}
-					if (entity.has(Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat)) {
-						entityComponent[Field.Flags] += EntityFlags.TriggerMoveFromCollectionIntoCombat;
+					if (entity.has(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty)) {
+						entityComponent[Field.Flags] += EntityFlags.TriggerMoveFromCollectionIntoParty;
 					}
 					if (entity.has(Component.Monster.Collection.ArchetypeCollectedMonster)) {
 						entityComponent[Field.Flags] += EntityFlags.ArchetypeCollectedMonster;
@@ -262,16 +294,6 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						entityComponent[Field.Position_z] = Position.value.z;
 						entityComponent[Field.Flags] += EntityFlags.Position;
 					}
-					if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
-						const FriendlyPosition = entity.read(Component.Monster.Combat.FriendlyPosition);
-						entityComponent[Field.FriendlyPosition] = FriendlyPosition.value;
-						entityComponent[Field.Flags] += EntityFlags.FriendlyPosition;
-					}
-					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
-						const EnemyPosition = entity.read(Component.Monster.Combat.EnemyPosition);
-						entityComponent[Field.EnemyPosition] = EnemyPosition.value;
-						entityComponent[Field.Flags] += EntityFlags.EnemyPosition;
-					}
 					if (entity.has(Component.Monster.Combat.ArchetypeCombatMonster)) {
 						entityComponent[Field.Flags] += EntityFlags.ArchetypeCombatMonster;
 					}
@@ -285,6 +307,16 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					}
 					if (entity.has(Component.Monster.Combat.TriggerMoveFromWildIntoCombat)) {
 						entityComponent[Field.Flags] += EntityFlags.TriggerMoveFromWildIntoCombat;
+					}
+					if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
+						const FriendlyPosition = entity.read(Component.Monster.Combat.FriendlyPosition);
+						entityComponent[Field.FriendlyPosition] = FriendlyPosition.value;
+						entityComponent[Field.Flags] += EntityFlags.FriendlyPosition;
+					}
+					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
+						const EnemyPosition = entity.read(Component.Monster.Combat.EnemyPosition);
+						entityComponent[Field.EnemyPosition] = EnemyPosition.value;
+						entityComponent[Field.Flags] += EntityFlags.EnemyPosition;
 					}
 					entitiesArray.push(entityComponent);
 				}

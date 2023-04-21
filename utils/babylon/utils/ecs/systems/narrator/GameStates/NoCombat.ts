@@ -29,7 +29,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					// For now, as a placeholder, just spawn a random monster.
 					this.createEntity(
 						Component.Monster.CreateMe, { team: 'Foe', destination: 'Combat' },
-						Component.Monster.BaseStats, { health: 10, attack: 5, speed: 5 },
+						Component.Monster.BaseStats, { health: 10, attack: 1, speed: 25 },
 					);
 				} else { console.log('No encounter found.'); }
 			}

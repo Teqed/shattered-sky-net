@@ -7,32 +7,32 @@ import createPixelCamera from '../createPixelCamera';
 import { type SystemLoop } from '../utilityTypes';
 import initializeUIDSystem from './systems/UID';
 import initializeInputSystem from './systems/Input';
-import initializeMoveIntoCombatSystem from './systems/narrator/MoveIntoCombat';
-import initializeEnergySystem from './systems/Energy';
-import intializeActionSystem from './systems/Action';
+import initializeCombatNarratorSystem from './systems/narrator/gamestates/combat/CombatNarrator';
+import initializeEnergySystem from './systems/narrator/gamestates/combat/Energy';
+import intializeActionSystem from './systems/narrator/gamestates/combat/Action';
 import initializeCombatPositionSystem from './systems/CombatPosition';
-import initializeDamageSystem from './systems/Damage';
-import initializeCleanupCombatSceneSystem from './systems/narrator/CleanupCombatScene';
+import initializeDamageSystem from './systems/narrator/gamestates/combat/Damage';
 import initializeSaveGameSystem from './systems/narrator/SaveGame';
 import initializeGameStateSystem from './systems/narrator/GameState';
 import initalizeMeshPositionSystem from './systems/MeshPosition';
 import initializeMonsterMakerSystem from './systems/narrator/MonsterMaker';
-import initializeNoCombatSystem from './systems/narrator/GameStates/NoCombat';
+import initializeNoCombatSystem from './systems/narrator/gamestates/NoCombat';
+import initializeCutsceneSystem from './systems/narrator/gamestates/Cutscene';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
 	const InputSystem = initializeInputSystem(UIDSystem);
 	const MonsterMakerSystem = initializeMonsterMakerSystem(InputSystem);
-	const MoveIntoCombatSystem = initializeMoveIntoCombatSystem(MonsterMakerSystem);
-	const EnergySystem = initializeEnergySystem(MoveIntoCombatSystem);
+	const CombatNarratorSystem = initializeCombatNarratorSystem(MonsterMakerSystem);
+	const EnergySystem = initializeEnergySystem(CombatNarratorSystem);
 	const ActionSystem = intializeActionSystem(EnergySystem);
 	const CombatPositionSystem = initializeCombatPositionSystem(ActionSystem);
 	const MeshPositionSystem = initalizeMeshPositionSystem(CombatPositionSystem, scene);
 	const DamageSystem = initializeDamageSystem(MeshPositionSystem);
-	const CleanupCombatSceneSystem = initializeCleanupCombatSceneSystem(DamageSystem);
-	const NoCombatSystem = initializeNoCombatSystem(CleanupCombatSceneSystem);
+	const NoCombatSystem = initializeNoCombatSystem(DamageSystem);
+	const CutsceneSystem = initializeCutsceneSystem(NoCombatSystem);
 
-	const SaveGameSystem = initializeSaveGameSystem(NoCombatSystem);
+	const SaveGameSystem = initializeSaveGameSystem(CutsceneSystem);
 	const GameStateSystem = initializeGameStateSystem(SaveGameSystem);
 
 	const world = await World.create();
@@ -76,16 +76,18 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const systems: SystemLoop = {
 		UIDSystem,
-		GameStateSystem,
 		InputSystem,
-		MoveIntoCombatSystem,
+		MonsterMakerSystem,
+		CombatNarratorSystem,
 		EnergySystem,
 		ActionSystem,
 		CombatPositionSystem,
 		MeshPositionSystem,
 		DamageSystem,
-		CleanupCombatSceneSystem,
+		NoCombatSystem,
+		CutsceneSystem,
 		SaveGameSystem,
+		GameStateSystem,
 	}
 	return { world, systems }
 };

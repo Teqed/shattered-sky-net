@@ -13,10 +13,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				Component.Monster.Attack,
 				Component.Monster.Speed,
 				Component.Monster.Combat.TriggerMoveFromWildIntoCombat,
-				Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat,
+				Component.Monster.Collection.TriggerMoveFromCollectionIntoParty,
 				Component.Monster.Collection.ArchetypeCollectedMonster,
 				Component.Monster.Combat.ArchetypeCombatMonster,
 				Component.Monster.Collection.RestingInCollection,
+				Component.Monster.Party,
+				Component.Monster.Wild,
 			).write);
 
 		override execute () {
@@ -34,15 +36,19 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					case 'Combat':
 						switch (team) {
 							case 'Foe':
+								entity.add(
+									Component.Monster.Wild);
 								entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
 								break;
 							case 'Friend':
 								entity.add(
-									Component.Monster.Collection.TriggerMoveFromCollectionIntoCombat)
+									Component.Monster.Collection.TriggerMoveFromCollectionIntoParty)
 								entity.add(
 									Component.Monster.Collection.ArchetypeCollectedMonster);
 								entity.add(
 									Component.Monster.Collection.RestingInCollection);
+								entity.add(
+									Component.Monster.Party);
 								break;
 							default:
 								console.error('Invalid team value: ' + team)
@@ -52,6 +58,10 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 							Component.Monster.Collection.RestingInCollection);
 						entity.add(
 							Component.Monster.Collection.ArchetypeCollectedMonster);
+						break;
+					case 'Wild':
+						entity.add(
+							Component.Monster.Wild);
 						break;
 					default:
 						console.error('Invalid destination value: ' + destination)

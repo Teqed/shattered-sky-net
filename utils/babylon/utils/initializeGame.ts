@@ -96,7 +96,7 @@ export class Game {
 		});
 
 		await this._everyTick();
-		await this._goToTitle();
+		// await this._goToTitle();
 		const game = await this._setUpGame();
 		const world = game.world;
 		const systems = game.systems;
@@ -124,60 +124,54 @@ export class Game {
 							case State.Title:
 								this._world.control({
 									stop: [
-										this._systems.InputSystem,
-										this._systems.MoveIntoCombatSystem,
+										this._systems.CutsceneSystem,
+										this._systems.NoCombatSystem,
+										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
-										this._systems.CombatPositionSystem,
-										this._systems.MeshPositionSystem,
 										this._systems.DamageSystem,
-										this._systems.CleanupCombatSceneSystem,
 									],
 									restart: []
 								})
+								this._goToTitle();
 								break;
 							case State.NoCombat:
 								this._world.control({
 									stop: [
+										this._systems.CutsceneSystem,
+										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
 										this._systems.DamageSystem,
-										this._systems.CleanupCombatSceneSystem,
 									],
 									restart: [
-										this._systems.InputSystem,
-										this._systems.MoveIntoCombatSystem,
-										this._systems.CombatPositionSystem,
-										this._systems.MeshPositionSystem,
+										this._systems.NoCombatSystem,
 									]
 								})
 								break;
 							case State.Combat:
 								this._world.control({
-									stop: [],
+									stop: [
+										this._systems.CutsceneSystem,
+										this._systems.NoCombatSystem,
+									],
 									restart: [
-										this._systems.InputSystem,
-										this._systems.MoveIntoCombatSystem,
+										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
-										this._systems.CombatPositionSystem,
-										this._systems.MeshPositionSystem,
 										this._systems.DamageSystem,
-										this._systems.CleanupCombatSceneSystem,
 									]
 								})
 								break;
 							case State.Collection:
 								this._world.control({
 									stop: [
-										this._systems.InputSystem,
-										this._systems.MoveIntoCombatSystem,
+										this._systems.CutsceneSystem,
+										this._systems.NoCombatSystem,
+										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
-										this._systems.CombatPositionSystem,
-										this._systems.MeshPositionSystem,
 										this._systems.DamageSystem,
-										this._systems.CleanupCombatSceneSystem,
 									],
 									restart: []
 								})
@@ -186,18 +180,16 @@ export class Game {
 							case State.Cutscene:
 								this._world.control({
 									stop: [
-										this._systems.InputSystem,
-										this._systems.MoveIntoCombatSystem,
+										this._systems.NoCombatSystem,
+										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
-										this._systems.CombatPositionSystem,
-										// this._systems.MeshPositionSystem,
 										this._systems.DamageSystem,
-										this._systems.CleanupCombatSceneSystem,
 									],
-									restart: []
+									restart: [
+										this._systems.CutsceneSystem,
+									]
 								})
-								console.warn('Cutscene not implemented yet')
 								break;
 							default:
 								break;
@@ -214,7 +206,7 @@ export class Game {
 					console.error(error);
 				}
 			}
-		}, 1000 / 1);
+		}, 1000 / 8);
 	}
 
 	private _showLoadingScreen = (message?: string, color?: string) => {
