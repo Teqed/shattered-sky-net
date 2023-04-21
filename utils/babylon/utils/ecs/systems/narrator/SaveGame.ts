@@ -1,9 +1,10 @@
 
-import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
+import { type Entity, system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
 import reviveTypedArray from '@stdlib/array-reviver';
 import typedarray2json from '@stdlib/array-to-json';
 import parseJSON from '@stdlib/utils-parse-json';
 import * as Component from '../../components/components';
+import { Position } from '../../components/monster/combat';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	enum EntityFlags {
 		None = 0b0,
@@ -59,134 +60,143 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			.with(Component.UID)
 			.usingAll.write);
 
+		private _rawSaveArray: unknown[] = [];
+
 		override initialize () {
 			addEventListener('load', (event) => {
 				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				if (this.NarratorTriggerLoadSave.triggerLoad === 1 && (event as any).detail.saveData.systemsData) {
+				if ((event as any).detail.saveData.systemsData) {
 					console.log('Loading the game!');
-					this.NarratorTriggerLoadSave.triggerLoad = 0;
-					// Remove all existing entities:
-					for (const entity of this.entities.current) {
-						entity.delete();
-					}
+					this.NarratorTriggerLoadSave.triggerLoad = 1;
 					// Fetch the savedata from event.detail.saveData
 					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const rawSaveJSON: string = (event as any).detail.saveData.systemsData as string;
 					// Parse the JSON string into a JSON object
 					const rawSaveArray = JSON.parse(rawSaveJSON);
+					this._rawSaveArray = rawSaveArray;
 					console.log(rawSaveArray);
-					const processedSaveArray = [];
-					for (const entity of rawSaveArray) {
-						const entityData = parseJSON(JSON.stringify(entity), reviveTypedArray);
-						processedSaveArray.push(entityData);
-					}
-					console.log(processedSaveArray);
-					for (const monsterMatrix of processedSaveArray) {
-					// Create the entity
-						const entity = this.createEntity();
-						// Add the components
-						entity.add(Component.UID, { value: monsterMatrix[Field.UID] });
-						switch (monsterMatrix[Field.Team]) {
-							case 0:
-								entity.add(Component.Monster.Team, { value: 'Friend' });
-								break;
-							case 1:
-								entity.add(Component.Monster.Team, { value: 'Foe' });
-								break;
-							case 2:
-								entity.add(Component.Monster.Team, { value: 'Other' });
-								break;
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Health) {
-							entity.add(Component.Monster.Health, {
-								value: monsterMatrix[Field.Health]});
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Attack) {
-							entity.add(Component.Monster.Attack, {
-								value: monsterMatrix[Field.Attack]});
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Speed) {
-							entity.add(Component.Monster.Speed, {
-								value: monsterMatrix[Field.Speed]});
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.BaseStats) {
-							entity.add(Component.Monster.BaseStats, {
-								health: monsterMatrix[Field.BaseStats_health],
-								attack: monsterMatrix[Field.BaseStats_attack],
-								speed: monsterMatrix[Field.BaseStats_speed],
-							});
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.CreateMe) {
-							entity.add(Component.Monster.CreateMe);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Party) {
-							entity.add(Component.Monster.Party);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Wild) {
-							entity.add(Component.Monster.Wild);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeMonster) {
-							entity.add(Component.Monster.ArchetypeMonster);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.RestingInCollection) {
-							entity.add(Component.Monster.Collection.RestingInCollection);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromCollectionIntoParty) {
-							entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCollectedMonster) {
-							entity.add(Component.Monster.Collection.ArchetypeCollectedMonster);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Energy) {
-							entity.add(Component.Monster.Combat.Energy, { value: monsterMatrix[Field.Energy] });
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.ActionReady) {
-							entity.add(Component.Monster.Combat.ActionReady);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.QueuedAction) {
-							switch (monsterMatrix[Field.QueuedAction]) {
-								case 0:
-									entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' });
-									break;
-								case 1:
-									entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackFriend' });
-									break;
-								case 2:
-									entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackOther' });
-									break;
-							}
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.Position) {
-							entity.add(Component.Monster.Combat.Position, {
-								value: {
-									x: monsterMatrix[Field.Position_x],
-									y: monsterMatrix[Field.Position_y],
-									z: monsterMatrix[Field.Position_z] } });
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCombatMonster) {
-							entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.IncomingDamage) {
-							entity.add(Component.Monster.Combat.IncomingDamage, { value: monsterMatrix[Field.IncomingDamage] });
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.CombatDisabled) {
-							entity.add(Component.Monster.Combat.CombatDisabled);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromWildIntoCombat) {
-							entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.FriendlyPosition) {
-							entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[Field.FriendlyPosition] });
-						}
-						if (monsterMatrix[Field.Flags] & EntityFlags.EnemyPosition) {
-							entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[Field.EnemyPosition] });
-						}
-					}
 				}
 			});
 		}
 
 		override execute () {
+			if (this.NarratorTriggerLoadSave.triggerLoad === 1) {
+				this.NarratorTriggerLoadSave.triggerLoad = 0;
+				// Remove all existing entities:
+				for (const entity of this.entities.current) {
+					entity.add(Component.ToBeDeleted);
+					if (entity.has(Component.Monster.Combat.Position)) {
+						entity.remove(Component.Monster.Combat.Position)
+					}
+				}
+				const processedSaveArray = [];
+				for (const entity of this._rawSaveArray) {
+					const entityData = parseJSON(JSON.stringify(entity), reviveTypedArray);
+					processedSaveArray.push(entityData);
+				}
+				console.log(processedSaveArray);
+				for (const monsterMatrix of processedSaveArray) {
+				// Create the entity
+					const entity = this.createEntity();
+					// Add the components
+					entity.add(Component.UID, { value: monsterMatrix[Field.UID] });
+					switch (monsterMatrix[Field.Team]) {
+						case 0:
+							entity.add(Component.Monster.Team, { value: 'Friend' });
+							break;
+						case 1:
+							entity.add(Component.Monster.Team, { value: 'Foe' });
+							break;
+						case 2:
+							entity.add(Component.Monster.Team, { value: 'Other' });
+							break;
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Health) {
+						entity.add(Component.Monster.Health, {
+							value: monsterMatrix[Field.Health]});
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Attack) {
+						entity.add(Component.Monster.Attack, {
+							value: monsterMatrix[Field.Attack]});
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Speed) {
+						entity.add(Component.Monster.Speed, {
+							value: monsterMatrix[Field.Speed]});
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.BaseStats) {
+						entity.add(Component.Monster.BaseStats, {
+							health: monsterMatrix[Field.BaseStats_health],
+							attack: monsterMatrix[Field.BaseStats_attack],
+							speed: monsterMatrix[Field.BaseStats_speed],
+						});
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.CreateMe) {
+						entity.add(Component.Monster.CreateMe);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Party) {
+						entity.add(Component.Monster.Party);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Wild) {
+						entity.add(Component.Monster.Wild);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeMonster) {
+						entity.add(Component.Monster.ArchetypeMonster);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.RestingInCollection) {
+						entity.add(Component.Monster.Collection.RestingInCollection);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromCollectionIntoParty) {
+						entity.add(Component.Monster.Collection.TriggerMoveFromCollectionIntoParty);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCollectedMonster) {
+						entity.add(Component.Monster.Collection.ArchetypeCollectedMonster);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Energy) {
+						entity.add(Component.Monster.Combat.Energy, { value: monsterMatrix[Field.Energy] });
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.ActionReady) {
+						entity.add(Component.Monster.Combat.ActionReady);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.QueuedAction) {
+						switch (monsterMatrix[Field.QueuedAction]) {
+							case 0:
+								entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackEnemies' });
+								break;
+							case 1:
+								entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackFriend' });
+								break;
+							case 2:
+								entity.add(Component.Monster.Combat.QueuedAction, { value: 'AttackOther' });
+								break;
+						}
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.Position) {
+						entity.add(Component.Monster.Combat.Position, {
+							value: {
+								x: monsterMatrix[Field.Position_x],
+								y: monsterMatrix[Field.Position_y],
+								z: monsterMatrix[Field.Position_z] } });
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.ArchetypeCombatMonster) {
+						entity.add(Component.Monster.Combat.ArchetypeCombatMonster);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.IncomingDamage) {
+						entity.add(Component.Monster.Combat.IncomingDamage, { value: monsterMatrix[Field.IncomingDamage] });
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.CombatDisabled) {
+						entity.add(Component.Monster.Combat.CombatDisabled);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.TriggerMoveFromWildIntoCombat) {
+						entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.FriendlyPosition) {
+						entity.add(Component.Monster.Combat.FriendlyPosition, { value: monsterMatrix[Field.FriendlyPosition] });
+					}
+					if (monsterMatrix[Field.Flags] & EntityFlags.EnemyPosition) {
+						entity.add(Component.Monster.Combat.EnemyPosition, { value: monsterMatrix[Field.EnemyPosition] });
+					}
+				}
+			}
 			if (this.NarratorTriggerLoadSave.triggerSave === 1) {
 				console.log('Saving the game!');
 				this.NarratorTriggerLoadSave.triggerSave = 0;

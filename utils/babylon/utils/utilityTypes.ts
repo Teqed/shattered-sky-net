@@ -16,4 +16,5 @@ export type SystemLoop = {
 	CutsceneSystem: SystemType<System>,
 	SaveGameSystem: SystemType<System>,
 	GameStateSystem: SystemType<System>,
+	DeleterSystem: SystemType<System>,
 }

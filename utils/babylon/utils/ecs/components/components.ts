@@ -6,5 +6,7 @@ import _Narrator from './narrator/narrator';
 @component export class UID {
 	@field.int32 declare value: number;
 }
+@component export class ToBeDeleted {
+}
 export const Monster = _Monster;
 export const Narrator = _Narrator;

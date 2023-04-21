@@ -20,6 +20,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				case 'Gameover':
 					// Play the gameover cutscene.
 					// For now, as a placeholder, just change the game state to Title.
+					window.alert('Gameover!')
 					this.NarratorGameState.value = State.Title;
 					break;
 				default:

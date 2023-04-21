@@ -18,6 +18,7 @@ import CustomLoadingScreen from './loadingScreen';
 import patchEngine from './fixFont';
 import createWorld from './ecs/startAllSystems';
 import { State, type SystemLoop } from './utilityTypes';
+import * as Component from './ecs/components/components';
 // *** *** *** *** *** *** ***
 // *** *** END IMPORTS *** ***
 // *** *** *** *** *** *** ***
@@ -88,6 +89,9 @@ export class Game {
 		window.addEventListener('gameStateChange', (event_) => {
 			const { detail } = event_ as CustomEvent;
 			this._state = detail.gameState;
+			// if (this._state === State.Title) {
+			// 	this._setUpGame();
+			// }
 		});
 		window.addEventListener('save', (event) => {
 			const detail: string = (event as CustomEvent).detail;
@@ -124,6 +128,7 @@ export class Game {
 							case State.Title:
 								this._world.control({
 									stop: [
+										this._systems.GameStateSystem,
 										this._systems.CutsceneSystem,
 										this._systems.NoCombatSystem,
 										this._systems.CombatNarratorSystem,
@@ -145,6 +150,7 @@ export class Game {
 										this._systems.DamageSystem,
 									],
 									restart: [
+										this._systems.GameStateSystem,
 										this._systems.NoCombatSystem,
 									]
 								})
@@ -156,6 +162,7 @@ export class Game {
 										this._systems.NoCombatSystem,
 									],
 									restart: [
+										this._systems.GameStateSystem,
 										this._systems.CombatNarratorSystem,
 										this._systems.EnergySystem,
 										this._systems.ActionSystem,
@@ -173,7 +180,9 @@ export class Game {
 										this._systems.ActionSystem,
 										this._systems.DamageSystem,
 									],
-									restart: []
+									restart: [
+										this._systems.GameStateSystem,
+									]
 								})
 								console.warn('Collection not implemented yet')
 								break;
@@ -187,6 +196,7 @@ export class Game {
 										this._systems.DamageSystem,
 									],
 									restart: [
+										this._systems.GameStateSystem,
 										this._systems.CutsceneSystem,
 									]
 								})
@@ -294,6 +304,9 @@ export class Game {
 
 	private _setUpGame = async () => {
 		this._gamescene = new Scene(this._engine);
+		// if (this._world) {
+		// 	await this._world.terminate();
+		// }
 
 		return await createWorld(this._gamescene,
 			this._canvas, this._rapierWorker);
@@ -303,12 +316,13 @@ export class Game {
 		this._showLoadingScreen();
 		// this._activeScene!.removeCamera(this._activeScene!.activeCameras![0]);
 		console.log('go to game')
+		this._loadSaveSlot();
 		// try { this._activeScene!.detachControl() } catch (error) { }
 		if (this._gamescene) {
 			await this._gamescene.whenReadyAsync();
 			this._activeScene = this._gamescene;
 			this._activeScene.attachControl();
-			this._state = State.Combat;
+			this._state = State.NoCombat;
 			try { this._titleScene?.dispose(); } catch (error) { }
 			this._titleScene = undefined;
 		} else {

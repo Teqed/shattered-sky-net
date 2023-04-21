@@ -4,11 +4,15 @@ import { State } from '../../../utilityTypes';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class GameStateSystem extends System {
 		private NarratorGameState = this.singleton.write(Component.Narrator.GameState);
-		private lastGameState = -1;
+		private lastGameState = State.Preload;
 
 		private _dispatchStateEvent = (gameState: number) => {
 			window.dispatchEvent(new CustomEvent('gameStateChange', { detail: { gameState } }));
 		};
+
+		override initialize () {
+			this.NarratorGameState.value = State.NoCombat;
+		}
 
 		override execute () {
 			if (this.NarratorGameState.value !== this.lastGameState) {
@@ -35,6 +39,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				}
 				console.log(`Game state changed to ${this.NarratorGameState.value}!`);
 				this.lastGameState = this.NarratorGameState.value;
+				if (this.NarratorGameState.value === State.Title) {
+					this.NarratorGameState.value = State.NoCombat;
+				}
 			}
 		}
 	}

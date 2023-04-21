@@ -18,6 +18,7 @@ import initalizeMeshPositionSystem from './systems/MeshPosition';
 import initializeMonsterMakerSystem from './systems/narrator/MonsterMaker';
 import initializeNoCombatSystem from './systems/narrator/gamestates/NoCombat';
 import initializeCutsceneSystem from './systems/narrator/gamestates/Cutscene';
+import initializeDeleterSystem from './systems/Deleter';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas, rapierWorker: rapierWorkerType) => {
 	const UIDSystem = initializeUIDSystem();
@@ -27,13 +28,14 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 	const EnergySystem = initializeEnergySystem(CombatNarratorSystem);
 	const ActionSystem = intializeActionSystem(EnergySystem);
 	const CombatPositionSystem = initializeCombatPositionSystem(ActionSystem);
-	const MeshPositionSystem = initalizeMeshPositionSystem(CombatPositionSystem, scene);
-	const DamageSystem = initializeDamageSystem(MeshPositionSystem);
+	const DamageSystem = initializeDamageSystem(CombatPositionSystem);
 	const NoCombatSystem = initializeNoCombatSystem(DamageSystem);
 	const CutsceneSystem = initializeCutsceneSystem(NoCombatSystem);
 
 	const SaveGameSystem = initializeSaveGameSystem(CutsceneSystem);
 	const GameStateSystem = initializeGameStateSystem(SaveGameSystem);
+	const DeleterSystem = initializeDeleterSystem(GameStateSystem);
+	const MeshPositionSystem = initalizeMeshPositionSystem(DeleterSystem, scene);
 
 	const world = await World.create();
 
@@ -88,6 +90,7 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 		CutsceneSystem,
 		SaveGameSystem,
 		GameStateSystem,
+		DeleterSystem,
 	}
 	return { world, systems }
 };

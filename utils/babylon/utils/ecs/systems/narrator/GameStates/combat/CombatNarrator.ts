@@ -4,7 +4,7 @@ import * as Component from '../../../../components/components';
 import { State } from '../../../../../utilityTypes';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class CombatNarrator extends System {
-		entitiesCollection = this.query(q => q.current
+		entitiesInParty = this.query(q => q.current
 			.with(Component.Monster.Party)
 			.using(
 				Component.Monster.Combat.ArchetypeCombatMonster,
@@ -55,7 +55,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 
 		private setupBattlefield () {
 			const friendlyPositions = this.entitiesOnFriendlyBattlefield.current.map((entity) => { return entity });
-			for (const entity of this.entitiesCollection.current) {
+			for (const entity of this.entitiesInParty.current) {
 				const occupiedPositions = friendlyPositions.map((entity) => {
 					return entity.read(Component.Monster.Combat.FriendlyPosition).value;
 				}
@@ -102,14 +102,15 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 					entity.delete();
 				}
 			}
+			this.battlefieldInit = true;
 		}
 
 		private checkForWinCondition () {
-			const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Foe');
-			if (allFoesDisabled) {
-				console.log('All foes have been disabled. Cleaning up combat scene.');
-				window.alert('Victory! All foes have been defeated.');
-				for (const entity of this.defeatedFoes.current) {
+			const allFriendlyDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Friend');
+			if (allFriendlyDisabled) {
+				console.log('All friendly monsters have been disabled. Cleaning up combat scene.');
+				window.alert('Defeat! All friendly monsters have been defeated.');
+				for (const entity of this.entitiesOnFriendlyBattlefield.current) {
 				// Remove them from the battlefield by removing their position.
 					entity.remove(Component.Monster.Combat.Position);
 					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
@@ -119,44 +120,70 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						entity.remove(Component.Monster.Combat.FriendlyPosition);
 					}
 					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
+					entity.remove(Component.Monster.Combat.QueuedAction);
+					entity.remove(Component.Monster.Combat.Energy);
+					// Remove the entity from the world.
+					// entity.delete();
+				}
+				for (const entity of this.entitiesOnEnemyBattlefield.current) {
+				// Remove them from the battlefield by removing their position.
+					entity.remove(Component.Monster.Combat.Position);
+					if (entity.has(Component.Monster.Combat.EnemyPosition)) {
+						entity.remove(Component.Monster.Combat.EnemyPosition);
+					}
+					if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
+						entity.remove(Component.Monster.Combat.FriendlyPosition);
+					}
+					entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
+					entity.remove(Component.Monster.Combat.QueuedAction);
+					entity.remove(Component.Monster.Combat.Energy);
 					// Remove the entity from the world.
 					// entity.delete();
 				}
 				// End combat state
 				this.battlefieldInit = false;
-				this.NarratorGameState.value = State.NoCombat;
+				this.NarratorDesiredCutscene.value = 'Gameover';
+				this.NarratorGameState.value = State.Cutscene;
 			} else {
-				const allFriendlyDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Friend');
-				if (allFriendlyDisabled) {
-					console.log('All friendly monsters have been disabled. Cleaning up combat scene.');
-					window.alert('Defeat! All friendly monsters have been defeated.');
-					for (const entity of this.activeCombatants.current) {
-					// Remove them from the battlefield by removing their position.
+				const allFoesDisabled = !this.activeCombatants.current.some(entity => entity.read(Component.Monster.Team).value === 'Foe');
+				if (allFoesDisabled) {
+					console.log('All foes have been disabled. Cleaning up combat scene.');
+					window.alert('Victory! All foes have been defeated.');
+					for (const entity of this.defeatedFoes.current) {
+						// Remove them from the battlefield by removing their position.
 						entity.remove(Component.Monster.Combat.Position);
-						if (entity.has(Component.Monster.Combat.EnemyPosition)) {
-							entity.remove(Component.Monster.Combat.EnemyPosition);
-						}
-						if (entity.has(Component.Monster.Combat.FriendlyPosition)) {
+						entity.remove(Component.Monster.Combat.EnemyPosition);
+						entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
+						entity.remove(Component.Monster.Combat.QueuedAction);
+						entity.remove(Component.Monster.Combat.Energy);
+					// Remove the entity from the world.
+					// entity.delete();
+					}
+					for (const entity of this.entitiesOnFriendlyBattlefield.current) {
+						if (entity.has(Component.Monster.Party)) {
+							entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
+							entity.remove(Component.Monster.Combat.QueuedAction);
+							entity.remove(Component.Monster.Combat.Energy);
+							entity.remove(Component.Monster.Combat.Position);
 							entity.remove(Component.Monster.Combat.FriendlyPosition);
 						}
-						entity.remove(Component.Monster.Combat.ArchetypeCombatMonster);
-						// Remove the entity from the world.
-						// entity.delete();
 					}
 					// End combat state
 					this.battlefieldInit = false;
-					this.NarratorDesiredCutscene.value = 'Gameover';
-					this.NarratorGameState.value = State.Cutscene;
+					this.NarratorGameState.value = State.NoCombat;
 				}
 			}
 		}
 
 		override execute () {
-			if (!this.battlefieldInit) {
-				this.setupBattlefield();
-				this.battlefieldInit = true;
+			console.log('CombatNarrator executing.')
+			if (this.NarratorGameState.value === State.Combat) {
+				if (!this.battlefieldInit) {
+					this.setupBattlefield();
+				} else {
+					this.checkForWinCondition();
+				}
 			}
-			this.checkForWinCondition();
 		}
 	}
 	return CombatNarrator;

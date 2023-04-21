@@ -41,12 +41,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 								entity.add(Component.Monster.Combat.TriggerMoveFromWildIntoCombat);
 								break;
 							case 'Friend':
-								entity.add(
-									Component.Monster.Collection.TriggerMoveFromCollectionIntoParty)
+								// entity.add(
+								// 	Component.Monster.Collection.TriggerMoveFromCollectionIntoParty)
 								entity.add(
 									Component.Monster.Collection.ArchetypeCollectedMonster);
-								entity.add(
-									Component.Monster.Collection.RestingInCollection);
+								// entity.add(
+								// 	Component.Monster.Collection.RestingInCollection);
 								entity.add(
 									Component.Monster.Party);
 								break;
