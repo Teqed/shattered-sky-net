@@ -27,9 +27,13 @@ import { component, field, type Entity } from '@lastolivegames/becsy';
 	// @field.uint8 declare value: number;
 	@field.staticString(['Gameover', 'Cutscene2', 'Cutscene3']) declare value: string;
 }
+@component class SearchForEncounters {
+	@field.uint8 declare value: number;
+}
 
 export default {
 	GameState,
 	TriggerLoadSave,
 	DesiredCutscene,
+	SearchForEncounters,
 }
