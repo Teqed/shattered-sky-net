@@ -16,15 +16,32 @@ import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator'
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent';
 import { Nullable } from '@babylonjs/core';
 import * as BABYLON from '@babylonjs/core';
+import { PassPostProcess } from '@babylonjs/core/PostProcesses/passPostProcess';
 
-const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Camera>) => {
-	const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('#KMBISP#8', scene)
-	const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
+const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Camera>, engine: any) => {
+	// const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('#KMBISP#10', scene)
+	// const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
 	// myPostProcess!.samples = 4;
 	const glow = new GlowLayer('glow', scene);
-	// const downsample = new PassPostProcess('downsample', 0.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
-	const blurPass1 = new BlurPostProcess('glareBlurPass1', new Vector2(1, 0), 6, 1.0, scene.activeCamera, Texture.BILINEAR_SAMPLINGMODE, scene.getEngine());
-	const blurPass2 = new BlurPostProcess('glareBlurPass2', new Vector2(0, 1), 6, 1.0, scene.activeCamera, Texture.BILINEAR_SAMPLINGMODE, scene.getEngine());
+	// const downsample = new PassPostProcess('downsample', 0.05, scene.activeCamera, 1, scene.getEngine());
+	// const passProcess = new BABYLON.PassPostProcess('pass', 1, camera);
+	// passProcess.samples = 1;
+	const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('1IHPPF', scene)
+	const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
+	const pixelateX = nodeMaterial.getBlockByName('pixelateSizeX');
+	const pixelateY = nodeMaterial.getBlockByName('pixelateSizeY');
+	// let t = 0;
+	// scene.onBeforeRenderObservable.add(() => {
+	// 	// @ts-expect-error
+	// 	pixelateX.value = 1 + Math.abs(Math.sin(t) * 50);
+	// 	// @ts-expect-error
+	// 	pixelateY.value = 1 + Math.abs(Math.sin(t) * 50);
+
+	// 	t += 0.01;
+	// });
+	// engine.setHardwareScalingLevel(1);
+	const blurPass1 = new BlurPostProcess('glareBlurPass1', new Vector2(1, 0), 6, 1.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
+	const blurPass2 = new BlurPostProcess('glareBlurPass2', new Vector2(0, 1), 6, 1.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
 	// const toneMap = new TonemapPostProcess('tonemap', TonemappingOperator.HejiDawson, 1.8, scene.activeCamera);
 	// downsample.alwaysForcePOT = true;
 
@@ -117,20 +134,21 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 
 	return {
 		myPostProcess,
-		glow,
+		// passProcess,
+		// glow,
 		// downsample,
-		blurPass1,
-		blurPass2,
+		// blurPass1,
+		// blurPass2,
 		// toneMap,
 		// postProcess,
 	}
 }
 
-export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene) => {
+export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene, engine: any) => {
 	scene.clearColor = Color4.FromHexString('#151729')
 	const light = new HemisphericLight('light',
 		new Vector3(0, 0.8, 0), scene);
-	light.intensity = 0.5;
+	light.intensity = 0.9;
 	scene.ambientColor = new BABYLON.Color3(0.62, 0.51, 0.68)
 	// point spotlight at center of scene, have it slightly offset
 	// so that it's not directly on top of the camera
@@ -162,16 +180,16 @@ export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene)
 	// eslint-disable-next-line no-constant-condition
 	if (true) {
 		// const fx =
-		await createVisualChain(scene, camera)
-		// let fxLevel = 0.10
-		// const fxTarget = 0.20
+		await createVisualChain(scene, camera, engine)
+		// let fxLevel = 0.01
+		// const fxTarget = 0.05
 
 		// scene.onReadyObservable.addOnce(() => {
 		// 	scene.onBeforeRenderObservable.add(() => {
 		// 		if (fxLevel < fxTarget) {
 		// 		// @ts-ignore - private property is stil accessible
 		// 			fx.downsample._options = fxLevel
-		// 			fxLevel += 0.01
+		// 			fxLevel += 0.001
 		// 			// fxLevel += 0.0005
 		// 		} else {
 		// 		// @ts-ignore - private property is stil accessible

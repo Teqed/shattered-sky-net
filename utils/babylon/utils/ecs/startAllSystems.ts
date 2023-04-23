@@ -3,6 +3,7 @@ import { World } from '@lastolivegames/becsy';
 import { type rapierWorkerType } from '../../../worker/rapier-wrap';
 import createUICamera from '../createUICamera';
 import createPixelCamera from '../createPixelCamera';
+import createGameCamera from '../createGameCamera';
 // import * as Component from './components/components';
 import { type SystemLoop } from '../utilityTypes';
 import initializeUIDSystem from './systems/UID';
@@ -68,7 +69,7 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 	// }
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { camera: gameCam, shadows: shadowGenerator } = await createPixelCamera(canvas, scene);
+	const { camera: gameCam, shadows: shadowGenerator } = await createGameCamera(canvas, scene);
 	const UICam = createUICamera(canvas, scene);
 	scene.activeCameras = [gameCam, UICam];
 	// const objects = await initializeGame(this._scene, rapierWorker);

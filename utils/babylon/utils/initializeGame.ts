@@ -8,10 +8,10 @@ import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import createPixelCamera from './createPixelCamera';
 import createUICamera from './createUICamera';
 // ! Debugger
-// import '@babylonjs/core/Debug/debugLayer';
+import '@babylonjs/core/Debug/debugLayer';
 // ! Inspector
-// import '@babylonjs/inspector';
-// import '@babylonjs/loaders/glTF';
+import '@babylonjs/inspector';
+import '@babylonjs/loaders/glTF';
 import titleScreenBackground from './titleScreenBackground';
 import { SavegameManager, Savegame, SaveSlot } from './saveGameManager';
 import CustomLoadingScreen from './loadingScreen';
@@ -236,7 +236,7 @@ export class Game {
 		this._titleScene = new Scene(this._engine);
 		const {	camera: gameCam,
 			shadows: shadowGenerator } = await createPixelCamera(this._canvas,
-			this._titleScene);
+			this._titleScene, this._engine);
 		titleScreenBackground(this._titleScene,
 			this._rapierWorker, shadowGenerator);
 		const UICam = createUICamera(this._canvas, this._titleScene);
