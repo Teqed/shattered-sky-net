@@ -26,10 +26,14 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// const downsample = new PassPostProcess('downsample', 0.05, scene.activeCamera, 1, scene.getEngine());
 	// const passProcess = new BABYLON.PassPostProcess('pass', 1, camera);
 	// passProcess.samples = 1;
-	const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('1IHPPF', scene)
-	const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
-	const pixelateX = nodeMaterial.getBlockByName('pixelateSizeX');
-	const pixelateY = nodeMaterial.getBlockByName('pixelateSizeY');
+	// const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('1IHPPF', scene)
+	// const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
+	// const pixelateX = nodeMaterial.getBlockByName('pixelateSizeX');
+	// const pixelateY = nodeMaterial.getBlockByName('pixelateSizeY');
+	// engine.setSize(
+	// 	Math.floor(window.innerWidth / 8),
+	// 	Math.floor(window.innerHeight / 8)
+	// );
 	// let t = 0;
 	// scene.onBeforeRenderObservable.add(() => {
 	// 	// @ts-expect-error
@@ -133,12 +137,12 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// };
 
 	return {
-		myPostProcess,
+		// myPostProcess,
 		// passProcess,
-		// glow,
+		glow,
 		// downsample,
-		// blurPass1,
-		// blurPass2,
+		blurPass1,
+		blurPass2,
 		// toneMap,
 		// postProcess,
 	}
