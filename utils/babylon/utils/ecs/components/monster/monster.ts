@@ -23,7 +23,7 @@ import _Combat from './combat';
 }
 @component class CreateMe {
 	@field.staticString(['Friend', 'Foe', 'Other']) declare team: string;
-	@field.staticString(['Combat', 'Collection']) declare destination: string;
+	@field.staticString(['Combat', 'Collection', 'Party', 'Wild']) declare destination: string;
 	// This component should only exist on entities without the ArchetypeActiveMonster.
 	// It will tell the narrator to transform this entity into an ArchetypeActiveMonster.
 	static validate (entity: Entity): void {

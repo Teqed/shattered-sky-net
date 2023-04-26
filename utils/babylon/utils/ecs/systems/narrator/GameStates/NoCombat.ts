@@ -11,8 +11,19 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				Component.Monster.BaseStats,
 			).write);
 
+		private NarratorMemoryOfStarter = this.query(q => q.current.with(Component.Narrator.Memory.Exists));
+		// private NarratorMemoryOfStarter = this.singleton.write(Component.Narrator.Memory.Exists);
+		private NarratorDesiredCutscene = this.singleton.write(Component.Narrator.DesiredCutscene);
+
 		override execute () {
 			if (this.NarratorGameState.value !== State.NoCombat) {
+				return;
+			}
+
+			if (this.NarratorMemoryOfStarter.current.length === 0) {
+				// If the player has not received the starter yet, send them to the starter cutscene.
+				this.NarratorDesiredCutscene.value = 'Starter';
+				this.NarratorGameState.value = State.Cutscene;
 				return;
 			}
 

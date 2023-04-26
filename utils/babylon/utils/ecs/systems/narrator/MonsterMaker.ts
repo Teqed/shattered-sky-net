@@ -63,6 +63,12 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						entity.add(
 							Component.Monster.Wild);
 						break;
+					case 'Party':
+						entity.add(
+							Component.Monster.Party);
+						entity.add(
+							Component.Monster.Collection.ArchetypeCollectedMonster);
+						break;
 					default:
 						console.error('Invalid destination value: ' + destination)
 				}

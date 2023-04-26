@@ -5,11 +5,11 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class CombatPositionSystem extends System {
 		friendlyEntitiesEntered = this.query(q => q.added
 			.with(Component.Monster.Combat.FriendlyPosition)
-			.using(Component.Monster.Combat.Position).write);
+			.without(Component.Monster.Combat.Position).write);
 
 		enemyEntitiesEntered = this.query(q => q.added
 			.with(Component.Monster.Combat.EnemyPosition)
-			.using(Component.Monster.Combat.Position).write);
+			.without(Component.Monster.Combat.Position).write);
 
 		override execute () {
 			for (const entity of this.friendlyEntitiesEntered.added) {

@@ -16,6 +16,7 @@ import { component, field, type Entity } from '@lastolivegames/becsy';
 // The first component we might want to add is a component that
 // controls the game state.
 // The game state will be used to control the flow of the game.
+import _memory from './memory';
 @component class GameState {
 	@field.uint8 declare value: number;
 }
@@ -25,15 +26,17 @@ import { component, field, type Entity } from '@lastolivegames/becsy';
 }
 @component class DesiredCutscene {
 	// @field.uint8 declare value: number;
-	@field.staticString(['Gameover', 'Cutscene2', 'Cutscene3']) declare value: string;
+	@field.staticString(['Intro', 'Gameover', 'Starter', 'Async', 'None']) declare value: string;
 }
 @component class SearchForEncounters {
 	@field.uint8 declare value: number;
 }
+const Memory = _memory;
 
 export default {
 	GameState,
 	TriggerLoadSave,
 	DesiredCutscene,
 	SearchForEncounters,
+	Memory,
 }

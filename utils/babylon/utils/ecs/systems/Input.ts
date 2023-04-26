@@ -1,9 +1,7 @@
 
 import { system, System, type SystemGroup, type SystemType } from '@lastolivegames/becsy';
-import { Scene } from '@babylonjs/core/scene';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
-import { Engine } from '@babylonjs/core/Engines/engine';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import * as Component from '../components/components';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
@@ -17,6 +15,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				Component.Monster.CreateMe,
 				Component.Monster.BaseStats,
 			).write);
+
+		private monstersInParty = this.query(q => q.current
+			.with(Component.Monster.Party));
 
 		override initialize () {
 			addEventListener('keydown', (event) => {
@@ -58,6 +59,13 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 						Component.Monster.CreateMe, { team: 'Friend', destination: 'Combat' },
 						Component.Monster.BaseStats, { health: 10, attack: 1, speed: 25 },
 					);
+				}
+				if (event.code === 'KeyP') {
+					console.log('P pressed');
+					// Log the current party.
+					for (const entity of this.monstersInParty.current) {
+						console.log('Party member');
+					}
 				}
 				if (event.code === 'KeyQ') {
 					const borderUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
