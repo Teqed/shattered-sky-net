@@ -1,5 +1,5 @@
 
-import chooseRoute from '../babylon/utils/chooseRoute';
+import chooseRoute from '../babylon/chooseRoute';
 import { numberMeshes } from '../nbody/everyFrame';
 import { CustomMouseEvent } from './mouseEvents';
 import spawnRapier from './rapier-wrap';

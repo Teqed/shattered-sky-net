@@ -11,7 +11,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 		};
 
 		override initialize () {
-			this.NarratorGameState.value = State.NoCombat;
+			this.NarratorGameState.value = State.Preload;
 		}
 
 		override execute () {
@@ -39,9 +39,9 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				}
 				console.log(`Game state changed to ${this.NarratorGameState.value}!`);
 				this.lastGameState = this.NarratorGameState.value;
-				if (this.NarratorGameState.value === State.Title) {
-					this.NarratorGameState.value = State.NoCombat;
-				}
+				// if (this.NarratorGameState.value === State.Title) {
+				// 	this.NarratorGameState.value = State.NoCombat;
+				// }
 			}
 		}
 	}

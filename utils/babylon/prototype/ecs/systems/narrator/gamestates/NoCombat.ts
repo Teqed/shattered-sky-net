@@ -21,6 +21,8 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 			}
 
 			if (this.NarratorMemoryOfStarter.current.length === 0) {
+				console.log('No memory of starter found.')
+				console.log(this.NarratorMemoryOfStarter.current.length)
 				// If the player has not received the starter yet, send them to the starter cutscene.
 				this.NarratorDesiredCutscene.value = 'Starter';
 				this.NarratorGameState.value = State.Cutscene;

@@ -14,7 +14,7 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				const speed = entity.read(Component.Monster.Speed);
 				const energy = entity.write(Component.Monster.Combat.Energy);
 				energy.value += speed.value * (this.delta);
-				if (energy.value > 100) {
+				if (energy.value > 100000) {
 					energy.value = 0;
 					try { entity.add(Component.Monster.Combat.ActionReady); } catch (error) { }
 				}

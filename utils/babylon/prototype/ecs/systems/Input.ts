@@ -4,6 +4,7 @@ import '@babylonjs/core/Meshes/thinInstanceMesh';
 import { AdvancedDynamicTexture, Button, TextBlock } from '@babylonjs/gui';
 import { Control } from '@babylonjs/gui/2D/controls/control';
 import * as Component from '../components/components';
+import { State, type SystemLoop } from '../../utilityTypes';
 export default (afterSystem: SystemGroup | SystemType<System>) => {
 	@system(s => s.after(afterSystem)) class InputSystem extends System {
 		private narratorTriggerLoadSave = this.singleton.write(Component.Narrator.TriggerLoadSave);
@@ -41,16 +42,15 @@ export default (afterSystem: SystemGroup | SystemType<System>) => {
 				}
 				if (event.code === 'Digit1') {
 					console.log('1 pressed');
-					this.narratorGameState.value = 1;
+					this.narratorGameState.value = State.NoCombat;
 				}
 				if (event.code === 'Digit2') {
 					console.log('2 pressed');
-					// Change the game state to 2 (collection).
-					this.narratorGameState.value = 2;
+					this.narratorGameState.value = State.Combat;
 				}
 				if (event.code === 'Digit3') {
 					console.log('3 pressed');
-					this.narratorGameState.value = 3;
+					this.narratorGameState.value = State.Collection;
 				}
 				if (event.code === 'KeyZ') {
 					console.log('Z pressed');

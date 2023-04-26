@@ -140,6 +140,15 @@ export class Game {
 								})
 								this._goToTitle();
 								break;
+							case State.Preload:
+								this._world.control({
+									stop: [
+									],
+									restart: [
+										this._systems.GameStateSystem,
+									]
+								})
+								break;
 							case State.NoCombat:
 								this._world.control({
 									stop: [
@@ -322,7 +331,7 @@ export class Game {
 			await this._gamescene.whenReadyAsync();
 			this._activeScene = this._gamescene;
 			this._activeScene.attachControl();
-			this._state = State.NoCombat;
+			this._state = State.Preload;
 			try { this._titleScene?.dispose(); } catch (error) { }
 			this._titleScene = undefined;
 		} else {

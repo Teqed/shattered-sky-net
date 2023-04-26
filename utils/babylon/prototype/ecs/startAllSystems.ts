@@ -35,8 +35,8 @@ export default async (scene: Scene, canvas: HTMLCanvasElement | OffscreenCanvas,
 
 	const SaveGameSystem = initializeSaveGameSystem(CutsceneSystem);
 	const GameStateSystem = initializeGameStateSystem(SaveGameSystem);
-	const DeleterSystem = initializeDeleterSystem(GameStateSystem);
-	const MeshPositionSystem = initalizeMeshPositionSystem(DeleterSystem, scene);
+	const MeshPositionSystem = initalizeMeshPositionSystem(GameStateSystem, scene);
+	const DeleterSystem = initializeDeleterSystem(MeshPositionSystem);
 
 	const world = await World.create();
 
