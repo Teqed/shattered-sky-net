@@ -1,24 +1,27 @@
-
-import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
-import { Scene } from '@babylonjs/core/scene';
-import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
-import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector';
-import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
-import { SpotLight } from '@babylonjs/core/Lights/spotLight';
-import { GlowLayer } from '@babylonjs/core/Layers/glowLayer';
-import { BlurPostProcess } from '@babylonjs/core/PostProcesses/blurPostProcess';
-import { Texture } from '@babylonjs/core/Materials/Textures/texture';
 import '@babylonjs/core/Meshes/thinInstanceMesh';
-import '@babylonjs/core/Physics/physicsEngineComponent'
+import '@babylonjs/core/Physics/physicsEngineComponent';
 import '@babylonjs/core/Helpers/sceneHelpers';
-import * as BABYLONCAMERA from '@babylonjs/core/Cameras';
-import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
 import '@babylonjs/core/Lights/Shadows/shadowGeneratorSceneComponent';
-import { Nullable } from '@babylonjs/core';
+import { type Nullable } from '@babylonjs/core';
 import * as BABYLON from '@babylonjs/core';
+import * as BABYLONCAMERA from '@babylonjs/core/Cameras';
+import { ArcRotateCamera } from '@babylonjs/core/Cameras/arcRotateCamera';
+import { GlowLayer } from '@babylonjs/core/Layers/glowLayer';
+import { HemisphericLight } from '@babylonjs/core/Lights/hemisphericLight';
+import { ShadowGenerator } from '@babylonjs/core/Lights/Shadows/shadowGenerator';
+import { SpotLight } from '@babylonjs/core/Lights/spotLight';
+import { Texture } from '@babylonjs/core/Materials/Textures/texture';
+import { Color3, Color4 } from '@babylonjs/core/Maths/math.color';
+import { Vector2, Vector3 } from '@babylonjs/core/Maths/math.vector';
+import { BlurPostProcess } from '@babylonjs/core/PostProcesses/blurPostProcess';
 import { PassPostProcess } from '@babylonjs/core/PostProcesses/passPostProcess';
+import { type Scene } from '@babylonjs/core/scene';
 
-const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Camera>, engine: any) => {
+const createVisualChain = async (
+	scene: Scene,
+	camera: Nullable<BABYLONCAMERA.Camera>,
+	engine: any,
+) => {
 	// const nodeMaterial = await BABYLON.NodeMaterial.ParseFromSnippetAsync('#KMBISP#10', scene)
 	// const myPostProcess = nodeMaterial.createPostProcess(camera, 1.0, Texture.NEAREST_SAMPLINGMODE);
 	// myPostProcess!.samples = 4;
@@ -44,8 +47,24 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// 	t += 0.01;
 	// });
 	// engine.setHardwareScalingLevel(1);
-	const blurPass1 = new BlurPostProcess('glareBlurPass1', new Vector2(1, 0), 6, 1.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
-	const blurPass2 = new BlurPostProcess('glareBlurPass2', new Vector2(0, 1), 6, 1.0, scene.activeCamera, Texture.NEAREST_SAMPLINGMODE, scene.getEngine());
+	const blurPass1 = new BlurPostProcess(
+		'glareBlurPass1',
+		new Vector2(1, 0),
+		6,
+		1,
+		scene.activeCamera,
+		Texture.NEAREST_SAMPLINGMODE,
+		scene.getEngine(),
+	);
+	const blurPass2 = new BlurPostProcess(
+		'glareBlurPass2',
+		new Vector2(0, 1),
+		6,
+		1,
+		scene.activeCamera,
+		Texture.NEAREST_SAMPLINGMODE,
+		scene.getEngine(),
+	);
 	// const toneMap = new TonemapPostProcess('tonemap', TonemappingOperator.HejiDawson, 1.8, scene.activeCamera);
 	// downsample.alwaysForcePOT = true;
 
@@ -137,33 +156,51 @@ const createVisualChain = async (scene: Scene, camera: Nullable<BABYLONCAMERA.Ca
 	// };
 
 	return {
+		// downsample,
+		blurPass1,
+
+		blurPass2,
 		// myPostProcess,
 		// passProcess,
 		glow,
-		// downsample,
-		blurPass1,
-		blurPass2,
 		// toneMap,
 		// postProcess,
-	}
-}
+	};
+};
 
-export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene, engine: any) => {
-	scene.clearColor = Color4.FromHexString('#151729')
-	const light = new HemisphericLight('light',
-		new Vector3(0, 0.8, 0), scene);
+export default async (
+	canvas: HTMLCanvasElement | OffscreenCanvas,
+	scene: Scene,
+	engine: any,
+) => {
+	scene.clearColor = Color4.FromHexString('#151729');
+	const light = new HemisphericLight('light', new Vector3(0, 0.8, 0), scene);
 	light.intensity = 0.9;
-	scene.ambientColor = new BABYLON.Color3(0.62, 0.51, 0.68)
+	scene.ambientColor = new BABYLON.Color3(0.62, 0.51, 0.68);
 	// point spotlight at center of scene, have it slightly offset
 	// so that it's not directly on top of the camera
-	const spotlight = new SpotLight('spotlight', new Vector3(4, 8, 0), new Vector3(-4, -8, 0), Math.PI / 16, 2, scene);
+	const spotlight = new SpotLight(
+		'spotlight',
+		new Vector3(4, 8, 0),
+		new Vector3(-4, -8, 0),
+		Math.PI / 16,
+		2,
+		scene,
+	);
 	// Set spotlight color to gold
 	spotlight.diffuse = Color3.FromHexString('#FFC566');
-	const shadows = new ShadowGenerator(1024, spotlight);
+	const shadows = new ShadowGenerator(1_024, spotlight);
 
 	// const camera = new FreeCamera('Camera', new Vector3.Zero(), scene);
 	// const camera = new ArcRotateCamera('Camera', -Math.PI / 5, Math.PI / 3, 200, Vector3.Zero(), scene);
-	const camera = new ArcRotateCamera('Camera', Math.PI / 4, Math.PI / 3, 50, Vector3.Zero(), scene);
+	const camera = new ArcRotateCamera(
+		'Camera',
+		Math.PI / 4,
+		Math.PI / 3,
+		50,
+		Vector3.Zero(),
+		scene,
+	);
 	const orthoSize = 2;
 	camera.orthoTop = orthoSize;
 	camera.orthoBottom = -orthoSize;
@@ -177,14 +214,14 @@ export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene,
 	// camera.beta = Math.PI / 2;
 	scene.pointerX = 0;
 	scene.pointerY = 0;
-	camera.lowerRadiusLimit = 2
-	camera.upperRadiusLimit = 500
-	camera.wheelPrecision = 5
-	camera.wheelDeltaPercentage = 0.01
+	camera.lowerRadiusLimit = 2;
+	camera.upperRadiusLimit = 500;
+	camera.wheelPrecision = 5;
+	camera.wheelDeltaPercentage = 0.01;
 	// eslint-disable-next-line no-constant-condition
 	if (true) {
 		// const fx =
-		await createVisualChain(scene, camera, engine)
+		await createVisualChain(scene, camera, engine);
 		// let fxLevel = 0.01
 		// const fxTarget = 0.05
 
@@ -202,5 +239,6 @@ export default async (canvas: HTMLCanvasElement | OffscreenCanvas, scene: Scene,
 		// 	})
 		// })
 	}
-	return {camera, shadows};
-}
+
+	return { camera, shadows };
+};
