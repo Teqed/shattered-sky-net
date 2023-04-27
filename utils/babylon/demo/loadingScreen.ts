@@ -1,3 +1,5 @@
+import { type Engine } from '@babylonjs/core/Engines/engine';
+
 type ILoadingScreen = {
 	// What happens when loading starts
 	displayLoadingUI: () => void;
@@ -7,7 +9,7 @@ type ILoadingScreen = {
 	loadingUIBackgroundColor: string;
 	loadingUIText: string;
 };
-export default class implements ILoadingScreen {
+export class CustomScreen implements ILoadingScreen {
 	// optional, but needed due to interface definitions
 	public loadingUIBackgroundColor: string;
 
@@ -81,4 +83,34 @@ export default class implements ILoadingScreen {
 			});
 		}
 	}
+}
+
+export default class {
+	public engine: Engine;
+
+	public loadingScreen: CustomScreen;
+
+	public constructor(engine: Engine) {
+		this.engine = engine;
+		this.loadingScreen = new CustomScreen('Loading...', 1);
+		this.engine.loadingScreen = this.loadingScreen;
+	}
+
+	public hide = (): void => {
+		this.engine.hideLoadingUI();
+	};
+
+	public show = (
+		fadeInTime?: number,
+		message?: string,
+		color?: string,
+	): void => {
+		this.loadingScreen = new CustomScreen(
+			message ?? 'Loading...',
+			fadeInTime ?? 1,
+		);
+		this.engine.loadingScreen.loadingUIBackgroundColor = color ?? '#151729';
+		this.engine.loadingScreen = this.loadingScreen;
+		this.engine.displayLoadingUI();
+	};
 }

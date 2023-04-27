@@ -1,6 +1,6 @@
 /* eslint-disable id-length */
-import '@babylonjs/core/Materials/Textures/baseTexture';
-import '@babylonjs/core/Rendering/edgesRenderer';
+// import '@babylonjs/core/Materials/Textures/baseTexture';
+// import '@babylonjs/core/Rendering/edgesRenderer';
 // @ts-expect-error - no types for image
 import amigaPattern from '../../../assets/textures/mygrid.jpg';
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
@@ -22,7 +22,7 @@ export default async (
 	engine: Engine,
 	canvas: HTMLCanvasElement,
 ) => {
-	const { camera, shadows } = await createPixelCamera(canvas, scene, engine);
+	const { camera, shadows } = await createPixelCamera(canvas, scene);
 	// Create a ground, and place a box on it
 	// Create a rapier physics body too
 	const ground = MeshBuilder.CreateBox(
@@ -84,26 +84,6 @@ export default async (
 	box2.position.z = 0;
 	box2.rotate(new Vector3(0, 1, 0), Math.PI / 4);
 	box2.material = forBox;
-
-	const newBody = {
-		mass: 1,
-		meshId: 1,
-		p: {
-			x: box.position.x,
-			y: box.position.y,
-			z: box.position.z,
-		},
-		r: {
-			w: 0,
-			x: 0,
-			y: 0,
-			z: 0,
-		},
-		size: 1,
-	};
-
-	// crystal will be a floating icosahedron, blue, with emissive glow
-	// it will rotate slowly
 	const crystal = MeshBuilder.CreateIcoSphere(
 		'crystal',
 		{ radius: 0.25, subdivisions: 1 },
@@ -116,16 +96,6 @@ export default async (
 	forCrystal.diffuseColor = Color3.FromHexString('#1a548d');
 	forCrystal.emissiveColor = Color3.FromHexString('#1a548d');
 	crystal.material = forCrystal;
-	// crystal.physicsImpostor = new PhysicsImpostor(crystal, PhysicsImpostor.BoxImpostor, { mass: 1, restitution: 0.9 }, scene);
-	// crystal.physicsImpostor.physicsBody.setFriction(0.5);
-	// crystal.physicsImpostor.physicsBody.setAngularDamping(0.5);
-	// crystal.physicsImpostor.physicsBody.setLinearDamping(0.5);
-	// crystal.physicsImpostor.physicsBody.setRigidBodyType(RigidBodyType.Dynamic);
-	// crystal.physicsImpostor.physicsBody.setGravityEnabled(true);
-	// crystal.physicsImpostor.physicsBody.setActive(true);
-	// crystal.physicsImpostor.physicsBody.setCanSleep(true);
-	// crystal.physicsImpostor.physicsBody.setAngularVelocity(new Vector3(0, 0.1, 0));
-	// crystal.physicsImpostor.physicsBody.setLinearVelocity(new Vector3(0, 0, 0));
 
 	// Add outline to crystal
 	// crystal.enableEdgesRendering();
@@ -157,7 +127,9 @@ export default async (
 		shadows.getShadowMap()?.renderList?.push(box);
 		shadows.getShadowMap()?.renderList?.push(box2);
 		shadows.getShadowMap()?.renderList?.push(crystal);
-	} catch {}
+	} catch {
+		console.error('Failed to add meshes to shadow map');
+	}
 
 	ground.receiveShadows = true;
 	box.receiveShadows = true;

@@ -1,13 +1,13 @@
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
 import CustomLoadingScreen from './loadingScreen';
-import titleScreenBackground from './titleScreenBackground';
+import titleScreenBackground from './titleScreen';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import { type World } from '@lastolivegames/becsy';
 
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
-	private canvas: HTMLCanvasElement | OffscreenCanvas;
+	private canvas: HTMLCanvasElement;
 
 	private engine: Engine;
 
@@ -17,6 +17,8 @@ export class Game {
 
 	private activeScene: Scene;
 
+	private loadingScreen: CustomLoadingScreen;
+
 	public constructor(
 		canvas: HTMLCanvasElement | OffscreenCanvas,
 		_navigationToLoad: string,
@@ -25,6 +27,7 @@ export class Game {
 		this.rapierWorker = rapierWorker;
 		this.canvas = canvas as HTMLCanvasElement;
 		this.engine = new Engine(this.canvas, true);
+		this.loadingScreen = new CustomLoadingScreen(this.engine);
 		this.activeScene = new Scene(this.engine);
 		this.initialize();
 	}
@@ -67,21 +70,5 @@ export class Game {
 			this.engine,
 			this.canvas as HTMLCanvasElement,
 		);
-	};
-
-	// loadingScreen will have two methods, show and hide
-	private loadingScreen = {
-		hide: (): void => {
-			this.engine.hideLoadingUI();
-		},
-		show: (fadeInTime?: number, message?: string, color?: string): void => {
-			this.engine.loadingScreen = new CustomLoadingScreen(
-				message ?? 'Loading...',
-				fadeInTime ?? 1,
-			);
-			this.engine.loadingScreen.loadingUIBackgroundColor =
-				color ?? '#151729';
-			this.engine.displayLoadingUI();
-		},
 	};
 }
