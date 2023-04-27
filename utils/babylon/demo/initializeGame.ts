@@ -1,9 +1,10 @@
 import { type rapierWorkerType } from '../../worker/rapier-wrap';
+import createWorld from './ecs/createWorld';
 import CustomLoadingScreen from './loadingScreen';
 import titleScreenBackground from './titleScreen';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
-import { type World } from '@lastolivegames/becsy';
+import { type World } from 'thyseus';
 
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
@@ -17,6 +18,8 @@ export class Game {
 
 	private activeScene: Scene;
 
+	private loadingScene: Scene;
+
 	private loadingScreen: CustomLoadingScreen;
 
 	public constructor(
@@ -29,22 +32,65 @@ export class Game {
 		this.engine = new Engine(this.canvas, true);
 		this.loadingScreen = new CustomLoadingScreen(this.engine);
 		this.activeScene = new Scene(this.engine);
+		this.loadingScene = new Scene(this.engine);
 		this.initialize();
 	}
 
 	private async initialize(): Promise<void> {
-		this.loadingScreen.show(0);
+		this.loadingScreen.show(1, 'Loading...', '#151729');
+		// eslint-disable-next-line no-promise-executor-return
+		const screenFade = new Promise(resolve => setTimeout(resolve, 1_000));
 		window.addEventListener('resize', () => {
 			this.engine.resize();
 		});
 		this.registerLoops();
+		await screenFade;
 		await this.goToTitle();
+		this.loadingScreen.show(0, 'Loading...', '#151729');
+		const worldPromise = createWorld(this.loadingScene, this.canvas);
+		this.loadingScreen.hide();
+		this.world = await worldPromise;
+		window.addEventListener('keydown', this.handleInput);
+	}
+
+	private handleInput = async (event: { code: string }) => {
+		if (event.code === 'KeyC') {
+			this.continue();
+		}
+
+		if (event.code === 'KeyV') {
+			await this.goBackToTitle();
+		}
+	};
+
+	private async continue() {
+		this.loadingScreen.show();
+		// eslint-disable-next-line no-promise-executor-return
+		const screenFade = new Promise(resolve => setTimeout(resolve, 1_000));
+		await screenFade;
+		this.activeScene.dispose();
+		this.activeScene = this.loadingScene;
+		this.loadingScreen.hide();
+	}
+
+	private async goBackToTitle() {
+		this.loadingScreen.show();
+		// eslint-disable-next-line no-promise-executor-return
+		const screenFade = new Promise(resolve => setTimeout(resolve, 1_000));
+		this.world = undefined;
+		this.loadingScene = new Scene(this.engine);
+		const newWorld = createWorld(this.loadingScene, this.canvas);
+		await screenFade;
+		this.activeScene.dispose();
+		this.activeScene = new Scene(this.engine);
+		this.goToTitle();
+		this.world = await newWorld;
 		this.loadingScreen.hide();
 	}
 
 	private registerLoops = (): void => {
 		this.engine.runRenderLoop(() => {
-			if (this.activeScene) {
+			if (this.activeScene && this.activeScene.cameras.length > 0) {
 				try {
 					this.activeScene.render();
 				} catch (error) {
@@ -52,15 +98,30 @@ export class Game {
 				}
 			}
 		});
-		setInterval(() => {
-			if (this.world) {
-				try {
-					this.world.execute();
-				} catch (error) {
-					console.error(error);
+		let previousTime = Date.now();
+		let delta = 0;
+		const timeStep = 1 / 60;
+		const worldLoop = async (time: number) => {
+			const dt = time - previousTime;
+			delta += dt;
+			previousTime = time;
+			while (delta > timeStep) {
+				if (this.world) {
+					try {
+						// eslint-disable-next-line no-await-in-loop
+						await this.world.update();
+					} catch (error) {
+						console.error(error);
+					}
 				}
+
+				delta -= timeStep;
 			}
-		}, 1_000 / 8);
+
+			window.requestAnimationFrame(worldLoop);
+		};
+
+		window.requestAnimationFrame(worldLoop);
 	};
 
 	private goToTitle = async (): Promise<void> => {

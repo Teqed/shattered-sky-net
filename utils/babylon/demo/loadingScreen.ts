@@ -11,16 +11,25 @@ type ILoadingScreen = {
 };
 export class CustomScreen implements ILoadingScreen {
 	// optional, but needed due to interface definitions
-	public loadingUIBackgroundColor: string;
 
 	public constructor(
-		public loadingUIText: string,
+		public loadingUIText: string = 'Loading...',
 		public loadingUIFadeInTime: number = 1,
-	) {
-		this.loadingUIBackgroundColor = '#151729';
-	}
+		public loadingUIFadeOutTime: number = 1,
+		public loadingUIBackgroundColor: string = '#111',
+	) {}
 
 	public displayLoadingUI() {
+		try {
+			const oldLoadingScreenDiv =
+				document.querySelector('#loadingScreenDiv');
+			if (oldLoadingScreenDiv) {
+				oldLoadingScreenDiv.remove();
+			}
+		} catch (error) {
+			console.log(error);
+		}
+
 		// create a loading screen UI
 		const loadingScreenDiv = document.createElement('div');
 		loadingScreenDiv.style.width = '100%';
@@ -41,6 +50,7 @@ export class CustomScreen implements ILoadingScreen {
 		// Use keyframes to fade in the loading screen
 		// First, create a style element
 		const style = document.createElement('style');
+		style.id = 'loadingScreenDivStyle';
 		style.innerHTML = `
 			@keyframes fadeIn {
 				from {
@@ -58,6 +68,12 @@ export class CustomScreen implements ILoadingScreen {
 		// remove loading screen UI
 		const loadingScreenDiv = document.querySelector('#loadingScreenDiv');
 		if (loadingScreenDiv) {
+			// Remove old style element
+			const oldStyle = document.querySelector('#loadingScreenDivStyle');
+			if (oldStyle) {
+				oldStyle.remove();
+			}
+
 			// First, transition the opacity to 0
 			// Use keyframe animations
 			// To do this, we need to create a style element
@@ -74,7 +90,7 @@ export class CustomScreen implements ILoadingScreen {
 			`;
 			loadingScreenDiv.appendChild(style);
 			// @ts-expect-error - style is an element of loadingScreenDiv
-			loadingScreenDiv.style.animation = 'fadeOut 1s';
+			loadingScreenDiv.style.animation = `fadeOut ${this.loadingUIFadeOutTime}s`;
 			// When the animation is done, remove the element
 			loadingScreenDiv.addEventListener('animationend', () => {
 				if (loadingScreenDiv) {
@@ -92,11 +108,19 @@ export default class {
 
 	public constructor(engine: Engine) {
 		this.engine = engine;
-		this.loadingScreen = new CustomScreen('Loading...', 1);
+		this.loadingScreen = new CustomScreen();
 		this.engine.loadingScreen = this.loadingScreen;
 	}
 
-	public hide = (): void => {
+	public hide = (fadeOutTime?: number): void => {
+		this.loadingScreen.loadingUIFadeOutTime = fadeOutTime ?? 1;
+		this.loadingScreen = new CustomScreen(
+			'Loading...',
+			this.loadingScreen.loadingUIFadeInTime,
+			this.loadingScreen.loadingUIFadeOutTime,
+			this.loadingScreen.loadingUIBackgroundColor,
+		);
+		this.engine.loadingScreen = this.loadingScreen;
 		this.engine.hideLoadingUI();
 	};
 
@@ -105,11 +129,14 @@ export default class {
 		message?: string,
 		color?: string,
 	): void => {
+		this.loadingScreen.loadingUIFadeInTime = fadeInTime ?? 1;
+		this.loadingScreen.loadingUIBackgroundColor = color ?? '#111';
 		this.loadingScreen = new CustomScreen(
 			message ?? 'Loading...',
-			fadeInTime ?? 1,
+			this.loadingScreen.loadingUIFadeInTime,
+			this.loadingScreen.loadingUIFadeOutTime,
+			this.loadingScreen.loadingUIBackgroundColor,
 		);
-		this.engine.loadingScreen.loadingUIBackgroundColor = color ?? '#151729';
 		this.engine.loadingScreen = this.loadingScreen;
 		this.engine.displayLoadingUI();
 	};

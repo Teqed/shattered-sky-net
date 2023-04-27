@@ -7612,6 +7612,11 @@ eslint@^8.34.0:
     strip-json-comments "^3.1.0"
     text-table "^0.2.0"
 
+esm-env@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/esm-env/-/esm-env-1.0.0.tgz#b124b40b180711690a4cb9b00d16573391950413"
+  integrity sha512-Cf6VksWPsTuW01vU9Mk/3vRue91Zevka5SjyNf3nEpokFRuqt/KjUQoGAwq9qMmhpLTHmXzSIrFRw8zxWzmFBA==
+
 esno@^0.16.3:
   version "0.16.3"
   resolved "https://registry.npmjs.org/esno/-/esno-0.16.3.tgz"
@@ -13191,6 +13196,13 @@ through@^2.3.6, through@^2.3.8:
   version "2.3.8"
   resolved "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
+
+thyseus@^0.11.0:
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/thyseus/-/thyseus-0.11.0.tgz#0bc71903b4ba8a311bcec01b1d299cd102714ec3"
+  integrity sha512-1k5QbWTAilZMpfo5BsqIrGJ/KluutWj9uo4RfaGgLCMUMItKCguwxnVsFMOsZJYma6vExSjoSQRG9eXiDL5n3A==
+  dependencies:
+    esm-env "^1.0.0"
 
 tiny-emitter@^2.1.0:
   version "2.1.0"

@@ -139,9 +139,15 @@ export default async (
 
 	const UICam = createUICamera(canvas, scene);
 	scene.activeCameras = [camera, UICam];
-	const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI('UI');
+	const mainMenuUI = AdvancedDynamicTexture.CreateFullscreenUI(
+		'UI',
+		true,
+		scene,
+	);
 	if (mainMenuUI.layer) {
 		mainMenuUI.layer.layerMask = 0x10_00_00_00;
+	} else {
+		console.error('Failed to set layer mask for UI');
 	}
 
 	mainMenuUI.idealHeight = 720;
