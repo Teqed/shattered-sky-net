@@ -1,12 +1,18 @@
 import createPixelCamera from '../createPixelCamera';
 import createUICamera from '../createUICamera';
+import systems from './systems/systems';
 import { type Scene } from '@babylonjs/core/scene';
-import { World } from 'thyseus';
+import { createWorld, pipe } from 'bitecs';
 
 export default async (scene: Scene, canvas: HTMLCanvasElement) => {
 	const { camera } = await createPixelCamera(canvas, scene);
 	const UICam = createUICamera(canvas, scene);
 	scene.activeCameras = [camera, UICam];
+	const world = createWorld();
 
-	return await World.new().build();
+	const allSytemsPipeline = pipe(systems.UIDSystem);
+	// const allSytemsPipeline = systems.UIDSystem;
+	// allSytemsPipeline(world);
+
+	return { allSytemsPipeline, world };
 };

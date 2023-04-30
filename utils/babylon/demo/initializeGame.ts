@@ -4,7 +4,7 @@ import CustomLoadingScreen from './loadingScreen';
 import titleScreenBackground from './titleScreen';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
-import { type World } from 'thyseus';
+import { addEntity, type IWorld } from 'bitecs';
 
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
@@ -14,7 +14,10 @@ export class Game {
 
 	private rapierWorker: rapierWorkerType;
 
-	private world: World | undefined;
+	private world: IWorld | undefined;
+
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	private pipeline: ((...input: any[]) => any) | undefined;
 
 	private activeScene: Scene;
 
@@ -49,13 +52,18 @@ export class Game {
 		this.loadingScreen.show(0, 'Loading...', '#151729');
 		const worldPromise = createWorld(this.loadingScene, this.canvas);
 		this.loadingScreen.hide();
-		this.world = await worldPromise;
+		const { world, allSytemsPipeline } = await worldPromise;
+		this.world = world;
+		this.pipeline = allSytemsPipeline;
+
 		window.addEventListener('keydown', this.handleInput);
 	}
 
 	private handleInput = async (event: { code: string }) => {
 		if (event.code === 'KeyC') {
 			this.continue();
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			addEntity(this.world!);
 		}
 
 		if (event.code === 'KeyV') {
@@ -98,18 +106,17 @@ export class Game {
 				}
 			}
 		});
-		let previousTime = Date.now();
+		let previousTime = 0;
 		let delta = 0;
-		const timeStep = 1 / 60;
+		const timeStep = 1_000 / 1;
 		const worldLoop = async (time: number) => {
 			const dt = time - previousTime;
 			delta += dt;
 			previousTime = time;
 			while (delta > timeStep) {
-				if (this.world) {
+				if (this.world && this.pipeline) {
 					try {
-						// eslint-disable-next-line no-await-in-loop
-						await this.world.update();
+						this.pipeline(this.world);
 					} catch (error) {
 						console.error(error);
 					}

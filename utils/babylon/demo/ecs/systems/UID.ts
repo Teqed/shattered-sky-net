@@ -1,25 +1,28 @@
-/* eslint-disable @typescript-eslint/explicit-member-accessibility */
+/* eslint-disable canonical/filename-match-exported */
 /* eslint-disable canonical/filename-match-regex */
-import { defineSystem, Entity, initStruct, struct } from 'thyseus';
+import { UID } from '../components/components';
+import { addComponent, defineQuery, type IWorld, Not } from 'bitecs';
 
-@struct
-class UID {
-	@struct.u32 declare id: number;
+const queryEntitiesWithoutUID = defineQuery([Not(UID)]);
 
-	constructor(id: number = 0) {
-		initStruct(this);
+const UIDSystem = (world: IWorld) => {
+	console.log('UIDSystem');
+	const entitiesWithoutUID = queryEntitiesWithoutUID(world);
+	for (const eid of entitiesWithoutUID) {
+		let tryUID: number = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+		while (UID.uid.includes(tryUID)) {
+			tryUID = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
+			if (tryUID === 0) {
+				console.error('UIDSystem: tryUID === 0');
+			}
+		}
 
-		this.id = id;
+		addComponent(world, UID, eid);
+		UID.uid[eid] = tryUID;
+		console.log(`UIDSystem: ${eid} has UID ${UID.uid[eid]}`);
 	}
-}
 
-// eslint-disable-next-line import/prefer-default-export
-export const uidSystem = defineSystem(
-	({ Query, Without }) => [Query([Entity], Without(UID))],
-	// eslint-disable-next-line func-names
-	function uidSystem(query) {
-		query.forEach(entity => {
-			entity.add(new UID(Math.random() * 1_000_000));
-		});
-	},
-);
+	return world;
+};
+
+export default UIDSystem;
