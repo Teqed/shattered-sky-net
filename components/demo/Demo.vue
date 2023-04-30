@@ -18,8 +18,11 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+	window.location.reload();
 	try {
-		rapierWorker.dispose();
+		if (rapierWorker) {
+			rapierWorker.dispose();
+		}
 		// babylonWorker.dispose();
 	} catch (error) {
 		console.log(error);
