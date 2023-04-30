@@ -6,7 +6,6 @@ import { addComponent, defineQuery, type IWorld, Not } from 'bitecs';
 const queryEntitiesWithoutUID = defineQuery([Not(UID)]);
 
 const UIDSystem = (world: IWorld) => {
-	console.log('UIDSystem');
 	const entitiesWithoutUID = queryEntitiesWithoutUID(world);
 	for (const eid of entitiesWithoutUID) {
 		let tryUID: number = crypto.getRandomValues(new Uint32Array(1))[0] ?? 0;
