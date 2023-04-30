@@ -10,7 +10,12 @@ export default async (scene: Scene, canvas: HTMLCanvasElement) => {
 	scene.activeCameras = [camera, UICam];
 	const world = createWorld();
 
-	const allSytemsPipeline = pipe(systems.UIDSystem);
+	const allSytemsPipeline = pipe(
+		systems.UIDSystem,
+		systems.CombatPositionSystem,
+		systems.MeshPositionSystem,
+		systems.InputSystem,
+	);
 	// const allSytemsPipeline = systems.UIDSystem;
 	// allSytemsPipeline(world);
 
