@@ -15,6 +15,8 @@ export default async (scene: Scene, canvas: HTMLCanvasElement) => {
 		systems.CombatPositionSystem,
 		systems.MeshPositionSystem,
 		systems.InputSystem,
+		systems.EnergySystem,
+		systems.GameStateSystem,
 	);
 	// const allSytemsPipeline = systems.UIDSystem;
 	// allSytemsPipeline(world);
