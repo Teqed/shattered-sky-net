@@ -4,7 +4,21 @@ import CustomLoadingScreen from './loadingScreen';
 import titleScreenBackground from './titleScreen';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
-import { addEntity, type IWorld } from 'bitecs';
+import {
+	addEntity,
+	defineDeserializer,
+	defineSerializer,
+	getWorldComponents,
+	type IWorld,
+} from 'bitecs';
+
+const arrayBufferToString = (buffer: ArrayBuffer): string => {
+	return new TextDecoder('utf-16').decode(buffer);
+};
+
+const stringToArrayBuffer = (stringToConvert: string): ArrayBuffer => {
+	return new TextEncoder().encode(stringToConvert);
+};
 
 // eslint-disable-next-line import/prefer-default-export
 export class Game {
@@ -50,11 +64,24 @@ export class Game {
 		await screenFade;
 		await this.goToTitle();
 		this.loadingScreen.show(0, 'Loading...', '#151729');
-		const worldPromise = createWorld(this.loadingScene, this.canvas);
 		this.loadingScreen.hide();
-		const { world, allSytemsPipeline } = await worldPromise;
-		this.world = world;
-		this.pipeline = allSytemsPipeline;
+		const savegameJSON = localStorage.getItem('savegame00');
+		if (savegameJSON) {
+			// If savegame exists, load it
+			// Check browser storage for savegame
+			// we'll call it packet when we get it
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			const packet = stringToArrayBuffer(savegameJSON);
+			const worldPromise = this.loadGame(packet);
+			const { world, allSytemsPipeline } = await worldPromise;
+			this.world = world;
+			this.pipeline = allSytemsPipeline;
+		} else {
+			const worldPromise = createWorld(this.loadingScene, this.canvas);
+			const { world, allSytemsPipeline } = await worldPromise;
+			this.world = world;
+			this.pipeline = allSytemsPipeline;
+		}
 
 		window.addEventListener('keydown', this.handleInput);
 	}
@@ -68,6 +95,11 @@ export class Game {
 
 		if (event.code === 'KeyV') {
 			await this.goBackToTitle();
+		}
+
+		if (event.code === 'KeyS' && this.world) {
+			this.saveGame(this.world);
+			console.log('Game saved');
 		}
 	};
 
@@ -138,5 +170,22 @@ export class Game {
 			this.engine,
 			this.canvas as HTMLCanvasElement,
 		);
+	};
+
+	private saveGame = (world: IWorld) => {
+		const serialize = defineSerializer(getWorldComponents(world));
+		const packet = serialize(getWorldComponents(world));
+		console.log(packet);
+		const packetString = arrayBufferToString(packet);
+		localStorage.setItem('savegame00', packetString);
+		return packet;
+	};
+
+	private loadGame = async (packet: Uint8Array) => {
+		const newWorldPromise = createWorld(this.activeScene, this.canvas);
+		const { world, allSytemsPipeline } = await newWorldPromise;
+		const deserialize = defineDeserializer(world);
+		deserialize(world, packet.buffer);
+		return { allSytemsPipeline, world };
 	};
 }
