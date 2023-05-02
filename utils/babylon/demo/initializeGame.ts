@@ -5,18 +5,18 @@ import titleScreenBackground from './titleScreen';
 import { Engine } from '@babylonjs/core/Engines/engine';
 import { Scene } from '@babylonjs/core/scene';
 import {
-	addEntity,
 	defineDeserializer,
 	defineSerializer,
 	getWorldComponents,
 	type IWorld,
+	registerComponents,
 } from 'bitecs';
 
-const arrayBufferToString = (buffer: ArrayBuffer): string => {
+const arrayBufferToString = (buffer: ArrayBuffer) => {
 	return new TextDecoder('utf-16').decode(buffer);
 };
 
-const stringToArrayBuffer = (stringToConvert: string): ArrayBuffer => {
+const stringToArrayBuffer = (stringToConvert: string) => {
 	return new TextEncoder().encode(stringToConvert);
 };
 
@@ -67,10 +67,6 @@ export class Game {
 		this.loadingScreen.hide();
 		const savegameJSON = localStorage.getItem('savegame00');
 		if (savegameJSON) {
-			// If savegame exists, load it
-			// Check browser storage for savegame
-			// we'll call it packet when we get it
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 			const packet = stringToArrayBuffer(savegameJSON);
 			const worldPromise = this.loadGame(packet);
 			const { world, allSytemsPipeline } = await worldPromise;
@@ -89,7 +85,6 @@ export class Game {
 	private handleInput = async (event: { code: string }) => {
 		if (event.code === 'KeyC' && this.world) {
 			this.continue();
-			addEntity(this.world);
 		}
 
 		if (event.code === 'KeyV') {
@@ -172,19 +167,29 @@ export class Game {
 	};
 
 	private saveGame = (world: IWorld) => {
-		const serialize = defineSerializer(getWorldComponents(world));
-		const packet = serialize(getWorldComponents(world));
-		console.log(packet);
+		const serialize = defineSerializer(world);
+		const packet = serialize(world);
+		// const worldComponents = getWorldComponents(world);
+		// const componentSerializer = JSON.stringify;
+		// const packetString2 = componentSerializer(worldComponents);
 		const packetString = arrayBufferToString(packet);
+		console.log(packetString);
+		// console.log(packetString2);
 		localStorage.setItem('savegame00', packetString);
-		return packet;
+		// localStorage.setItem('savegame00c', packetString2);
+		const deserialize = defineDeserializer(world);
+		deserialize(world, packet);
+		return { packet };
 	};
 
 	private loadGame = async (packet: Uint8Array) => {
 		const newWorldPromise = createWorld(this.activeScene, this.canvas);
 		const { world, allSytemsPipeline } = await newWorldPromise;
-		const deserialize = defineDeserializer(world);
-		deserialize(world, packet.buffer);
+		// const componentDeserializer = JSON.parse;
+		// const worldComponents: Component[] = componentDeserializer(packet2);
+		// registerComponents(world, worldComponents);
+		allSytemsPipeline(world);
+		console.log(packet);
 		return { allSytemsPipeline, world };
 	};
 }
