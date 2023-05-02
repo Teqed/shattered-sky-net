@@ -87,10 +87,9 @@ export class Game {
 	}
 
 	private handleInput = async (event: { code: string }) => {
-		if (event.code === 'KeyC') {
+		if (event.code === 'KeyC' && this.world) {
 			this.continue();
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			addEntity(this.world!);
+			addEntity(this.world);
 		}
 
 		if (event.code === 'KeyV') {
