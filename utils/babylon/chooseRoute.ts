@@ -17,18 +17,18 @@ export default async (
 			break;
 		}
 
-		case 'scene0': {
-			const { Game } = await import('./prototype/initializeGame');
-			const gameWorld = new Game(canvas, navigationToLoad, rapierWorker);
-			console.log('gameWorld', gameWorld);
-			break;
-		}
+		// case 'scene0': {
+		// 	const { Game } = await import('./prototype/initializeGame');
+		// 	const gameWorld = new Game(canvas, navigationToLoad, rapierWorker);
+		// 	console.log('gameWorld', gameWorld);
+		// 	break;
+		// }
 
-		case 'scene1': {
-			const { Game } = await import('./demo/initializeGame');
-			const gameWorld = new Game(canvas, navigationToLoad, rapierWorker);
-			break;
-		}
+		// case 'scene1': {
+		// 	const { Game } = await import('./demo/initializeGame');
+		// 	const gameWorld = new Game(canvas, navigationToLoad, rapierWorker);
+		// 	break;
+		// }
 
 		default: {
 			console.error('no navigationToLoad');
