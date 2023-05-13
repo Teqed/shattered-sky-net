@@ -9,7 +9,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "test:unit": "vitest",
     "test:e2e": "playwright test",
-    "do": "vite preview --port 5173"
+    "do": "vite preview --port 5173",
+    "yarn-audit-fix": "yarn-audit-fix"
   },
   "devDependencies": {
     "@babylonjs/core": "^5.51.0",
@@ -77,7 +78,8 @@
     "vue-eslint-parser": "^9.1.0",
     "vue-gtag": "^2.0.1",
     "vue-tsc": "^1.2.0",
-    "vuetify": "^3.1.4"
+    "vuetify": "^3.1.4",
+    "yarn-audit-fix": "^9.3.10"
   },
   "dependencies": {
     "@lastolivegames/becsy": "^0.14.3",
@@ -86,7 +88,6 @@
     "@stdlib/utils-parse-json": "^0.0.8",
     "@types/ws": "^8.5.4",
     "bitecs": "^0.3.38",
-    "nuxt-socket-io": "^3.0.12",
     "socket.io": "^4.6.1",
     "socket.io-client": "^4.6.1",
     "thyseus": "^0.11.0",
