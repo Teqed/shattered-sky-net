@@ -81,7 +81,7 @@ useHead({
 }
 
 .details {
-	flex: 1;
+	/* flex: 1; */
 	margin-left: 1.5vw;
 	animation: var(--animation-generic);
 }
