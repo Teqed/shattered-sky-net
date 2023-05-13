@@ -1,46 +1,44 @@
 <script setup lang="ts">
 // const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
-	meta: [
-	],
+	meta: [],
 });
 </script>
 
 <script lang="ts"></script>
 
 <template>
-  <div>
-    <NuxtErrorBoundary>
-      <Body>
-        <header>
-          <SiteHeader />
-        </header>
-        <slot />
-      </Body>
-    </NuxtErrorBoundary>
-  </div>
+	<div>
+		<NuxtErrorBoundary>
+			<Body>
+				<header>
+					<SiteHeader />
+				</header>
+				<slot />
+			</Body>
+		</NuxtErrorBoundary>
+	</div>
 </template>
 
 <style>
-
 * {
 	--animation-generic: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
-  }
+}
 
-  #reverse {
+#reverse {
 	transition: none !important;
-  }
+}
 
 @media (hover: hover) {
 	.item a:hover {
-	text-decoration: underline;
-	background-color: hsl(189deg 65% 21% / 20%);
+		text-decoration: underline;
+		background-color: hsl(189deg 65% 21% / 20%);
 	}
-  }
+}
 
-  .tile {
+.tile {
 	width: min(85vw, 85vmin);
-  padding: 1.2vh 1vw;
+	padding: 1.2vh 1vw;
 	background: rgb(71 71 71 / 40%);
 	border-radius: 16px;
 	box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
@@ -49,9 +47,9 @@ useHead({
 	-webkit-backdrop-filter: saturate(180%) blur(10px);
 	border: 1px solid rgb(121 121 121 / 51%);
 	transition: box-shadow 0.28s ease-in-out;
-  }
+}
 
-  .retile {
+.retile {
 	width: min(85vw, 85vmin);
 	padding: 1.2vh 1vw;
 	background: rgb(71 71 71 / 40%);
@@ -62,33 +60,33 @@ useHead({
 	-webkit-backdrop-filter: saturate(180%) blur(10px);
 	border: 1px solid rgb(121 121 121 / 51%);
 	/* transition: box-shadow 0.28s ease-in-out; */
-  }
+}
 
-  .tile:hover {
+.tile:hover {
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
-  }
+}
 
-  .retile:hover {
+.retile:hover {
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
-  }
+}
 
-  .item {
+.item {
 	padding: 0.4vh 3vw 1.5vh 2vw;
 	display: flex;
-  }
+}
 
-  .reitem {
+.reitem {
 	padding: 0.4vh 3vw 1.5vh 2vw;
 	display: flex;
-  }
+}
 
-  .details {
-	flex: 1;
+.details {
+	/* flex: 1; */
 	margin-left: 1.5vw;
 	animation: var(--animation-generic);
-  }
+}
 
-  .i-icon {
+.i-icon {
 	display: flex;
 	place-items: center;
 	place-content: center;
@@ -96,9 +94,9 @@ useHead({
 	height: 32px;
 	color: var(--color-text);
 	animation: var(--animation-generic);
-  }
+}
 
-  .rei-icon {
+.rei-icon {
 	display: flex;
 	place-items: center;
 	place-content: center;
@@ -106,13 +104,12 @@ useHead({
 	height: 32px;
 	color: var(--color-text);
 	/* animation: var(--animation-generic); */
-  }
+}
 
-  h3 {
+h3 {
 	font-size: 1.2rem;
 	font-weight: 500;
 	margin-bottom: 0.5vh;
 	color: var(--color-heading);
-  }
-
+}
 </style>
