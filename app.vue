@@ -1,4 +1,5 @@
 <script setup lang="ts">
+const route = useRoute();
 const head = useLocaleHead({
 	addDirAttribute: true,
 	identifierAttribute: 'id',
@@ -24,7 +25,7 @@ useHead({
 			<NuxtLayout>
 				<NuxtPage v-slot="{ Component }">
 					<transition name="slide" mode="out-in">
-						<component :is="Component" :key="$route.path" />
+						<component :is="Component" :key="route.path" />
 					</transition>
 				</NuxtPage>
 			</NuxtLayout>
