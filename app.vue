@@ -17,7 +17,7 @@ useHead({
 
 <template>
 	<div>
-		<SeoKit :language="head.htmlAttrs?.lang" :dir="head.htmlAttrs?.dir" />
+		<!-- <SeoKit :language="head.htmlAttrs?.lang" :dir="head.htmlAttrs?.dir" /> -->
 		<NuxtErrorBoundary>
 			<ClientOnly>
 				<FollowCursor />

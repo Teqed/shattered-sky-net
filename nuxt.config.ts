@@ -58,6 +58,13 @@ export default defineNuxtConfig({
 		// seoOptimise: true,
 		strategy: 'no_prefix',
 		// vueI18n: 'i18n.config.ts', // if you are using custom path, default
+		vueI18n: {
+			// compositionOnly: false,
+			// locale: 'fr',
+			fallbackLocale: 'en-US',
+			legacy: false,
+			// runtimeOnly: false,
+		},
 	},
 	modules: [
 		'@nuxt/devtools',
@@ -121,7 +128,9 @@ export default defineNuxtConfig({
 			siteAuthor: 'Timothy E. Quilling',
 			siteDescription: 'Hosting for Shattered Sky',
 			siteName: 'Shattered Sky',
-			siteUrl: 'https://shatteredsky.net',
+			siteUrl:
+				// eslint-disable-next-line node/no-process-env
+				process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
 		},
 	},
 	security: {
@@ -171,9 +180,9 @@ export default defineNuxtConfig({
 		},
 		typeCheck: true,
 	},
-	unhead: {
-		ogTitleTemplate: '%pageTitle',
-	},
+	// unhead: {
+	// 	ogTitleTemplate: '%pageTitle',
+	// },
 	vite: {
 		build: {
 			emptyOutDir: true,
