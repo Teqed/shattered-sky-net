@@ -77,7 +77,39 @@ export default defineNuxtConfig({
 	extends: ['nuxt-seo-kit'],
 
 	i18n: {
-		vueI18n: './i18n.config.ts', // if you are using custom path, default
+		baseUrl: 'https://shatteredsky.net',
+		defaultLocale: 'en-US',
+		detectBrowserLanguage: {
+			cookieKey: 'i18n_redirected',
+			redirectOn: 'root',
+			useCookie: true,
+		},
+		langDir: 'lang/',
+		lazy: true,
+		locales: [
+			{
+				code: 'en',
+				file: 'en-US.json',
+				iso: 'en-US',
+				name: 'English',
+			},
+			{
+				code: 'fr',
+				file: 'fr-FR.json',
+				iso: 'fr-FR',
+				name: 'Français',
+			},
+			{
+				code: 'zh',
+				file: 'zh-CN.json',
+				iso: 'zh-CN',
+				name: '中文',
+			},
+		],
+		// seo: true,
+		// seoOptimise: true,
+		strategy: 'no_prefix',
+		// vueI18n: 'i18n.config.ts', // if you are using custom path, default
 	},
 
 	// serverHandlers: [
@@ -130,7 +162,7 @@ export default defineNuxtConfig({
 				},
 			},
 		],
-		['@nuxtjs/i18n'],
+		'@nuxtjs/i18n',
 	],
 
 	nitro: {
