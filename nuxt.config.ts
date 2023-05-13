@@ -79,43 +79,7 @@ export default defineNuxtConfig({
 				Roboto: true,
 			},
 		}],
-		['@nuxtjs/i18n', {
-			baseUrl: 'https://shatteredsky.net',
-			locales: [{
-				code: 'en',
-				iso: 'en-US',
-				name: 'English',
-				file: 'en-US.json',
-			}, {
-				code: 'fr',
-				iso: 'fr-FR',
-				name: 'Français',
-				file: 'fr-FR.json',
-			}, {
-				code: 'zh',
-				iso: 'zh-CN',
-				name: '中文',
-				file: 'zh-CN.json',
-			}],
-			lazy: true,
-			langDir: 'lang/',
-			defaultLocale: 'en',
-			strategy: 'no_prefix',
-			seo: true,
-			seoOptimise: true,
-			detectBrowserLanguage: {
-				useCookie: true,
-				cookieKey: 'i18n_redirected',
-				redirectOn: 'root',
-			},
-			vueI18n: {
-				legacy: false,
-				// locale: 'fr',
-				fallbackLocale: 'en',
-				runtimeOnly: false,
-				compositionOnly: false,
-			}
-		}],
+		['@nuxtjs/i18n'],
 	],
 	devtools: {
 		enabled: false,
