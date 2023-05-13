@@ -59,7 +59,7 @@ export default defineNuxtConfig({
 		'nuxt-security',
 		'nuxt-delay-hydration',
 		// 'nuxt-purgecss',
-		'@nuxtjs/html-validator',
+		// '@nuxtjs/html-validator', // Validator, temp disabled
 		[
 			'@nuxtjs/google-fonts',
 			{
