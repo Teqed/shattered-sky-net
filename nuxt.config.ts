@@ -138,14 +138,15 @@ export default defineNuxtConfig({
 	security: {
 		headers: {
 			// crossOriginOpenerPolicy: false,
-			crossOriginEmbedderPolicy: {
-				route: '/social',
-				value: 'unsafe-none',
-			},
+			// crossOriginEmbedderPolicy: {
+			// 	route: '/social',
+			// 	value: 'unsafe-none',
+			// },
 
 			crossOriginResourcePolicy: {
 				route: '/**',
-				value: 'cross-origin',
+				// value: 'cross-origin',
+				value: 'same-origin',
 			},
 			// contentSecurityPolicy: false,
 			// originAgentCluster: false,
