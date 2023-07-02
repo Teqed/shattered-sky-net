@@ -33,7 +33,7 @@ useHead({
             <a href="https://discord.gg/VaWPCXr" target="_blank" rel="noopener">{{ $t('social.card1.linkText') }}</a>
           </i18n-t>
         </p>
-        <br>
+        <!-- <br>
         <div style="width: 100%; height: 300px">
           <iframe
             src="https://discord.com/widget?id=272487248006479874"
@@ -46,7 +46,7 @@ useHead({
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             title="Discord Widget"
           />
-        </div>
+        </div> -->
       </div>
     </TileItem>
     <TileItem>
@@ -68,7 +68,7 @@ useHead({
             rel="noopener"
           >{{ $t('social.card2.linkText') }}</a>
         </p>
-        <br>
+        <!-- <br>
         <div style="width: 100%; height: 600px">
           <iframe
             src="https://mastodon.shatteredsky.net/public"
@@ -81,14 +81,14 @@ useHead({
             sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts"
             title="Mastodon Widget"
           />
-          <!-- <iframe
+          <iframe
         allowfullscreen
         sandbox="allow-top-navigation allow-scripts allow-popups allow-popups-to-escape-sandbox"
         width="100%"
         height="100%"
         src="https://www.mastofeed.com/apiv2/feed?userurl=https%3A%2F%2Fmastodon.shatteredsky.net%2Fusers%2Fteq&theme=dark&size=75&header=true&replies=true&boosts=true"
-      ></iframe> -->
-        </div>
+      ></iframe>
+        </div> -->
       </div>
     </TileItem>
   </div>

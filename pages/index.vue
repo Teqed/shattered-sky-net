@@ -8,6 +8,12 @@ useHead({
 			content: 'Home page for Shattered Sky community.',
 		},
 	],
+	link: [
+		{
+			rel: 'me',
+			href: 'https://mastodon.shatteredsky.net/@teq',
+		},
+	],
 });
 </script>
 

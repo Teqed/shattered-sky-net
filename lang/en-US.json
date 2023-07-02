@@ -69,6 +69,13 @@
 			"sub": "\"Squawk.\"",
 			"blurb": "A Skybourne-inspired Spheres of Power campaign. Airships are the primary form of travel between disconnected civilizations, requiring a crew of sailors to man and protect from hazardous weather and flying monsters. Spheres of Power provides versatile character building options, along with Spheres of War for martials.",
 			"linkText": "Login here."
+		},
+		"card4": {
+			"title": "Blood Lords",
+			"sub": "\"The undead rule in Geb just as much as the living.\"",
+			"blurb": "The ghost king of Geb rules a nation where the living and undead work uneasily side-by-side. The power behind the throne, and the true rulers of Geb, are the {0}: a scheming group of undying necromancers whose whims affect millions. Joining the Blood Lords isn't easy, but a band of less-than-good-hearted troubleshooters is destined to ascend their ranks for exposing a dangerous plot to the nation.",
+			"linkText": "Login here.",
+			"linkText2": "Blood Lords"
 		}
 	},
 	"stream": {
