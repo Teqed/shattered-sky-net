@@ -1,6 +1,5 @@
 import writeLog from '../utils/writeLog';
-import { type ChatCompletionRequestMessage } from 'openai';
-import { Configuration, OpenAIApi } from 'openai';
+import OpenAI from 'openai';
 import { type Socket } from 'socket.io';
 import { Server } from 'socket.io';
 import { type DefaultEventsMap } from 'socket.io/dist/typed-events';
@@ -18,11 +17,10 @@ type ResponseChunk = {
 	model: string;
 	object: string;
 };
-const configuration = new Configuration({
+const openai = new OpenAI({
 	// eslint-disable-next-line node/no-process-env
 	apiKey: process.env.OPENAI_API_KEY,
 });
-const openai = new OpenAIApi(configuration);
 const deniedReply =
 	'Your message was deemed potentially unsafe by the automated moderation API and not sent.';
 const errorReply =
@@ -64,7 +62,7 @@ const chatCompletionStreaming = async (
 		messages = baseMessages.concat(messages);
 		try {
 			console.time('moderation');
-			const moderation = await openai.createModeration({
+			const moderation = await openai.moderations.create({
 				input: latestMessage.content,
 			});
 			console.timeEnd('moderation');
@@ -75,7 +73,7 @@ const chatCompletionStreaming = async (
 				} else {
 					console.time('conversation');
 					try {
-						const response = await openai.createChatCompletion(
+						const response = await openai.chat.completions.create(
 							{
 								messages,
 								model: 'gpt-3.5-turbo',
