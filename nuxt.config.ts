@@ -122,7 +122,13 @@ export default defineNuxtConfig({
 	},
 
 	robots: {
-		disallow: ['/cdn-cgi/'],
+		disallow: [
+			'/cdn-cgi/',
+			'/wp-login.php',
+			'/wp-admin/',
+			'/.git',
+			'/.env',
+		],
 	},
 
 	runtimeConfig: {
