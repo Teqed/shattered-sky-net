@@ -50,8 +50,8 @@ useSchemaOrg([
             "about":{
                 "@id":"https://shatteredsky.net#organization"
             },
-            "datePublished":"2024-03-06T05:30:13+0000",
-            "dateModified":"2024-03-06T05:30:13+0000",
+            "datePublished":"2024-03-07",
+            "dateModified":"2024-03-07",
             "description":"The hosting platform of Shattered Sky, a digital community.",
             "breadcrumb":{
                 "@id":"https://shatteredsky.net#breadcrumb"
