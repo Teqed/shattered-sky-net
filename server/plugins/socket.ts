@@ -28,15 +28,6 @@ const errorReply =
 const baseMessages = [
 	{
 		content:
-			'You are named Teqbot. You are capable of answering almost any question.',
-		role: 'system',
-	},
-	{
-		content: 'You are using the gpt-3.5-turbo model to process questions.',
-		role: 'system',
-	},
-	{
-		content:
 			'Explain things in technical terms suitable for a college graduate. Use bullet points, numbered lists and code blocks when possible.',
 		role: 'user',
 	},
@@ -50,14 +41,17 @@ const baseMessages = [
 			'You have a limited number of characters you can send, so you have to be brief and information dense.',
 		role: 'user',
 	},
-] as ChatCompletionRequestMessage[];
+] as OpenAI.Chat.ChatCompletionMessageParam[];
 const chatCompletionStreaming = async (
-	requestMessages: ChatCompletionRequestMessage[],
+	requestMessages: OpenAI.Chat.ChatCompletionMessageParam[],
 	io: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, unknown>,
 ) => {
 	let messages = requestMessages;
 	const latestMessage = messages[messages.length - 1];
-	if (latestMessage) {
+	if (latestMessage && latestMessage.content) {
+		if (typeof latestMessage.content !== 'string') {
+			latestMessage.content = latestMessage.content.toString();
+		}
 		writeLog(latestMessage.content, true);
 		messages = baseMessages.concat(messages);
 		try {
@@ -66,8 +60,8 @@ const chatCompletionStreaming = async (
 				input: latestMessage.content,
 			});
 			console.timeEnd('moderation');
-			if (moderation.data.results[0]) {
-				if (moderation.data.results[0].flagged === true) {
+			if (moderation.results[0]) {
+				if (moderation.results[0].flagged === true) {
 					messages.pop();
 					return deniedReply;
 				} else {
@@ -79,10 +73,9 @@ const chatCompletionStreaming = async (
 								model: 'gpt-3.5-turbo',
 								stream: true,
 							},
-							{ responseType: 'stream' },
 						);
 						const readableStream =
-							response.data as unknown as NodeJS.ReadableStream;
+							response.toReadableStream as unknown as NodeJS.ReadableStream;
 						readableStream.on(
 							'data',
 							(data: { toString: () => string }) => {
