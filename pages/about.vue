@@ -15,6 +15,13 @@ useHead({
       <template #heading>
         {{ $t('about.card0.title') }}
       </template>
+      <p>
+        {{ $t('about.card0.blurb') }}
+      </p>
+      <br>
+      <p>
+        {{ $t('about.card0.blurb2') }}
+      </p>
 
       <p />
     </TileItem>
@@ -33,11 +40,9 @@ useHead({
       <p>
         <i18n-t keypath="about.card1.blurb2" scope="global" for="about.card1.linkText">
           <a
-            href="mailto:teqed@shatteredsky.net?subject=About ShatteredSky.net"
-            rel="nofollow noopener noreferrer"
-          >
-            teqed@shatteredsky.net
-          </a>
+            href="https://quilling.dev"
+            rel="author external"
+          >quilling.dev</a>
         </i18n-t>
       </p>
     </TileItem>

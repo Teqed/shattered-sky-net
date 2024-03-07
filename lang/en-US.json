@@ -115,12 +115,14 @@
 	},
 	"about": {
 		"card0": {
-			"title": "About"
+			"title": "About",
+			"blurb": "Shattered Sky is a social community for friends old and new. A few of us host some free services for each other, usually in the spirit of playing games together. If you already know one of our members, you are welcome to request an invitation from them. We are not otherwise accepting unsolicited sign-ups at this time.",
+			"blurb2": "We are an inclusive, welcoming, and supportive community. We do not tolerate hate speech, harassment, or discrimination. We reserve the right to remove anyone who does not respect our community guidelines. Please report any violations to our administrators."
 		},
 		"card1": {
 			"title": "Created by",
-			"blurb": "Website by Timothy E. Quilling, 2023.",
-			"blurb2": "Please contact {0} for inquiries."
+			"blurb": "Webpage and associated services by Timothy Quilling, 2023.",
+			"blurb2": "Learn more about me and the projects I'm passionate about at {0}."
 		}
 	}
 }
