@@ -1,4 +1,4 @@
-Characters have a number of Wealth Points (wp) according to their level determined by the table below.
+Characters have a number of Wealth Points (wp) according to their level determined by the table below. Once per day while making your daily preparations, you can reassign your Wealth Points to purchase any of the following abilities.
 
 | Level | Wealth Points |
 | ----- | ------------- |
@@ -22,8 +22,6 @@ Characters have a number of Wealth Points (wp) according to their level determin
 | 19    | 685 wp        |
 | 20    | 880 wp        |
 
-\
-Once per day while making your daily preparations, you can reassign your Wealth Points to purchase any of the following abilities.
 
 ::TileItemSrd
 ### Offensive Attunement

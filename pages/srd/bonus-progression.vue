@@ -33,8 +33,8 @@ useSeoMeta({
 :root {
 	--color-canvas-default: rgb(1 1 1 / 20%);
 	--color-canvas-subtle: rgb(121 121 121 / 10%);
-	--color-border-default: #30363d;
-	--color-border-muted: #21262d;
+	--color-border-default: rgb(121 121 121 / 51%);
+	--color-border-muted: rgb(121 121 121 / 26%);
 }
 
 table {
