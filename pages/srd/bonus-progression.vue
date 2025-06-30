@@ -12,7 +12,7 @@ useSeoMeta({
 
 <template>
 	<div>
-		<TileItemSrd>
+		<TileItem>
 			<template #icon>
 				<div class="i-mdi:information-outline text-2xl" />
 			</template>
@@ -24,7 +24,7 @@ useSeoMeta({
 			<div v-else>Markdown page not found</div>
 			</p>
 			<p />
-		</TileItemSrd>
+		</TileItem>
 	</div>
 </template>
 <style>

@@ -10,8 +10,8 @@ useHead({
 </script>
 
 <template>
-	<div class="item">
-		<div class="details tile">
+	<div class="item-srd">
+		<div class="details-srd tile-srd">
 			<h3>
 				<slot name="heading" />
 			</h3>

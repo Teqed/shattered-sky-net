@@ -10,6 +10,7 @@ useHead({
 <template>
 	<div>
 		<NuxtErrorBoundary>
+
 			<Body>
 				<header>
 					<SiteHeader />
@@ -49,6 +50,19 @@ useHead({
 	transition: box-shadow 0.28s ease-in-out;
 }
 
+.tile-srd {
+	/* width: min(85vw, 85vmin); */
+	padding: 0.8vh 1vw;
+	background: rgb(71 71 71 / 40%);
+	border-radius: 16px;
+	box-shadow: 0 4px 30px rgb(121 121 121 / 10%);
+	backdrop-filter: saturate(180%) blur(10px);
+	/* stylelint-disable-next-line property-no-vendor-prefix */
+	-webkit-backdrop-filter: saturate(180%) blur(10px);
+	border: 1px solid rgb(121 121 121 / 51%);
+	transition: box-shadow 0.28s ease-in-out;
+}
+
 .retile {
 	width: min(85vw, 85vmin);
 	padding: 1.2vh 1vw;
@@ -66,12 +80,21 @@ useHead({
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
 }
 
+.tile-srd:hover {
+	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
+}
+
 .retile:hover {
 	box-shadow: 0 4px 30px rgb(121 121 121 / 25%);
 }
 
 .item {
 	padding: 0.4vh 3vw 1.5vh 2vw;
+	display: flex;
+}
+
+.item-srd {
+	padding: 0.2vh 1.5vw 0.7vh 1vw;
 	display: flex;
 }
 
@@ -83,6 +106,12 @@ useHead({
 .details {
 	/* flex: 1; */
 	margin-left: 1.5vw;
+	animation: var(--animation-generic);
+}
+
+.details-srd {
+	/* flex: 1; */
+	/* margin-left: 1.5vw; */
 	animation: var(--animation-generic);
 }
 
