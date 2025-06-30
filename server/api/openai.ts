@@ -61,11 +61,11 @@
 // 	}
 // 	return errorReply;
 // };
-export default defineEventHandler(async (event) => {
-	const body = await readBody(event)
-	if (body.requestType === 'chatCompletion') {
-		// return chatCompletion(body);
-		return 'chatCompletion';
-	}
-	return 'No requestType specified.'
-});
+// export default defineEventHandler(async (event) => {
+// 	const body = await readBody(event)
+// 	if (body.requestType === 'chatCompletion') {
+// 		// return chatCompletion(body);
+// 		return 'chatCompletion';
+// 	}
+// 	return 'No requestType specified.'
+// });

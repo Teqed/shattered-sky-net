@@ -3,7 +3,6 @@ import chooseRoute from '../babylon/chooseRoute';
 import { numberMeshes } from '../nbody/everyFrame';
 import { CustomMouseEvent } from './mouseEvents';
 import spawnRapier from './rapier-wrap';
-// @ts-expect-error
 // eslint-disable-next-line import/default
 import rapierWorkerUrl from './rapier-expose?worker&url';
 
@@ -56,5 +55,5 @@ const babylonMain = {
 }
 export const loadGame = async (canvas: HTMLCanvasElement, navigation: string) => {
 	const rapierWorker = await babylonMain.initGame(canvas, navigation, rapierWorkerUrl);
-	return {babylonMain, rapierWorker};
+	return { babylonMain, rapierWorker };
 };

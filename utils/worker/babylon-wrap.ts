@@ -3,17 +3,16 @@ import {
 	wrap,
 	transfer
 } from 'comlink';
-// @ts-expect-error
 // eslint-disable-next-line import/default
 import rapierWorkerUrl from './rapier-expose?worker&url';
-import {type rapierWorkerType} from './rapier-wrap';
+import { type rapierWorkerType } from './rapier-wrap';
 const worker = new Worker(new URL('../../utils/worker/babylon-expose.ts', import.meta.url), {
 	type: 'module',
 });
 export interface babylonWorkerType {
 	dispose: () => Promise<void>,
 	resize: (width: number, height: number) => {
-	/* ... */
+		/* ... */
 	},
 	mouseEvent: (event: {
 		type: string,
@@ -27,8 +26,8 @@ export interface babylonWorkerType {
 		deltaMode?: number,
 	}
 	) => {
-	/* ... */
-	},
+			/* ... */
+		},
 	subSpawn: (url: string) => Promise<rapierWorkerType>,
 	meshCounter: () => Promise<number>,
 	initGame: (canvas: OffscreenCanvas, navigation: string, rapierWorker: rapierWorkerType) => Promise<rapierWorkerType>,
@@ -36,6 +35,7 @@ export interface babylonWorkerType {
 export const babylonWorker: babylonWorkerType = wrap(worker);
 export const loadGame = async (canvas: HTMLCanvasElement, navigation: string) => {
 	const offscreen = canvas.transferControlToOffscreen();
+	// @ts-expect-error
 	const rapierWorker = await babylonWorker.initGame(transfer(offscreen, [offscreen]), navigation, rapierWorkerUrl);
-	return {babylonWorker, rapierWorker};
+	return { babylonWorker, rapierWorker };
 };

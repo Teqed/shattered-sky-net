@@ -9,6 +9,7 @@ import { type rapierWorkerType } from '~~/utils/worker/rapier-wrap';
 let babylonWorker: any;
 let rapierWorker: rapierWorkerType;
 onMounted(async () => {
+	// @ts-expect-error
 	const canvas: HTMLCanvasElement = document.querySelector('#renderCanvas')!;
 	// if offscreen canvas available
 	if (false) {

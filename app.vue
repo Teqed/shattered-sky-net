@@ -1,9 +1,9 @@
 <script setup lang="ts">
 const route = useRoute();
 const head = useLocaleHead({
-	addDirAttribute: true,
-	identifierAttribute: 'id',
-	addSeoAttributes: true,
+	dir: true,
+	key: 'id',
+	seo: true,
 });
 useHead({
 	meta: [
@@ -17,7 +17,7 @@ useHead({
 
 <template>
 	<div>
-		<SeoKit :language="head.htmlAttrs?.lang" :dir="head.htmlAttrs?.dir" />
+		<!-- <SeoKit :language="head.htmlAttrs?.lang" :dir="head.htmlAttrs?.dir" /> -->
 		<NuxtErrorBoundary>
 			<ClientOnly>
 				<FollowCursor />
@@ -100,22 +100,19 @@ body {
 	background: var(--color-background);
 	background-size: 150% 150%;
 	background-blend-mode: exclusion;
-	background-image: radial-gradient(
-			circle at bottom right,
+	background-image: radial-gradient(circle at bottom right,
 			rgb(170 0 206 / 10%),
-			rgb(50 0 206 / 0%) 65%
-		),
-		radial-gradient(
-			circle at top left,
+			rgb(50 0 206 / 0%) 65%),
+		radial-gradient(circle at top left,
 			rgb(50 0 206 / 15%),
-			rgb(170 0 206 / 0%) 65%
-		);
+			rgb(170 0 206 / 0%) 65%);
 	will-change: background-position;
 }
 
 ::-webkit-scrollbar {
 	width: 0;
-	background: transparent; /* make scrollbar transparent */
+	background: transparent;
+	/* make scrollbar transparent */
 }
 
 @keyframes fadein {

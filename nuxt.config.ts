@@ -1,7 +1,23 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
-import vuetify from 'vite-plugin-vuetify';
+// import vuetify from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
+	content: {
+		build: {
+			markdown: {
+				remarkPlugins: {
+					'remark-gfm': {},
+					'remark-breaks': {},
+					'remark-oembed': {},
+					'remark-emoji': {},
+				},
+			},
+		},
+	},
+	site: {
+		url: 'https://shatteredsky.net',
+		name: 'Shattered Sky',
+	},
 	app: {
 		head: {
 			link: [
@@ -15,7 +31,7 @@ export default defineNuxtConfig({
 	},
 	build: {
 		analyze: true,
-		transpile: ['vuetify'],
+		// transpile: ['vuetify'],
 	},
 	delayHydration: {
 		mode: 'init',
@@ -23,8 +39,18 @@ export default defineNuxtConfig({
 	devtools: {
 		enabled: false,
 	},
-	extends: ['nuxt-seo-kit'],
 	modules: [
+		'@nuxtjs/seo',
+		'@nuxt/content',
+		'@nuxt/eslint',
+		'@nuxt/fonts',
+		'@nuxt/icon',
+		'@nuxt/image',
+		'@nuxt/scripts',
+		'@nuxt/test-utils',
+		'@nuxt/ui',
+		'vuetify-nuxt-module',
+		//
 		'@nuxt/devtools',
 		// 'nuxt-purgecss',
 		[
@@ -48,11 +74,11 @@ export default defineNuxtConfig({
 		],
 		// ['unplugin-icons/nuxt', { /* options */ }],
 		// eslint-disable-next-line require-await
-		async (_options, nuxt) => {
-			nuxt.hooks.hook('vite:extendConfig', config => {
-				config.plugins?.push(vuetify({ autoImport: true }));
-			});
-		},
+		// async (_options, nuxt) => {
+		// 	nuxt.hooks.hook('vite:extendConfig', config => {
+		// 		config.plugins?.push(vuetify({ autoImport: true }));
+		// 	});
+		// },
 		// './modules/socket',
 		// 'nuxt-socket-io',
 		// '@unlighthouse/nuxt',
@@ -103,14 +129,12 @@ export default defineNuxtConfig({
 				seo: true,
 				seoOptimise: true,
 				strategy: 'no_prefix',
-				vueI18n: {
-					compositionOnly: false,
-
-					// locale: 'fr',
-					fallbackLocale: 'en',
-					legacy: false,
-					runtimeOnly: false,
-				},
+				// vueI18n: {
+				// 	compositionOnly: false,
+				// 	fallbackLocale: 'en',
+				// 	legacy: false,
+				// 	runtimeOnly: false,
+				// },
 			},
 		],
 	],
@@ -149,11 +173,11 @@ export default defineNuxtConfig({
 			// 	value: 'unsafe-none',
 			// },
 
-			crossOriginResourcePolicy: {
-				route: '/**',
-				// value: 'cross-origin',
-				value: 'same-origin',
-			},
+			// crossOriginResourcePolicy: {
+			// 	route: '/**',
+			// 	// value: 'cross-origin',
+			// 	value: 'same-origin',
+			// },
 			// contentSecurityPolicy: false,
 			// originAgentCluster: false,
 			// referrerPolicy: false,
@@ -190,7 +214,7 @@ export default defineNuxtConfig({
 		typeCheck: true,
 	},
 	unhead: {
-		ogTitleTemplate: '%pageTitle',
+		// ogTitleTemplate: '%pageTitle',
 	},
 	vite: {
 		build: {
@@ -200,4 +224,5 @@ export default defineNuxtConfig({
 			'process.env.DEBUG': false,
 		},
 	},
-});
+	compatibilityDate: '2025-05-15',
+})

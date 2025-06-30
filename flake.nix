@@ -23,6 +23,7 @@
         nodejs_24
         nodePackages_latest.pnpm
         yarn
+        sqlite
       ];
       nativeBuildInputs = buildInputs;
       npmDepsHash = ""; # <prefetch-npm-deps package-lock.json>
