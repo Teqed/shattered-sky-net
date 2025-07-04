@@ -21,17 +21,14 @@
       <NuxtLink to="/">
         {{ $t('nav.home') }}
       </NuxtLink>
-      <NuxtLink to="/files">
-        {{ $t('nav.files') }}
+      <NuxtLink to="/cloud">
+        {{ $t('nav.cloud') }}
       </NuxtLink>
       <NuxtLink to="/tabletop">
         {{ $t('nav.tabletop') }}
       </NuxtLink>
-      <NuxtLink to="/stream">
-        {{ $t('nav.stream') }}
-      </NuxtLink>
-      <NuxtLink to="/social">
-        {{ $t('nav.social') }}
+      <NuxtLink to="/blog">
+        {{ $t('nav.blog') }}
       </NuxtLink>
       <NuxtLink to="/about">
         {{ $t('nav.about') }}
@@ -42,9 +39,10 @@
 <style>
 .logo-container {
 	display: flex;
-	margin: 0 4vw 2vh;
+	margin: 0 2vw 0vh;
 	position: sticky;
 	float: left;
+	padding: 0.5rem 0rem 0.5rem 0rem;
   }
 
   .logo-container:hover {
@@ -52,14 +50,14 @@
   }
 
   .logo {
-    width: min(15vw, 125px);
+    width: min(15vw, 100px);
     height: auto;
 	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
 	justify-self: center;
   }
 
   .logo-blur {
-    width: min(15vw, 125px);
+    width: min(15vw, 100px);
     height: auto;
 	filter: blur(10px);
 	position: absolute;

@@ -1,19 +1,20 @@
 {
 	"title": {
 		"main": "Shattered Sky",
-		"sub": "Hosting platform for the Shattered Sky community."},
+		"sub": "Digital platform."
+	},
 	"nav": {
 		"home": "Home",
-		"files": "Files",
+		"cloud": "Cloud",
 		"tabletop": "Tabletop",
 		"stream": "Stream",
-		"social": "Social",
+		"blog": "Blog",
 		"about": "About"
 	},
 	"index": {
-		"files": {
-			"title": "Files",
-			"blurb": "File hosting can be found in the {0}.",
+		"0": {
+			"title": "$ ssh shatteredsky.net:22 -vvv",
+			"blurb": "Running on Linux 6.14.7-cachyos #1-NixOS PREEMPT_DYNAMIC Sun May 18 06:26:10 UTC 2025 x86_64\n\nReading configuration data ...\n\nChecking match for host ...\nExecuting command: /bin/bash {0}.",
 			"linkText": "directory browser"
 		},
 		"tabletop": {
@@ -27,8 +28,8 @@
 			"linkText": "Plex",
 			"linkText2": "Jellyfin"
 		},
-		"social": {
-			"title": "Social",
+		"blog": {
+			"title": "blog",
 			"blurb": "We participate in {0} web publishing using the ActivityPub protocol, and currently have a {1} microblogging front-end.",
 			"linkText": "Federated",
 			"linkText2": "Mastodon"
@@ -39,10 +40,10 @@
 			"linkText": "our Discord"
 		}
 	},
-	"files": {
+	"cloud": {
 		"card0": {
-			"title": "Files",
-			"blurb": "Browse the contents of our file server.",
+			"title": "Cloud Storage",
+			"blurb": "Browse the contents of our cloud file server.",
 			"linkText": "Login here."
 		}
 	},
@@ -65,9 +66,9 @@
 			"linkText": "Login here."
 		},
 		"card3": {
-			"title": "Spheres of Power",
-			"sub": "\"Squawk.\"",
-			"blurb": "A Skybourne-inspired Spheres of Power campaign. Airships are the primary form of travel between disconnected civilizations, requiring a crew of sailors to man and protect from hazardous weather and flying monsters. Spheres of Power provides versatile character building options, along with Spheres of War for martials.",
+			"title": "Ars Anima",
+			"sub": "\"The drum beats on...\"",
+			"blurb": "A homebrew campaign set in a far-flung future where magic and technology are ancient arts. Spheres of Power, Might, and Guile replace the typical Pathfinder class options.",
 			"linkText": "Login here."
 		},
 		"card4": {
@@ -95,29 +96,17 @@
 			"linkText": "Login here."
 		}
 	},
-	"social": {
+	"blog": {
 		"card0": {
-			"title": "Social",
-			"blurb": "Browse our social media."
-		},
-		"card1": {
-			"title": "Discord",
-			"blurb": "Discord is a proprietary freeware VoIP application and digital distribution platform designed for video gaming communities, that specializes in text, image, video and audio communication between users in a chat channel.",
-			"blurb2": "{0} is our hub for chatting and playing games. We keep text channels organized by topic, use threads for discussing individual games, and have regularly populated voice channels for playing together.",
-			"linkText": "Our Discord server"
-		},
-		"card2": {
-			"title": "Mastodon",
-			"blurb": "Mastodon is a free, open-source social network server. Users can interact with each other by posting text, images, and videos, and can follow other users' posts. Users create their accounts on \"instances\", which are separate servers running Mastodon.",
-			"blurb2": "We use a fork of Mastodon called Glitch-soc, which adds a few features compatible with the ActivityPub protocol.",
-			"linkText": "Check out our instance here."
+			"title": "Blog",
+			"blurb": "Browse blog posts and related content."
 		}
 	},
 	"about": {
 		"card0": {
 			"title": "About",
-			"blurb": "Shattered Sky is a social community for friends old and new. A few of us host some free services for each other, usually in the spirit of playing games together. If you already know one of our members, you are welcome to request an invitation from them. We are not otherwise accepting unsolicited sign-ups at this time.",
-			"blurb2": "We are an inclusive, welcoming, and supportive community. We do not tolerate hate speech, harassment, or discrimination. We reserve the right to remove anyone who does not respect our community guidelines. Please report any violations to our administrators."
+			"blurb": "Shattered Sky is a digital community and hosting platform founded in 2009.",
+			"blurb2": "We do not tolerate hate speech, harassment, or discrimination. Please report any violations to our administrators."
 		},
 		"card1": {
 			"title": "Created by",
