@@ -42,8 +42,8 @@
 	},
 	"cloud": {
 		"card0": {
-			"title": "Cloud Storage",
-			"blurb": "Browse the contents of our cloud file server.",
+			"title": "Cloud Services Portal",
+			"blurb": "Connect to our hosted applications and file server.",
 			"linkText": "Login here."
 		}
 	},
@@ -99,7 +99,7 @@
 	"blog": {
 		"card0": {
 			"title": "Blog",
-			"blurb": "Browse blog posts and related content."
+			"blurb": "No posts here yet -- check back later!"
 		}
 	},
 	"about": {
@@ -111,7 +111,8 @@
 		"card1": {
 			"title": "Created by",
 			"blurb": "Webpage and associated services by Timothy Quilling, 2023.",
-			"blurb2": "Learn more about me and the projects I'm passionate about at {0}."
+			"blurb2": "Learn more about me {0}.",
+			"linkText": "here"
 		}
 	}
 }

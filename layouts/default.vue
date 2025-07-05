@@ -1,7 +1,9 @@
 <script setup lang="ts">
 // const title = computed(() => t('layouts.title', { title: t(route.meta.title ?? 'TBD') }))
 useHead({
-	meta: [],
+	meta: [
+		{ name: 'darkreader-lock', content: 'Already dark by default.' },
+	],
 });
 </script>
 

@@ -1,13 +1,13 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 const route = useRoute();
-const { data: markdown_page } = await useAsyncData(route.path, () => queryCollection('content').path(route.path).first())
-const title = markdown_page.value?.title || 'Title not found';
+// const { data: markdown_page } = await useAsyncData(route.path, () => queryCollection('content').path(route.path).first())
+// const title = markdown_page.value?.title || 'Title not found';
 
-useSeoMeta({
-	title: markdown_page.value?.title,
-	description: markdown_page.value?.description
-})
+// useSeoMeta({
+// 	title: markdown_page.value?.title,
+// 	description: markdown_page.value?.description
+// })
 </script>
 
 <template>
@@ -17,11 +17,11 @@ useSeoMeta({
 				<div class="i-mdi:information-outline text-2xl" />
 			</template>
 			<template #heading>
-				{{ title }}
+				<!-- {{ title }} -->
 			</template>
 			<p>
-				<ContentRenderer v-if="markdown_page" :value="markdown_page" />
-			<div v-else>Markdown page not found</div>
+				<!-- <ContentRenderer v-if="markdown_page" :value="markdown_page" /> -->
+				<!-- <div v-else>Markdown page not found</div> -->
 			</p>
 			<p />
 		</TileItem>

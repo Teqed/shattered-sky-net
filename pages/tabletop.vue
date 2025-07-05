@@ -11,11 +11,7 @@ useHead({
 	<div>
 		<TileItem>
 			<template #icon>
-				<img
-					src="../assets/icons/fvtt.png"
-					style="width: 80%"
-					alt="FVTT logo"
-				>
+				<img src="../assets/icons/fvtt.png" style="width: 80%" alt="FVTT logo">
 			</template>
 			<template #heading>
 				{{ $t('tabletop.card0.title') }}
@@ -35,32 +31,25 @@ useHead({
 				<p>
 					<i>{{ $t('tabletop.card3.sub') }}</i>
 				</p>
-				<br >
+				<br>
 				<p>
 					{{ $t('tabletop.card3.blurb') }}
 				</p>
-				<br >
-				<a
-					href="https://foundry.shatteredsky.net/spheres/"
-					target="_blank"
-					rel="noopener"
-					>{{ $t('tabletop.card3.linkText') }}</a>
+				<br>
+				<a href="https://foundry.shatteredsky.net/spheres/" target="_blank" rel="noopener">{{
+					$t('tabletop.card3.linkText') }}</a>
 			</div>
 			<a href="https://foundry.shatteredsky.net/spheres/">
-				<img
-					src="../assets/images/spheres_group.webp"
-					style="
+				<img src="../assets/images/spheres_goosedra.png" style="
 						width: 45%;
 						float: right;
 						margin-left: 1rem;
 						margin-bottom: 1rem;
 						border-radius: 0.5rem;
-					"
-					alt="Spheres of Power"
-				>
+					" alt="Spheres of Power">
 			</a>
 		</TileItem>
-		
+
 		<TileItem>
 			<template #icon>
 				<div class="i-mdi:skull text-2xl" />
@@ -70,39 +59,26 @@ useHead({
 			</template>
 			<div style="width: 50%; float: left">
 				<p>
-					<i>{{ $t('tabletop.card4.sub') }}</i><br ><br >
+					<i>{{ $t('tabletop.card4.sub') }}</i><br><br>
 
-					<i18n-t
-						keypath="tabletop.card4.blurb"
-						scope="global"
-						for="tabletop.card4.linkText2"
-					>
-						<a
-							href="https://paizo.com/store/pathfinder/adventures/adventurePath/bloodLords"
-						>
+					<i18n-t keypath="tabletop.card4.blurb" scope="global" for="tabletop.card4.linkText2">
+						<a href="https://paizo.com/store/pathfinder/adventures/adventurePath/bloodLords">
 							{{ $t('tabletop.card4.linkText2') }}
 						</a>
 					</i18n-t>
 				</p>
-				<br >
-				<a
-					href="https://foundry.shatteredsky.net/bloodlords/"
-					target="_blank"
-					rel="noopener"
-					>{{ $t('tabletop.card4.linkText') }}</a>
+				<br>
+				<a href="https://foundry.shatteredsky.net/bloodlords/" target="_blank" rel="noopener">{{
+					$t('tabletop.card4.linkText') }}</a>
 			</div>
 			<a href="https://foundry.shatteredsky.net/bloodlords/">
-				<img
-					src="../assets/images/bloodlords.webp"
-					style="
+				<img src="../assets/images/bloodlords.webp" style="
 						width: 45%;
 						float: right;
 						margin-left: 1rem;
 						margin-bottom: 1rem;
 						border-radius: 0.5rem;
-					"
-					alt="Blood Lords"
-			></a>
+					" alt="Blood Lords"></a>
 		</TileItem>
 
 		<TileItem>
@@ -114,29 +90,22 @@ useHead({
 			</template>
 			<div style="width: 50%; float: left">
 				<p>
-					<i>{{ $t('tabletop.card2.sub') }}</i><br ><br >
+					<i>{{ $t('tabletop.card2.sub') }}</i><br><br>
 
 					{{ $t('tabletop.card2.blurb') }}
-					<br ><br >
+					<br><br>
 				</p>
-				<a
-					href="https://foundry.shatteredsky.net/krune/"
-					target="_blank"
-					rel="noopener"
-					>{{ $t('tabletop.card2.linkText') }}</a>
+				<a href="https://foundry.shatteredsky.net/krune/" target="_blank" rel="noopener">{{
+					$t('tabletop.card2.linkText') }}</a>
 			</div>
 			<a href="https://foundry.shatteredsky.net/krune/">
-				<img
-					src="../assets/images/krune_group.webp"
-					style="
+				<img src="../assets/images/krune_group.webp" style="
 						width: 45%;
 						float: right;
 						margin-left: 1rem;
 						margin-bottom: 1rem;
 						border-radius: 0.5rem;
-					"
-					alt="The Waking Rune"
-				>
+					" alt="The Waking Rune">
 			</a>
 		</TileItem>
 	</div>

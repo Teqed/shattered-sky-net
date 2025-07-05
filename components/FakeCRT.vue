@@ -10,12 +10,14 @@ useHead({
 </script>
 
 <template>
-	<div class="item">
-		<div class="details tile crt">
-			<slot />
-			<div class="scanline"></div>
+	<ClientOnly>
+		<div class="item">
+			<div class="details tile crt">
+				<slot />
+				<div class="scanline"></div>
+			</div>
 		</div>
-	</div>
+	</ClientOnly>
 </template>
 
 <style scoped>
@@ -223,6 +225,9 @@ useHead({
 
 .crt {
 	animation: textShadow 3.6s infinite;
+	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
+	font-size: clamp(0.1rem, 1.9vw, 1.0rem);
+	line-height: 1.5;
 }
 
 @keyframes scanline {
@@ -258,5 +263,6 @@ useHead({
 	position: absolute;
 	bottom: 100%;
 	animation: scanline 6s linear infinite;
+	pointer-events: none;
 }
 </style>

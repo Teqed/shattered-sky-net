@@ -13,7 +13,7 @@ useHead({
 				<div class="i-mdi:information-outline text-2xl" />
 			</template>
 			<template #heading>
-				Hello!
+				Timothy Quilling
 			</template>
 			<img src="../assets/images/me.webp" style="
 					width: 20%;
@@ -23,7 +23,7 @@ useHead({
 					border-radius: 1rem;
 				" alt="Despite everything, it's still me.">
 			<p>
-				I am Timothy Quilling, also known as Teq, American software developer and BSc IT.
+				Hello, I'm also known as Teq, and I'm a software developer with a BSc IT.
 			</p>
 			<br>
 			<p>

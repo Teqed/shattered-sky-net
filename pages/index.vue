@@ -8,7 +8,7 @@ useSchemaOrg([
 		"@id": "https://shatteredsky.net#breadcrumb",
 		"itemListElement": [
 			{ "@type": "ListItem", "position": 1, "name": "Home", "item": "https://shatteredsky.net" },
-			{ "@type": "ListItem", "position": 2, "name": "Files", "item": "https://shatteredsky.net/files" },
+			{ "@type": "ListItem", "position": 2, "name": "Cloud", "item": "https://shatteredsky.net/cloud" },
 			{ "@type": "ListItem", "position": 3, "name": "Tabletop", "item": "https://shatteredsky.net/tabletop" },
 			{ "@type": "ListItem", "position": 4, "name": "Blog", "item": "https://shatteredsky.net/blog" },
 			{ "@type": "ListItem", "position": 5, "name": "About", "item": "https://shatteredsky.net/about" }
@@ -92,82 +92,9 @@ const terminalLines: TerminalLine[] = [
 	{ text: "Connection established.", delay: 200, type: 'line' },
 	{ text: "Welcome to SHATTERED SKY", delay: 600, type: 'line' },
 ];
-const art = [
-	'<span class="motd-gray">┌─────────────────────────────┐</span>',
-	'<span class="motd-gray"> ⠀⠀⠀⠀⠀⠀⣄⠀⠀⠀⣦⣤⣾⣿⠿⠛⣋⣥⣤⣀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray"> ⠀⠀⠀⠀⡤⡀⢈⢻⣬⣿⠟⢁⣤⣶⣿⣿⡿⠿⠿⠛⠛⢀⣄⠀</span>',
-	'<span class="motd-gray"> ⠀⠀⢢⣘⣿⣿⣶⣿⣯⣤⣾⣿⣿⣿⠟⠁<span style="color:#fff";>⠄⠀⣾⡇</span>⣼⢻⣿⣾</span>',
-	'<span class="motd-gray"> ⣰⠞⠛⢉⣩⣿⣿⣿⣿⣿⣿⣿⣿⠋<span style="color:#fff";>⣼⣧⣤⣴⠟</span>⣠⣿⢰⣿⣿</span>',
-	'<span class="motd-gray"> ⣶⡾⠿⠿⠿⢿⣿⣿⣿⣿⣿⣿⣿⣄⣠⣤⡶⠟⢛⣩⣴⣿⣿⡟</span>',
-	'<span class="motd-gray"> <span style="color:#fff";>⣠⣄⠈⠀⣰⡦</span>⠙⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⡛⠛⠛⠁</span>',
-	'<span class="motd-gray"> <span style="color:#fff";>⠉⠛⠛⠛⠁</span>⡔⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠥⠀⠀</span>',
-	'<span class="motd-gray"> ⣭⣏⣭⣭⣥⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢠</span> ',
-	'<span style="color:#fff";>     What\'s it all for?..<span class="blink">_</span></span>',
-	'<span class="motd-gray">└─────────────────────────────┘</span>',
-	'<span class="motd-gray">┌─────────────────────────────┐</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⠃⠀⠈⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣏⣰⠛⢦⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠈⠷⠖⠾⢹⡄⠀⠀⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡏⠀⢀⡗⠦⡌⣷⠀⠀⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⡇⠀⣞⡀⣀⣱⢻⣃⠀⣀⡀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⠀⠀⣤⠞⠛⠉⠁⠀⠀⠋⠁⢀⣀⣁⣉⠉⠉⣦⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠀⠀⣠⣬⣷⣶⢤⣴⣶⡶⠶⠒⠛⠛⠛⣻⣿⡟⠋⠁⠀⠀⠀</span>',
-	'<span class="motd-gray"> ⠿⠿⣶⣤⣾⣿⣿⣿⣿⠘⠟⠋<span style="color:#fff";>⠀⣤⠀⠀⠀⠶</span>⠈⠛⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠘⢛⣿⣿⣿⣿⣿⣆⡀⠀<span style="color:#fff";>⠀⠀</span>⠀⠀⠀⠀⣧⣄⠀⠀⠀⠀⠀⠀</span>',
-	'<span class="motd-gray">⠀⠀⠀⠀⠈⠓⠚⠊⠀⠀⠀⠹⣳⢶⣖⡍⠉⠉⠹⠽⠚⠀⠀⠀⠀⠀⠀</span>',
-	'<span style="color:#fff";>         born to dance</span>',
-	'<span class="motd-gray">└─────────────────────────────┘</span>',
-	'<span class="motd-gray">┌─────────────────────────────┐</span>',
-	'',
-	'<span class="motd-gray">          made by <span style="color:#fff";>teq</span></span>',
-	'<span class="motd-gray">          <a href=/bio>more of me</a></span>',
-	'',
-	'<span class="motd-gray">└─────────────────────────────┘</span>',
-];
-const motdLines = [
-	'<span class="motd-gray">┌────── Welcome to <span style="color:#ffffff;">SHATTERED SKY</span> ──────┐</span>',
-	'<span style="color:#e06c75;"> OS</span>: <a class="inline-a" href="https://nixos.org/">NixOS 25.11 (Xantusia) x86_64</a>     ',
-	'<span style="color:#e06c75;"> Kernel</span>: <a class="inline-a" href="https://cachyos.org/">Linux 6.14.7-cachyos</a>          ',
-	'<span style="color:#e06c75;"> Fetched</span>: 2025-06-30 22:44:13 EDT      ',
-	'<span style="color:#e06c75;"> Locale</span>: en_US.UTF-8                   ',
-	'<span class="motd-gray">└──────────────────────────────────────┘</span>',
-	'<span class="motd-gray">┌────────────── <span style="color:#fff";>Terminal</span> ──────────────┐</span>',
-	'<span style="color:#e5c07b;"> Shell</span>: <a class="inline-a" href=https://fishshell.com/>fish 4.0.2</a>                     ',
-	'<span style="color:#e5c07b;"> Terminal</span>: <a class="inline-a" href="https://ghostty.org/">ghostty 1.1.4</a>               ',
-	'<span style="color:#e5c07b;">󱞎 Multiplexer</span>: <a class="inline-a" href="https://zellij.dev/">zellij 0.42.2</a>            ',
-	'<span style="color:#e5c07b;"> Font</span>: <a class="inline-a" href="https://www.nerdfonts.com/font-downloads">JetBrainsMono Nerd Font</a>         ',
-	'<span class="motd-gray">└──────────────────────────────────────┘</span>',
-	'<span class="motd-gray">┌────────────── <span style="color:#fff";>Desktop</span> ───────────────┐</span>',
-	'<span style="color:#98c379;"> Font</span>: <a class="inline-a" href="https://fonts.google.com/specimen/Inter">Inter</a>                           ',
-	'<span style="color:#98c379;">󱞎 Editor</span>: <a class="inline-a" href="https://zed.dev/">Zed 0.188.0</a>                   ',
-	'<span style="color:#98c379;"> Session</span>: <a class="inline-a" href="https://kde.org/plasma-desktop/">KDE Plasma (Wayland)</a>         ',
-	'<span style="color:#98c379;">󰍹 Display</span>: 2560x1440,1920x1080 @ 144Hz  ',
-	'<span class="motd-gray">└──────────────────────────────────────┘</span>',
-	'<span class="motd-gray">┌───────────── <span style="color:#fff";>Development</span> ────────────┐</span>',
-	'<span style="color:#61afef;"> Go</span>: <a class="inline-a" href="https://go.dev/doc/devel/release">go 1.24.3</a>                         ',
-	'<span style="color:#61afef;"> Rust</span>: <a class="inline-a" href="https://www.rust-lang.org/">rustc 1.88.0</a>                    ',
-	'<span style="color:#61afef;"> Python</span>: <a class="inline-a" href="https://www.python.org/">python 3.13.5</a>                ',
-	'<span style="color:#61afef;">󰈙 JavaScript</span>: <a class="inline-a" href="https://nodejs.org/">node.js 24.3.0</a>            ',
-	'<span class="motd-gray">└──────────────────────────────────────┘</span>',
-	'<span class="motd-gray">┌────────────── <span style="color:#fff";>Hardware</span> ──────────────┐</span>',
-	'<span style="color:#c678dd;"> CPU</span>: <a class="inline-a" href="https://www.amd.com/en/support/downloads/drivers.html/processors/ryzen/ryzen-3000-series/amd-ryzen-5-3600.html#amd_support_product_spec">AMD Ryzen 5 3600 @ 4.21 GHz</a>      ',
-	'<span style="color:#c678dd;">󰾲 GPU</span>: <a class="inline-a" href="https://www.amd.com/en/support/downloads/drivers.html/graphics/radeon-rx/radeon-rx-5000-series/amd-radeon-rx-5700.html#amd_support_product_spec">AMD Radeon RX 5700</a>               ',
-	'<span style="color:#c678dd;"> RAM</span>: 24 GiB / 32 GiB (76%)            ',
-	'<span style="color:#c678dd;"> Disk</span>: 453 GiB / 558 GiB (81%) <a class="inline-a" href="https://btrfs.readthedocs.io/en/latest/">btrfs</a>   ',
-	'<span class="motd-gray">└──────────────────────────────────────┘</span>',
-	'<span style="padding-left:2ch;">' +
-	'<span style="color:#e06c75;">●</span> ' +
-	'<span style="color:#e5c07b;">●</span> ' +
-	'<span style="color:#98c379;">●</span> ' +
-	'<span style="color:#56b6c2;">●</span> ' +
-	'<span style="color:#61afef;">●</span> ' +
-	'<span style="color:#c678dd;">●</span>' +
-	'</span>',
-];
 
 // --- State ---
 const displayedLines = ref<string[]>([]);
-const motdDisplayedLines = ref<string[]>([]);
 const showMotd = ref(false);
 
 // --- Terminal Animation Helpers ---
@@ -202,14 +129,16 @@ async function typeLineWithAnimatedDots(text: string, dotDelay: number) {
 	}
 }
 async function typeLines(lines: TerminalLine[]) {
-	for (const line of lines) {
-		await new Promise(resolve => setTimeout(resolve, line.delay));
-		if (line.type === 'char') {
-			await typeLineCharByChar(line.text, line.charDelay ?? 40, line.delays);
-		} else if (line.type === 'dots') {
-			await typeLineWithAnimatedDots(line.text, line.dotDelay ?? 300);
-		} else {
-			displayedLines.value.push(line.text);
+	if (showMotd.value == false) {
+		for (const line of lines) {
+			await new Promise(resolve => setTimeout(resolve, line.delay));
+			if (line.type === 'char') {
+				await typeLineCharByChar(line.text, line.charDelay ?? 40, line.delays);
+			} else if (line.type === 'dots') {
+				await typeLineWithAnimatedDots(line.text, line.dotDelay ?? 300);
+			} else {
+				displayedLines.value.push(line.text);
+			}
 		}
 	}
 	await showMotdAnimated();
@@ -217,49 +146,35 @@ async function typeLines(lines: TerminalLine[]) {
 
 // --- MOTD Animation ---
 async function showMotdAnimated() {
-	await new Promise(resolve => setTimeout(resolve, 2000));
+	await new Promise(resolve => setTimeout(resolve, 1100));
 	displayedLines.value = [];
 	showMotd.value = true;
-	for (const line of motdLines) {
-		motdDisplayedLines.value.push(line);
-		await new Promise(resolve => setTimeout(resolve, 20));
-	}
 }
 
 // --- Lifecycle ---
 onMounted(() => {
-	const width = ref(window.innerWidth).value;
-	if (width > 780) {
-		const prompt = '<span class="starship-bg-red-sep"></span><span class="starship-bg-red"> </span><span class="starship-bg-orange-sep"></span><span class="starship-bg-orange"> teq@shatteredsky </span><span class="starship-bg-yellow-sep"></span><span class="starship-bg-yellow"> ~ </span><span class="starship-bg-green-light-sep"></span><span class="starship-bg-green-light"> </span><span class="starship-bg-green-sep"></span><span class="starship-bg-green"> </span><span class="starship-bg-aqua-sep"></span><span class="starship-bg-aqua">  main </span><span class="starship-bg-blue-sep"></span><span class="starship-bg-blue"> </span><span class="starship-bg-purple-sep"></span><span class="starship-bg-purple">  v24.3.0 </span><span class="starship-bg3-sep"></span><span class="starship-bg3"> fish </span><span class="starship-bg1-sep"></span><span class="starship-bg1">  22:44 </span><span class="starship-bg1-sep-2"></span>';
-		const promptElement = document.querySelector('.prompt');
-		if (promptElement) {
-			promptElement.innerHTML = prompt ? prompt : '';
-		}
-		for (let i = 0; i < art.length; i++) {
-			motdLines[i] += `  ${art[i]}`;
-		}
-	} else {
-		const prompt = '<span class="starship-bg-red-sep"></span><span class="starship-bg-red"> </span><span class="starship-bg-orange-sep"></span><span class="starship-bg-orange"> teq@shatteredsky </span><span class="starship-bg-yellow-sep"></span><span class="starship-bg-yellow"> ~ </span><span class="starship-bg-green-light-sep"></span><span class="starship-bg-green-light"> </span><span class="starship-bg-green-sep"></span><span class="starship-bg-green"> </span><span class="starship-bg-aqua-sep"></span><span class="starship-bg-aqua"></span><span class="starship-bg-blue-sep"></span><span class="starship-bg-blue"></span><span class="starship-bg-purple-sep"></span><span class="starship-bg-purple"></span><span class="starship-bg3-sep"></span><span class="starship-bg3"></span><span class="starship-bg1-sep"></span><span class="starship-bg1">  22:44 </span><span class="starship-bg1-sep-2"></span>';
-		const promptElement = document.querySelector('.prompt');
-		if (promptElement) {
-			promptElement.innerHTML = prompt ? prompt : '';
-		}
-		motdLines.push(...art);
-	}
 	typeLines(terminalLines);
 });
 </script>
 
 <template>
-	<div>
+	<div class="landing">
 		<FakeCRT>
-			<div class="prompt"></div>
+			<div class="prompt"><span class="starship-bg-red-sep"></span><span class="starship-bg-red"> </span><span
+					class="starship-bg-orange-sep"></span><span class="starship-bg-orange"> teq@shatteredsky
+				</span><span class="starship-bg-yellow-sep"></span><span class="starship-bg-yellow"> ~ </span><span
+					class="starship-bg-green-light-sep"></span><span class="starship-bg-green-light">⠀</span><span
+					class="starship-bg-green-sep"></span><span class="starship-bg-green">⠀</span><span
+					class="starship-bg-aqua-sep"></span><span class="starship-bg-aqua">  main </span><span
+					class="starship-bg-blue-sep"></span><span class="starship-bg-blue">⠀</span><span
+					class="starship-bg-purple-sep"></span><span class="starship-bg-purple">  v24.3.0 </span><span
+					class="starship-bg3-sep"></span><span class="starship-bg3"> fish </span><span
+					class="starship-bg1-sep"></span><span class="starship-bg1">  22:44 </span><span
+					class="starship-bg1-sep-2"></span></div>
 			<template v-for="(line, idx) in displayedLines" :key="idx">
-				<p>{{ line }}</p>
+				<p class="fakelogin">{{ line }}</p>
 			</template>
-			<div v-if="showMotd" class="motd-pre" style="margin-top: 1.5em;">
-				<pre v-for="(line, idx) in motdDisplayedLines" :key="idx" v-html="line"></pre>
-			</div>
+			<MotdLine v-if="showMotd" />
 		</FakeCRT>
 	</div>
 </template>
@@ -268,58 +183,70 @@ onMounted(() => {
 <style>
 @keyframes cursor-blink {
 	0% {
+		opacity: 1;
+	}
+
+	50% {
+		opacity: 1;
+	}
+
+	75% {
+		opacity: 0;
+	}
+
+	100% {
 		opacity: 0;
 	}
 }
 
 .blink {
-	animation: cursor-blink 1.5s steps(2) infinite;
+	color: #fff;
+	animation: cursor-blink 1.5s infinite;
 }
 
 .inline-a {
 	text-decoration: none;
 	color: inherit;
+	animation: fadein 1s ease-in-out;
+	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 
-.crt {
-	font-family: 'JetBrainsMono Nerd Font', 'Fira Mono', 'Consolas', 'Menlo', monospace;
+.inline-a:hover {
+	text-decoration: underline;
+	color: #fff;
+	background: none !important;
+	transition: color 0.3s ease;
 }
 
-.motd-gray {
-	color: #888;
+
+
+@keyframes fadein {
+	from {
+		opacity: 0.1;
+		filter: blur(5px);
+	}
+
+	to {
+		opacity: 1;
+		filter: blur(0);
+	}
 }
 
-.motd-green {
-	color: #7ec699;
+.landing {
+	animation: fadein 0.1s ease-in-out;
 }
 
-.motd-yellow {
-	color: #e5c07b;
+.prompt {
+	animation: fadein 0.1s ease-in-out;
+	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 
-.motd-blue {
-	color: #61afef;
-}
-
-.motd-magenta {
-	color: #c678dd;
-}
-
-.motd-bold {
-	font-weight: bold;
-}
-
-.motd-pre {
-	font-family: 'JetBrainsMono Nerd Font', 'Fira Mono', 'Consolas', 'Menlo', monospace;
-	font-size: 1em;
+.fakelogin {
+	animation: fadein 0.1s ease-in-out;
+	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 
 /* Starship prompt colors and styles */
-@font-face {
-	font-family: 'JetBrainsMono Nerd Font';
-	src: url('/assets/fonts/JetBrainsMonoNerdFontMono-Regular.ttf') format('truetype');
-	font-display: swap;
-}
 
 /* Segment backgrounds */
 .starship-bg-red-sep {

@@ -2,18 +2,18 @@
 // import vuetify from 'vite-plugin-vuetify';
 
 export default defineNuxtConfig({
-	content: {
-		build: {
-			markdown: {
-				remarkPlugins: {
-					'remark-gfm': {},
-					'remark-breaks': {},
-					'remark-oembed': {},
-					'remark-emoji': {},
-				},
-			},
-		},
-	},
+	// content: {
+	// 	build: {
+	// 		markdown: {
+	// 			remarkPlugins: {
+	// 				'remark-gfm': {},
+	// 				'remark-breaks': {},
+	// 				'remark-oembed': {},
+	// 				'remark-emoji': {},
+	// 			},
+	// 		},
+	// 	},
+	// },
 	site: {
 		url: 'https://shatteredsky.net',
 		name: 'Shattered Sky',
@@ -41,9 +41,19 @@ export default defineNuxtConfig({
 	},
 	modules: [
 		'@nuxtjs/seo',
-		'@nuxt/content',
+		// '@nuxt/content',
 		'@nuxt/eslint',
-		'@nuxt/fonts',
+		['@nuxt/fonts', {
+			fonts: {
+				families: [
+					{ name: 'JetBrainsMono Nerd Font Mono', provider: 'local' },
+					// { name: 'JetBrains Mono' },
+					{ name: 'Inter' },
+					// specify specific font data - this will bypass any providers
+					// { name: 'Other Font', src: 'https://example.com/font.woff2' },
+				]
+			}
+		}],
 		'@nuxt/icon',
 		'@nuxt/image',
 		'@nuxt/scripts',
@@ -86,14 +96,14 @@ export default defineNuxtConfig({
 		'nuxt-delay-hydration',
 		// 'nuxt-purgecss',
 		// '@nuxtjs/html-validator', // Validator, temp disabled
-		[
-			'@nuxtjs/google-fonts',
-			{
-				families: {
-					Roboto: true,
-				},
-			},
-		],
+		// [
+		// 	'@nuxtjs/google-fonts',
+		// 	{
+		// 		families: {
+		// 			Roboto: true,
+		// 		},
+		// 	},
+		// ],
 		[
 			'@nuxtjs/i18n',
 			{
@@ -161,7 +171,6 @@ export default defineNuxtConfig({
 			siteDescription: 'Hosting for Shattered Sky',
 			siteName: 'Shattered Sky',
 			siteUrl:
-				// eslint-disable-next-line node/no-process-env
 				process.env.NUXT_PUBLIC_SITE_URL || 'https://shatteredsky.net',
 		},
 	},
@@ -217,6 +226,9 @@ export default defineNuxtConfig({
 		// ogTitleTemplate: '%pageTitle',
 	},
 	vite: {
+		server: {
+			allowedHosts: ['localhost', 'shatteredsky.net'],
+		},
 		build: {
 			emptyOutDir: true,
 		},

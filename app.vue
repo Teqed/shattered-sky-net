@@ -1,10 +1,10 @@
 <script setup lang="ts">
 const route = useRoute();
-const head = useLocaleHead({
-	dir: true,
-	key: 'id',
-	seo: true,
-});
+// const head = useLocaleHead({
+// 	dir: true,
+// 	key: 'id',
+// 	seo: true,
+// });
 useHead({
 	meta: [
 		{
@@ -90,10 +90,11 @@ body {
 	min-height: 100vh;
 	color: var(--color-text);
 	line-height: 1.6;
-	font-family: Roboto, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+	font-family: Inter, Roboto, -apple-system, BlinkMacSystemFont, 'Segoe UI',
 		Oxygen, Ubuntu, Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
 		sans-serif;
-	font-size: 15px;
+	/* font-size: 15px; */
+	font-size: min(3vw, 1rem);
 	text-rendering: optimizelegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
