@@ -2,7 +2,7 @@
 <script setup lang="ts">
 useHead({
 	title: 'About me',
-	meta: [{ name: 'description', content: 'Timothy Quilling — software developer and BSc IT.' }],
+	meta: [{ name: 'description', content: 'Teq — software developer and BSc IT.' }],
 });
 </script>
 
@@ -23,13 +23,7 @@ useHead({
 					border-radius: 1rem;
 				" alt="Despite everything, it's still me.">
 			<p>
-				Hello, I am Timothy Quilling, also known as Teq, American software developer and BSc IT.
-			</p>
-			<br>
-			<p>
-				My professional work primarily involves designing reliable infrastructure for the public sector and
-				enterprises. If you're interested in scheduling contract work with me, you can find my <a
-					href="/pdfs/quilling-resume.pdf">contact information here</a>.
+				Hello, my name is Teq (they/them), American software developer and BSc IT.
 			</p>
 			<br>
 			<p>
