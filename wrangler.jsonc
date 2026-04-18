@@ -2,6 +2,12 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "shattered-sky-net",
 	"compatibility_date": "2026-04-18",
+	"routes": [
+		{
+			"pattern": "shatteredsky.net",
+			"custom_domain": true
+		}
+	],
 	"observability": {
 		"enabled": true
 	}
