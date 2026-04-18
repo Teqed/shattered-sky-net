@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/multi-word-component-names -->
 <script setup lang="ts">
 useHead({
-	title: 'Timothy Quilling',
-	meta: [{ name: 'description', content: 'About Timothy Quilling.' }],
+	title: 'About me',
+	meta: [{ name: 'description', content: 'Timothy Quilling — software developer and BSc IT.' }],
 });
 </script>
 
@@ -13,7 +13,7 @@ useHead({
 				<div class="i-mdi:information-outline text-2xl" />
 			</template>
 			<template #heading>
-				Timothy Quilling
+				About
 			</template>
 			<img src="../assets/images/me.webp" style="
 					width: 20%;
@@ -23,29 +23,24 @@ useHead({
 					border-radius: 1rem;
 				" alt="Despite everything, it's still me.">
 			<p>
-				Hello, I'm also known as Teq, and I'm a software developer with a BSc IT.
+				Hello, I am Timothy Quilling, also known as Teq, American software developer and BSc IT.
 			</p>
 			<br>
 			<p>
-				My work has primarily been with designing reliable infrastructure for the US and Canadian public
-				sectors. I am
-				currently looking for new opportunities and you can find my <a
-					href="/pdfs/quilling-resume.pdf">professional
-					contact
-					information here.</a>
+				My professional work primarily involves designing reliable infrastructure for the public sector and
+				enterprises. If you're interested in scheduling contract work with me, you can find my <a
+					href="/pdfs/quilling-resume.pdf">contact information here</a>.
 			</p>
 			<br>
 			<p>
-				In my spare time I create free software to help others, which I host at <NuxtLink to="/">shatteredsky.net</NuxtLink>. My most recent
-				project is
-				a <a href="https://bsky.app/profile/did:plc:m6adptn62dcahfaq34tce3j5">moderation labeler</a> written in
-				Rust for
-				Bluesky's ATProtocol network.
+				In my spare time I create free software to help my friends, which I primarily host at
+				<NuxtLink to="/">shatteredsky.net</NuxtLink>. My preferred language for new projects is Rust and my
+				preferred environment is NixOS.
 			</p>
 			<br>
 			<p>
-				Originally from Orlando, on most of my days I can be found enjoying coffee, creating art and riding my
-				bike. <a href="https://quilling.dev/blog/more-about-me/">Learn more about me here.</a>
+				Originally from Orlando, on most of my days I can be found enjoying coffee, creating art or walking to
+				the local deli. <a href="https://quilling.dev/blog/more-about-me/">Learn more about me here</a>.
 			</p>
 
 			<p />

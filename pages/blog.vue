@@ -45,7 +45,7 @@ useHead({
 				<a href="https://quilling.dev/blog/more-about-me/">More about me</a>
 				<div style="float:right"><p><i>01-01-2024</i></p></div>
 			</template>
-			<p>I was born in Winter Park, Florida, near the Greater Orlando metropolitan area. At a young age, before I could read, I started playing games ... <a href="https://quilling.dev/blog/more-about-me/">Read more.</a></p>
+			<p>I was born in Winter Park, Florida, near Orlando. Before I could even read I was already playing on the computer. <a href="https://quilling.dev/blog/more-about-me/">Read more.</a></p>
 		</TileItem>
 	</div>
 </template>
