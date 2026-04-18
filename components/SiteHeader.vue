@@ -50,14 +50,14 @@
   }
 
   .logo {
-    width: min(15vw, 100px);
+    width: min(10vw, 90px);
     height: auto;
 	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
 	justify-self: center;
   }
 
   .logo-blur {
-    width: min(15vw, 100px);
+    width: min(10vw, 90px);
     height: auto;
 	filter: blur(10px);
 	position: absolute;
@@ -77,8 +77,8 @@
   header {
 	margin: auto;
 	max-width: fit-content;
-  padding: 2rem 5vw 2rem 2rem;
-	line-height: 1.5;
+  padding: 0.4rem 3vw 0.2rem 1rem;
+	line-height: 1.1;
 	min-height: 10vh;
 	display: flex;
 	place-items: center;

@@ -7,7 +7,8 @@ useHead({
 });
 </script>
 
-<script lang="ts"></script>
+<script lang="ts">
+</script>
 
 <template>
 	<div>
@@ -40,7 +41,7 @@ useHead({
 }
 
 .tile {
-	width: min(85vw, 85vmin);
+	width: min(85vw, 47rem);
 	padding: 1.2vh 1vw;
 	background: rgb(71 71 71 / 40%);
 	border-radius: 16px;

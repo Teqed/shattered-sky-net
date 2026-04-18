@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 
 // --- Schema.org & Head ---
 useSchemaOrg([
@@ -57,9 +57,12 @@ useSchemaOrg([
 useHead({
 	title: 'Shattered Sky',
 	titleTemplate: '%s',
-	meta: [{ name: 'description', content: 'Home page for Shattered Sky community.' }],
-	link: [{ rel: 'me', href: 'https://mastodon.shatteredsky.net/@teq' }],
+	meta: [{ name: 'description', content: 'Located in Jupiter\'s satellite system 204-Callisto, positioned at Aphelion 3.13704 AU, consuming 70mW...' },
+		{ name: 'og:image', content: 'https://shatteredsky.net/og-image.jpg' },
+	],
+	link: [{ rel: 'me', href: 'https://mastodon.shatteredsky.net/@teq' }, { rel: 'me', href: 'https://bsky.app/profile/quilling.dev' }],
 });
+// defineOgImageScreenshot({})
 
 // --- Types ---
 type TerminalLine = {
@@ -95,7 +98,11 @@ const terminalLines: TerminalLine[] = [
 
 // --- State ---
 const displayedLines = ref<string[]>([]);
-const showMotd = ref(false);
+const showMotdCookie = useCookie<boolean>('showMotd', { default: () => false, maxAge: 60 });
+const showMotd = ref(showMotdCookie.value);
+watch(showMotd, (val) => {
+  showMotdCookie.value = val;
+});
 
 // --- Terminal Animation Helpers ---
 async function typeLineCharByChar(text: string, charDelay: number, delays?: number[]) {
@@ -205,6 +212,7 @@ onMounted(() => {
 }
 
 .inline-a {
+	text-shadow: 1.870905614848819px 0 1px rgba(0, 30, 255, 0.25), -1.870905614848819px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
 	text-decoration: none;
 	color: inherit;
 	animation: fadein 1s ease-in-out;

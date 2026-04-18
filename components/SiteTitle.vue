@@ -279,7 +279,7 @@ onMounted(() => {
 }
 
 .greetings h1 {
-	font-size: min(8vw, 2.5rem);
+	font-size: min(8vw, 2.2rem);
 	top: 0px;
 	animation: slidein-top 0.28s ease-out;
 

@@ -40,6 +40,16 @@ export default defineNuxtConfig({
 		enabled: false,
 	},
 	modules: [
+		// ['nuxt-og-image', {
+		// 	ogImage: {
+		// 		defaults: {
+		// 			renderer: 'chromium',
+		// 			screenshot: {
+		// 				delay: 10000,
+		// 			},
+		// 		},
+		// 	}
+		// }],
 		'@nuxtjs/seo',
 		// '@nuxt/content',
 		'@nuxt/eslint',

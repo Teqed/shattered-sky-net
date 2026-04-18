@@ -13642,7 +13642,7 @@ nuxt-link-checker@^4.3.1:
     ultrahtml "^1.6.0"
     unstorage "^1.16.0"
 
-nuxt-og-image@^5.1.8:
+nuxt-og-image@5.1.8, nuxt-og-image@^5.1.8:
   version "5.1.8"
   resolved "https://registry.npmjs.org/nuxt-og-image/-/nuxt-og-image-5.1.8.tgz"
   integrity sha512-aOjME8E6uD0YDzIoU5wSpthgVA7sSl0r6jlgXii5W4Rvp2fwC49im3Yhv2CpnZAoZYiejN+4lL1zMw5ryCboMA==
@@ -17657,7 +17657,7 @@ unrs-resolver@^1.6.2, unrs-resolver@^1.9.2:
     "@unrs/resolver-binding-win32-ia32-msvc" "1.9.2"
     "@unrs/resolver-binding-win32-x64-msvc" "1.9.2"
 
-unstorage@^1.10.1, unstorage@^1.16.0:
+unstorage@^1.10.1, unstorage@^1.15.0, unstorage@^1.16.0:
   version "1.16.0"
   resolved "https://registry.npmjs.org/unstorage/-/unstorage-1.16.0.tgz"
   integrity sha512-WQ37/H5A7LcRPWfYOrDa1Ys02xAbpPJq6q5GkO88FBXVSQzHd7+BjEwfRqyaSWCv9MbsJy058GWjjPjcJ16GGA==
