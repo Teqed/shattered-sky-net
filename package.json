@@ -50,7 +50,6 @@
 		"@unocss/preset-uno": "^0.51.12",
 		"@vue/eslint-config-prettier": "^7.1.0",
 		"@vue/eslint-config-typescript": "^11.0.3",
-		"better-sqlite3": "^11.10.0",
 		"comlink": "^4.4.1",
 		"eslint": "^9.30.0",
 		"eslint-config-canonical": "^41.0.4",
