@@ -20,10 +20,11 @@
       pname = "shattered-sky-net"; # <same as package.json name>
       version = "0.1.0";
       buildInputs = with pkgs; [
-        nodejs_24
+        nodejs_22
         nodePackages_latest.pnpm
         yarn
         sqlite
+        wrangler
       ];
       nativeBuildInputs = buildInputs;
       npmDepsHash = ""; # <prefetch-npm-deps package-lock.json>

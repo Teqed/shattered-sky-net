@@ -69,3 +69,5 @@
 // 	}
 // 	return 'No requestType specified.'
 // });
+
+export default defineEventHandler(() => null);

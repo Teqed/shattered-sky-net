@@ -160,9 +160,18 @@ export default defineNuxtConfig({
 	],
 
 	nitro: {
+		preset: 'cloudflare_module',
+		cloudflare: {
+			deployConfig: true,
+			nodeCompat: true,
+		},
 		experimental: {
 			wasm: true,
 		},
+	},
+
+	ogImage: {
+		enabled: false,
 	},
 
 	robots: {
@@ -246,5 +255,5 @@ export default defineNuxtConfig({
 			'process.env.DEBUG': false,
 		},
 	},
-	compatibilityDate: '2025-05-15',
+	compatibilityDate: '2026-04-18',
 })

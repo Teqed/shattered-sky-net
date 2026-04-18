@@ -11,6 +11,19 @@ dist
 # Node dependencies
 node_modules
 
+# Wrangler / Cloudflare
+.wrangler
+.dev.vars
+
+# Yarn (Berry)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+
 # Logs
 logs
 *.log
