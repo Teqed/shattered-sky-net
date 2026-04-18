@@ -109,13 +109,11 @@ useHead({
 .details {
 	/* flex: 1; */
 	margin-left: 1.5vw;
-	animation: var(--animation-generic);
 }
 
 .details-srd {
 	/* flex: 1; */
 	/* margin-left: 1.5vw; */
-	animation: var(--animation-generic);
 }
 
 .i-icon {
@@ -125,7 +123,6 @@ useHead({
 	width: 32px;
 	height: 32px;
 	color: var(--color-text);
-	animation: var(--animation-generic);
 }
 
 .rei-icon {

@@ -25,7 +25,7 @@ useHead({
 				<a href="https://quilling.dev/blog/message-CPA4072/">Message CPA4072</a>
 				<div style="float:right"><p><i>04-12-2025</i></p></div>
 			</template>
-			<p>A common message to receive on the AS/400 IBMi system while doing a routine task is CPA4072, "Maximum number of records reached for file" with the problematic file listed. <a href="https://quilling.dev/blog/message-CPA4072/">Read more.</a></p>
+			<p>A common message to receive on the AS/400 IBMi system while doing a routine task is CPA4072, "Maximum number of records reached for file". <a href="https://quilling.dev/blog/message-CPA4072/">Read more.</a></p>
 		</TileItem>
 		<TileItem>
 			<template #icon>

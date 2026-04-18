@@ -215,7 +215,6 @@ onMounted(() => {
 	text-shadow: 1.870905614848819px 0 1px rgba(0, 30, 255, 0.25), -1.870905614848819px 0 1px rgba(255, 0, 80, 0.3), 0 0 3px;
 	text-decoration: none;
 	color: inherit;
-	animation: fadein 1s ease-in-out;
 	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 
@@ -240,17 +239,11 @@ onMounted(() => {
 	}
 }
 
-.landing {
-	animation: fadein 0.1s ease-in-out;
-}
-
 .prompt {
-	animation: fadein 0.1s ease-in-out;
 	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 
 .fakelogin {
-	animation: fadein 0.1s ease-in-out;
 	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 

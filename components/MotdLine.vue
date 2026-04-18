@@ -56,7 +56,6 @@ onMounted(async () => {
 
 <style>
 .motd-line {
-	animation: fadein 1s ease-in-out;
 	font-family: 'JetBrainsMono Nerd Font Mono', monospace;
 }
 

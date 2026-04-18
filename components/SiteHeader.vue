@@ -52,7 +52,6 @@
   .logo {
     width: min(10vw, 90px);
     height: auto;
-	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
 	justify-self: center;
   }
 
@@ -77,7 +76,7 @@
   header {
 	margin: auto;
 	max-width: fit-content;
-  padding: 0.4rem 3vw 0.2rem 1rem;
+  padding: 0.4rem 3vw 1.5vh 1rem;
 	line-height: 1.1;
 	min-height: 10vh;
 	display: flex;
@@ -114,7 +113,6 @@
 	-webkit-backdrop-filter: saturate(180%) blur(20px);
 	border: 1px solid rgb(121 121 121 / 51%);
 	transition: box-shadow 0.28s ease-in-out;
-	animation: fadein 0.28s ease-out, slidein-top 0.28s ease-out;
   }
 
   nav:hover {

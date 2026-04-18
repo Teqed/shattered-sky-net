@@ -1,10 +1,4 @@
 <script setup lang="ts">
-const route = useRoute();
-// const head = useLocaleHead({
-// 	dir: true,
-// 	key: 'id',
-// 	seo: true,
-// });
 useHead({
 	meta: [
 		{
@@ -17,17 +11,12 @@ useHead({
 
 <template>
 	<div>
-		<!-- <SeoKit :language="head.htmlAttrs?.lang" :dir="head.htmlAttrs?.dir" /> -->
 		<NuxtErrorBoundary>
 			<ClientOnly>
 				<FollowCursor />
 			</ClientOnly>
 			<NuxtLayout>
-				<NuxtPage v-slot="{ Component }">
-					<transition name="slide" mode="out-in">
-						<component :is="Component" :key="route.path" />
-					</transition>
-				</NuxtPage>
+				<NuxtPage />
 			</NuxtLayout>
 		</NuxtErrorBoundary>
 	</div>
@@ -38,10 +27,15 @@ a,
 .blue {
 	text-decoration: none;
 	color: rgb(47 112 172);
-	transition: 0.28s;
+}
+
+a:hover,
+.blue:hover {
+	transition: color 0.28s, background-color 0.28s, text-decoration-color 0.28s;
 }
 
 :root {
+	color-scheme: dark;
 	margin: 0 auto;
 	/* padding: 2rem; */
 	font-weight: normal;
@@ -147,4 +141,20 @@ body {
 		transform: translateY(0%);
 	}
 }
+
+/* Nuxt page transition — fires only on client-side navigation between pages,
+   not on initial SSR hydration (Nuxt manages the lifecycle).
+   Note: avoid `filter: blur()` here — browsers tile-rasterize filtered layers,
+   which can cause the bottom of tall pages to paint a frame late ("last tile pops"). */
+.page-enter-active,
+.page-leave-active {
+	transition: opacity 0.22s ease-out, transform 0.22s ease-out;
+}
+
+.page-enter-from,
+.page-leave-to {
+	opacity: 0;
+	transform: translateY(-12px);
+}
+
 </style>

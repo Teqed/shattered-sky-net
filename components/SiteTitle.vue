@@ -281,7 +281,6 @@ onMounted(() => {
 .greetings h1 {
 	font-size: min(8vw, 2.2rem);
 	top: 0px;
-	animation: slidein-top 0.28s ease-out;
 
 	/* Change colors as a gradient */
 	background: linear-gradient(300deg,
@@ -311,7 +310,6 @@ onMounted(() => {
 .greetings h2 {
 	text-align: center;
 	font-size: min(2vw, 0.8rem);
-	animation: slidein-top 0.28s ease-out;
 	font-weight: 500;
 	margin-bottom: 0.5vh;
 	color: var(--color-heading);

@@ -28,6 +28,7 @@ export default defineNuxtConfig({
 				},
 			],
 		},
+		pageTransition: { name: 'page', mode: 'out-in' },
 	},
 	build: {
 		analyze: true,
