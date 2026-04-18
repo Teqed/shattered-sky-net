@@ -30,14 +30,13 @@ useHead({
 				My work has primarily been with designing reliable infrastructure for the US and Canadian public
 				sectors. I am
 				currently looking for new opportunities and you can find my <a
-					href="pdfs/quilling-resume.pdf">professional
+					href="/pdfs/quilling-resume.pdf">professional
 					contact
 					information here.</a>
 			</p>
 			<br>
 			<p>
-				In my spare time I create free software to help others, which I host at <a
-					href="https://shatteredsky.net">shatteredsky.net</a>. My most recent
+				In my spare time I create free software to help others, which I host at <NuxtLink to="/">shatteredsky.net</NuxtLink>. My most recent
 				project is
 				a <a href="https://bsky.app/profile/did:plc:m6adptn62dcahfaq34tce3j5">moderation labeler</a> written in
 				Rust for

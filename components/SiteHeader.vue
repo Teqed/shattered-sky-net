@@ -8,7 +8,7 @@
       class="logo-blur"
       src="../assets/icons/ss-logo.min.svg"
     >
-    <NuxtLink to="/" class="logo-link">
+    <NuxtLink to="/" class="logo-link" aria-label="Home">
       <img alt="Site logo" class="logo" src="../assets/icons/ss-logo.min.svg">
     </NuxtLink>
   </div>

@@ -33,9 +33,6 @@ export default defineNuxtConfig({
 		analyze: true,
 		// transpile: ['vuetify'],
 	},
-	delayHydration: {
-		mode: 'init',
-	},
 	devtools: {
 		enabled: false,
 	},
@@ -68,8 +65,8 @@ export default defineNuxtConfig({
 		'@nuxt/image',
 		'@nuxt/scripts',
 		'@nuxt/test-utils',
-		'@nuxt/ui',
-		'vuetify-nuxt-module',
+		// '@nuxt/ui', // unused — no <U*> components in the app
+		// 'vuetify-nuxt-module', // unused — only Chat.vue used <v-textarea>/<v-btn>; Chat is stubbed
 		//
 		'@nuxt/devtools',
 		// 'nuxt-purgecss',
@@ -103,7 +100,7 @@ export default defineNuxtConfig({
 		// 'nuxt-socket-io',
 		// '@unlighthouse/nuxt',
 		'nuxt-security',
-		'nuxt-delay-hydration',
+		// 'nuxt-delay-hydration', // Lighthouse hack causing visible layout jump on load; we have real prerender now
 		// 'nuxt-purgecss',
 		// '@nuxtjs/html-validator', // Validator, temp disabled
 		// [
@@ -118,6 +115,7 @@ export default defineNuxtConfig({
 			'@nuxtjs/i18n',
 			{
 				baseUrl: 'https://shatteredsky.net',
+				bundle: { optimizeTranslationDirective: false },
 				defaultLocale: 'en',
 				detectBrowserLanguage: {
 					cookieKey: 'i18n_redirected',
@@ -125,7 +123,7 @@ export default defineNuxtConfig({
 					useCookie: true,
 				},
 				langDir: 'lang/',
-				lazy: true,
+				lazy: false,
 				locales: [
 					{
 						code: 'en',
@@ -168,10 +166,27 @@ export default defineNuxtConfig({
 		experimental: {
 			wasm: true,
 		},
+		prerender: {
+			crawlLinks: true,
+			routes: ['/'],
+			ignore: ['/babylon', '/api'],
+		},
+	},
+
+	routeRules: {
+		'/**': { prerender: true },
+		'/babylon/**': { prerender: false },
+		'/api/**': { prerender: false, headers: { 'cache-control': 'no-store' } },
+		'/og-image.jpg': { headers: { 'cache-control': 'public, max-age=86400, immutable' } },
+		'/pdfs/**': { headers: { 'cache-control': 'public, max-age=86400' } },
 	},
 
 	ogImage: {
 		enabled: false,
+	},
+
+	sitemap: {
+		zeroRuntime: true,
 	},
 
 	robots: {

@@ -1,24 +1,11 @@
-// plugins/vuetify.js
-// import 'vuetify/styles'
-import { createVuetify } from 'vuetify'
-// import { aliases, mdi } from 'vuetify/iconsets/mdi-svg'
-
-export default defineNuxtPlugin((nuxtApp) => {
-	const vuetify = createVuetify({
-		ssr: true,
-		// components,
-		// directives,
-		// icons: {
-		// 	defaultSet: 'mdi',
-		// 	aliases,
-		// 	sets: {
-		// 		mdi,
-		// 	},
-		// }
-		theme: {
-			defaultTheme: 'dark'
-		}
-	})
-
-	nuxtApp.vueApp.use(vuetify)
-})
+// Vuetify plugin disabled — vuetify-nuxt-module removed from nuxt.config.ts.
+// Restore this file's contents and re-enable the module if Vuetify is reintroduced.
+// import { createVuetify } from 'vuetify'
+// export default defineNuxtPlugin((nuxtApp) => {
+// 	const vuetify = createVuetify({
+// 		ssr: true,
+// 		theme: { defaultTheme: 'dark' },
+// 	})
+// 	nuxtApp.vueApp.use(vuetify)
+// })
+export default defineNuxtPlugin(() => {})

@@ -99,7 +99,7 @@
 	"blog": {
 		"card0": {
 			"title": "Blog",
-			"blurb": ""
+			"blurb": "Recent posts and writing."
 		}
 	},
 	"about": {
@@ -111,8 +111,8 @@
 		"card1": {
 			"title": "Created by",
 			"blurb": "Webpage and associated services by Timothy Quilling, 2023.",
-			"blurb2": "Learn more about me {0}.",
-			"linkText": "here"
+			"blurb2": "Read {0}.",
+			"linkText": "my full bio"
 		}
 	}
 }
