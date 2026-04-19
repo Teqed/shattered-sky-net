@@ -1,9 +1,13 @@
 <script setup lang="ts">
 useHead({
 	meta: [
-		{
-			name: 'darkreader-lock',
-		},
+		{ name: 'darkreader-lock' },
+		{ property: 'og:image', content: 'https://shatteredsky.net/og-image.jpg' },
+		{ property: 'og:image:width', content: '1200' },
+		{ property: 'og:image:height', content: '630' },
+		{ property: 'og:image:type', content: 'image/jpeg' },
+		{ name: 'twitter:card', content: 'summary_large_image' },
+		{ name: 'twitter:image', content: 'https://shatteredsky.net/og-image.jpg' },
 	],
 });
 </script>
